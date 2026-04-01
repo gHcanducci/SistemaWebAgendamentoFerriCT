@@ -1,0 +1,259 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Ferri CT Admin</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-deep:    #07070A;
+            --bg-surface: #0F0F14;
+            --bg-card:    #15151C;
+            --bg-sidebar: #0A0A0F;
+            --border:     rgba(255,255,255,0.07);
+            --accent:     #E8C547;
+            --accent-dim: rgba(232,197,71,0.12);
+            --accent-glow:rgba(232,197,71,0.3);
+            --text-primary:   #F0EFE8;
+            --text-secondary: #6A6A75;
+            --danger:  #E05050;
+            --success: #4CAF82;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --sidebar-w: 240px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .admin-layout { display: flex; min-height: 100vh; }
+
+        /* ─── SIDEBAR ─── */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column;
+            position: fixed; top: 0; left: 0; bottom: 0;
+            z-index: 100; transition: transform 0.3s;
+        }
+        .sidebar-logo { padding: 28px 24px 24px; border-bottom: 1px solid var(--border); }
+        .logo-mark { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 3px; color: var(--accent); display: block; line-height: 1; }
+        .logo-badge { display: inline-block; background: var(--accent-dim); border: 1px solid rgba(232,197,71,0.25); color: var(--accent); font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; padding: 2px 8px; border-radius: 999px; margin-top: 6px; }
+        .sidebar-nav { flex: 1; padding: 20px 12px; overflow-y: auto; }
+        .nav-section-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-secondary); padding: 0 12px 8px; margin-top: 16px; }
+        .nav-section-label:first-child { margin-top: 0; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: var(--radius-sm); text-decoration: none; color: var(--text-secondary); font-size: 0.875rem; font-weight: 500; transition: all 0.2s; margin-bottom: 2px; }
+        .nav-item i { font-size: 1.05rem; width: 20px; text-align: center; }
+        .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
+        .nav-item.active { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(232,197,71,0.15); }
+        .nav-item.active i { color: var(--accent); }
+        .nav-badge { margin-left: auto; background: var(--accent); color: var(--bg-deep); font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; }
+
+        /* ─── SIDEBAR FOOTER ─── */
+        .sidebar-footer { padding: 16px 12px; border-top: 1px solid var(--border); }
+        .sidebar-user { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: var(--radius-sm); }
+        .user-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-dim); border: 1px solid rgba(232,197,71,0.3); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: var(--accent); }
+        .user-info .user-name { font-weight: 600; font-size: 0.825rem; color: var(--text-primary); }
+        .user-info .user-role { font-size: 0.7rem; color: var(--text-secondary); }
+
+        /* ─── BOTÃO LOGOUT ADMIN ─── */
+        .btn-logout-admin {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 14px; border-radius: var(--radius-sm);
+            color: #ff8a8a; text-decoration: none;
+            font-size: 0.85rem; font-weight: 600;
+            transition: all 0.2s; margin-top: 6px;
+            background: rgba(224,80,80,0.06);
+            border: 1px solid rgba(224,80,80,0.15);
+            width: 100%;
+        }
+        .btn-logout-admin:hover {
+            background: rgba(224,80,80,0.14);
+            color: #ff8a8a;
+            border-color: rgba(224,80,80,0.3);
+        }
+        .btn-logout-admin i { font-size: 1rem; }
+
+        .link-site {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 14px; border-radius: var(--radius-sm);
+            color: var(--text-secondary); text-decoration: none;
+            font-size: 0.8rem; transition: all 0.2s; margin-top: 4px;
+        }
+        .link-site:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
+
+        /* ─── MAIN ─── */
+        .admin-main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+        .admin-topbar { height: 60px; background: rgba(7,7,10,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 28px; gap: 16px; position: sticky; top: 0; z-index: 50; }
+        .topbar-title { font-weight: 700; font-size: 0.95rem; }
+        .topbar-sep { color: var(--text-secondary); }
+        .topbar-page { color: var(--text-secondary); font-size: 0.875rem; }
+        .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+        .topbar-btn { width: 36px; height: 36px; border-radius: var(--radius-sm); background: rgba(255,255,255,0.04); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; text-decoration: none; font-size: 1rem; }
+        .topbar-btn:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.15); }
+        .notif-dot { position: relative; }
+        .notif-dot::after { content: ''; position: absolute; top: 4px; right: 4px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+        .topbar-cta { background: var(--accent); color: var(--bg-deep) !important; border: none !important; font-weight: 700; font-size: 0.78rem; padding: 0 14px; width: auto; letter-spacing: 0.3px; }
+        .topbar-cta:hover { background: #f5d465 !important; color: var(--bg-deep) !important; }
+
+        /* ─── TOPBAR LOGOUT ─── */
+        .topbar-logout {
+            display: flex; align-items: center; gap: 6px;
+            padding: 0 14px; height: 36px; border-radius: var(--radius-sm);
+            background: rgba(224,80,80,0.08);
+            border: 1px solid rgba(224,80,80,0.2);
+            color: #ff8a8a; text-decoration: none;
+            font-size: 0.78rem; font-weight: 600;
+            transition: all 0.2s;
+        }
+        .topbar-logout:hover { background: rgba(224,80,80,0.16); color: #ff8a8a; }
+
+        .admin-content { padding: 28px; flex: 1; }
+
+        /* ─── SHARED COMPONENTS ─── */
+        .glass { background: rgba(21,21,28,0.8); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: var(--radius-lg); }
+        .glass-sm { background: rgba(21,21,28,0.6); backdrop-filter: blur(8px); border: 1px solid var(--border); border-radius: var(--radius-md); }
+        .btn-gold { background: var(--accent); color: var(--bg-deep); border: none; border-radius: var(--radius-sm); padding: 9px 20px; font-weight: 700; font-size: 0.85rem; transition: all 0.25s; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-gold:hover { background: #f5d465; color: var(--bg-deep); transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
+        .btn-outline-gold { background: transparent; color: var(--accent); border: 1px solid rgba(232,197,71,0.4); border-radius: var(--radius-sm); padding: 9px 20px; font-weight: 600; font-size: 0.85rem; transition: all 0.25s; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-outline-gold:hover { background: var(--accent-dim); color: var(--accent); }
+        .btn-danger-soft { background: rgba(224,80,80,0.1); color: #ff8a8a; border: 1px solid rgba(224,80,80,0.25); border-radius: var(--radius-sm); padding: 9px 20px; font-weight: 600; font-size: 0.85rem; transition: all 0.25s; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-danger-soft:hover { background: rgba(224,80,80,0.2); color: #ff8a8a; }
+        .form-control, .form-select { background: rgba(255,255,255,0.04) !important; border: 1px solid var(--border) !important; color: var(--text-primary) !important; border-radius: var(--radius-sm) !important; padding: 10px 14px !important; font-size: 0.875rem !important; transition: all 0.2s !important; }
+        .form-control:focus, .form-select:focus { border-color: var(--accent) !important; box-shadow: 0 0 0 3px var(--accent-dim) !important; }
+        .form-control::placeholder { color: var(--text-secondary) !important; }
+        .form-select option { background: var(--bg-card); }
+        .form-label { color: var(--text-secondary); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.2px; font-weight: 700; margin-bottom: 6px; }
+        .badge-status { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 600; white-space: nowrap; }
+        .badge-status::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+        .badge-confirmado  { color: var(--success); background: rgba(76,175,130,0.12); }
+        .badge-pendente    { color: var(--accent);  background: var(--accent-dim); }
+        .badge-cancelado   { color: var(--danger);  background: rgba(224,80,80,0.12); }
+        .ferri-table { width: 100%; border-collapse: separate; border-spacing: 0 4px; }
+        .ferri-table thead th { color: var(--text-secondary); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.5px; padding: 8px 14px; font-weight: 700; border: none; }
+        .ferri-table tbody tr { background: var(--bg-card); transition: all 0.2s; }
+        .ferri-table tbody tr:hover { background: rgba(232,197,71,0.05); }
+        .ferri-table tbody td { padding: 13px 14px; border: none; vertical-align: middle; }
+        .ferri-table tbody td:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+        .ferri-table tbody td:last-child  { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+
+        keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        keyframes pulse-dot { 0%, 100% { box-shadow: 0 0 0 0 rgba(76,175,130,0.4); } 50% { box-shadow: 0 0 0 6px transparent; } }
+        .fade-up { animation: fadeUp 0.5s ease forwards; }
+        .delay-1 { animation-delay: 0.05s; opacity: 0; }
+        .delay-2 { animation-delay: 0.1s;  opacity: 0; }
+        .delay-3 { animation-delay: 0.15s; opacity: 0; }
+        .delay-4 { animation-delay: 0.2s;  opacity: 0; }
+        .delay-5 { animation-delay: 0.25s; opacity: 0; }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        @@media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .admin-main { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+
+        <!-- ─── SIDEBAR ─── -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <span class="logo-mark">FERRI CT</span>
+                <span class="logo-badge">Admin Panel</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">Principal</div>
+                <a href="/Admin/Index" class="nav-item @(ViewBag.ActivePage == "dashboard" ? "active" : "")">
+                    <i class="bi bi-grid-1x2-fill"></i> Dashboard
+                </a>
+
+                <div class="nav-section-label">Gestão</div>
+                <a href="/Admin/Alunos" class="nav-item @(ViewBag.ActivePage == "alunos" ? "active" : "")">
+                    <i class="bi bi-people-fill"></i> Alunos
+                    @if (ViewBag.TotalAlunos != null)
+                    {
+                        <span class="nav-badge">@ViewBag.TotalAlunos</span>
+                    }
+                </a>
+                <a href="/Admin/Agendamentos" class="nav-item @(ViewBag.ActivePage == "agendamentos" ? "active" : "")">
+                    <i class="bi bi-calendar-check-fill"></i> Agendamentos
+                </a>
+                <a href="/Admin/CriarAluno" class="nav-item @(ViewBag.ActivePage == "criar" ? "active" : "")">
+                    <i class="bi bi-person-plus-fill"></i> Novo Aluno
+                </a>
+
+                <div class="nav-section-label">Sistema</div>
+                <a href="/" class="nav-item" target="_blank">
+                    <i class="bi bi-box-arrow-up-right"></i> Ver Site Público
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-user">
+                    <div class="user-avatar">AD</div>
+                    <div class="user-info">
+                        <div class="user-name">Administrador</div>
+                        <div class="user-role">Ferri CT</div>
+                    </div>
+                </div>
+             
+                <a href="@Url.Action("Logout", "Admin")" class="btn-logout-admin">
+                    <i class="bi bi-box-arrow-left"></i> Sair do Painel
+                </a>
+            </div>
+        </aside>
+
+        <!-- ─── MAIN ─── -->
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <button class="topbar-btn d-md-none" onclick="document.getElementById('sidebar').classList.toggle('open')">
+                    <i class="bi bi-list"></i>
+                </button>
+                <span class="topbar-title">Ferri CT</span>
+                <span class="topbar-sep">/</span>
+                <span class="topbar-page">@ViewBag.Title</span>
+
+                <div class="topbar-right">
+                    <a href="/Admin/Agendamentos" class="topbar-btn notif-dot" title="Notificações">
+                        <i class="bi bi-bell"></i>
+                    </a>
+                    <a href="/Admin/CriarAluno" class="topbar-btn topbar-cta">
+                        <i class="bi bi-plus-lg"></i> Novo Aluno
+                    </a>
+                    
+                    <a href="@Url.Action("Logout", "Admin")" class="topbar-logout" title="Sair">
+                        <i class="bi bi-box-arrow-right"></i> Sair
+                    </a>
+                </div>
+            </header>
+
+            <main class="admin-content">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

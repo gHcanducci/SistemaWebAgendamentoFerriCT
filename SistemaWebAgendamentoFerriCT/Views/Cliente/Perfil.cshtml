@@ -1,0 +1,466 @@
+﻿@model SistemaWebAgendamentoFerriCT.Models.Cliente
+
+@{
+    ViewBag.Title = "Meu Perfil";
+}
+
+<style>
+    .perfil-wrapper {
+        min-height: calc(100vh - 64px);
+        padding: 60px 0;
+    }
+
+    .perfil-grid {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 24px;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    @@media (max-width: 768px) {
+        .perfil-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Card lateral */
+    .perfil-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 32px 24px;
+        text-align: center;
+        position: relative;
+    }
+
+        .perfil-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 40px;
+            right: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            border-radius: 999px;
+        }
+
+    .perfil-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--accent-dim);
+        border: 2px solid rgba(232,197,71,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 2rem;
+        color: var(--accent);
+        margin: 0 auto 16px;
+    }
+
+    .perfil-nome {
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 4px;
+    }
+
+    .perfil-since {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        margin-bottom: 20px;
+    }
+
+    .perfil-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(76,175,130,0.12);
+        border: 1px solid rgba(76,175,130,0.25);
+        color: var(--success);
+        border-radius: 999px;
+        padding: 5px 14px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 24px;
+    }
+
+    .perfil-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+        .perfil-actions a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+    .btn-editar-perfil {
+        background: var(--accent-dim);
+        border: 1px solid rgba(232,197,71,0.25);
+        color: var(--accent);
+    }
+
+        .btn-editar-perfil:hover {
+            background: rgba(232,197,71,0.2);
+            color: var(--accent);
+        }
+
+    .btn-agendar {
+        background: var(--accent);
+        color: var(--bg-deep);
+        border: none;
+        font-weight: 700;
+    }
+
+        .btn-agendar:hover {
+            background: #f5d465;
+            color: var(--bg-deep);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--accent-glow);
+        }
+
+    .btn-excluir-perfil {
+        background: rgba(224,80,80,0.08);
+        border: 1px solid rgba(224,80,80,0.2);
+        color: var(--danger);
+    }
+
+        .btn-excluir-perfil:hover {
+            background: rgba(224,80,80,0.15);
+            color: var(--danger);
+        }
+
+    /* Dados */
+    .info-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+        .info-card:last-child {
+            margin-bottom: 0;
+        }
+
+    .info-header {
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--border);
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .info-header i {
+            color: var(--accent);
+        }
+
+    .info-body {
+        padding: 8px 24px 16px;
+    }
+
+    .info-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+        .info-row:last-child {
+            border: none;
+        }
+
+    .info-icon {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent);
+        font-size: 0.95rem;
+    }
+
+    .info-label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-secondary);
+        font-weight: 700;
+        margin-bottom: 3px;
+    }
+
+    .info-value {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    /* Agendamentos */
+    .ag-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 4px;
+    }
+
+        .ag-table thead th {
+            color: var(--text-secondary);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 8px 14px;
+            font-weight: 700;
+            border: none;
+        }
+
+        .ag-table tbody tr {
+            background: rgba(255,255,255,0.02);
+            transition: background 0.2s;
+        }
+
+            .ag-table tbody tr:hover {
+                background: rgba(232,197,71,0.04);
+            }
+
+        .ag-table tbody td {
+            padding: 12px 14px;
+            border: none;
+            vertical-align: middle;
+            font-size: 0.875rem;
+        }
+
+            .ag-table tbody td:first-child {
+                border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+            }
+
+            .ag-table tbody td:last-child {
+                border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            }
+
+    .badge-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 600;
+    }
+
+        .badge-status::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+    .badge-confirmado {
+        color: var(--success);
+        background: rgba(76,175,130,0.12);
+    }
+
+    .badge-pendente {
+        color: var(--accent);
+        background: var(--accent-dim);
+    }
+
+    .badge-cancelado {
+        color: var(--danger);
+        background: rgba(224,80,80,0.12);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+        .empty-state i {
+            font-size: 2rem;
+            opacity: 0.25;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+    /* Toast */
+    .toast-msg {
+        position: fixed;
+        top: 80px;
+        right: 24px;
+        z-index: 9999;
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        animation: fadeUp 0.4s ease forwards;
+    }
+
+    .toast-sucesso {
+        background: rgba(76,175,130,0.15);
+        border: 1px solid rgba(76,175,130,0.4);
+        color: var(--success);
+    }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+@if (TempData["Sucesso"] != null)
+{
+    <div class="toast-msg toast-sucesso">
+        <i class="bi bi-check-circle-fill"></i> @TempData["Sucesso"]
+    </div>
+}
+
+<div class="perfil-wrapper container">
+
+    <div class="perfil-grid">
+
+        <!-- Coluna esquerda -->
+        <div>
+            <div class="perfil-card fade-up">
+                @{
+                    var initials = string.Join("", (Model.Nome ?? "?").Split(' ')
+                        .Take(2).Select(w => w.Length > 0 ? w[0].ToString().ToUpper() : ""));
+                }
+                <div class="perfil-avatar">@initials</div>
+                <div class="perfil-nome">@Model.Nome</div>
+                <div class="perfil-since">Aluno desde @Model.DataCadastro.ToString("MM/yyyy")</div>
+                <div class="perfil-badge"><i class="bi bi-check-circle-fill"></i> Ativo</div>
+
+                <div class="perfil-actions">
+                    <a href="/Agendamento/Create" class="btn-agendar">
+                        <i class="bi bi-calendar-check-fill"></i> Agendar Aula
+                    </a>
+                    <a href="/Cliente/Editar" class="btn-editar-perfil">
+                        <i class="bi bi-pencil-fill"></i> Editar Dados
+                    </a>
+                    <a href="/Cliente/Excluir" class="btn-excluir-perfil">
+                        <i class="bi bi-trash-fill"></i> Excluir Conta
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna direita -->
+        <div>
+            <!-- Dados pessoais -->
+            <div class="info-card fade-up delay-1">
+                <div class="info-header"><i class="bi bi-person-lines-fill"></i> Dados Pessoais</div>
+                <div class="info-body">
+                    <div class="info-row">
+                        <div class="info-icon"><i class="bi bi-person"></i></div>
+                        <div><div class="info-label">Nome Completo</div><div class="info-value">@Model.Nome</div></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-icon"><i class="bi bi-envelope"></i></div>
+                        <div><div class="info-label">E-mail</div><div class="info-value">@Model.Email</div></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-icon"><i class="bi bi-telephone"></i></div>
+                        <div><div class="info-label">Telefone</div><div class="info-value">@Model.Telefone</div></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-icon"><i class="bi bi-person-vcard"></i></div>
+                        <div><div class="info-label">CPF</div><div class="info-value">@Model.CPF</div></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-icon"><i class="bi bi-calendar3"></i></div>
+                        <div><div class="info-label">Cadastrado em</div><div class="info-value">@Model.DataCadastro.ToString("dd/MM/yyyy")</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Histórico de agendamentos -->
+            <div class="info-card fade-up delay-2">
+                <div class="info-header">
+                    <i class="bi bi-calendar-check-fill"></i> Meus Agendamentos
+                    @if (Model.Agendamentos != null && Model.Agendamentos.Any())
+                    {
+                        <span style="margin-left:auto;font-size:0.72rem;color:var(--text-secondary);font-weight:400">
+                            @Model.Agendamentos.Count() agendamento(s)
+                        </span>
+                    }
+                </div>
+                <div class="info-body" style="padding:0">
+                    @if (Model.Agendamentos != null && Model.Agendamentos.Any())
+                    {
+                        <table class="ag-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Horário</th>
+                                    <th>Tipo</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var ag in Model.Agendamentos.OrderByDescending(a => a.DataAula))
+                                {
+                                    var sc = ag.Status == "Confirmado" ? "badge-confirmado"
+                                           : ag.Status == "Cancelado" ? "badge-cancelado"
+                                           : "badge-pendente";
+                                    <tr>
+                                        <td style="font-weight:600">@ag.DataAula.ToString("dd/MM/yyyy")</td>
+                                        <td style="color:var(--text-secondary)">@ag.HorarioTurma?.HoraInicio.ToString("hh\:mm")</td>
+                                        <td style="color:var(--text-secondary)">@ag.TipoAula</td>
+                                        <td><span class="badge-status @sc">@ag.Status</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="empty-state">
+                            <i class="bi bi-calendar-x"></i>
+                            Nenhum agendamento ainda.
+                            <br>
+                            <a href="/Agendamento/Create" style="color:var(--accent);font-weight:600;text-decoration:none;margin-top:8px;display:inline-block">
+                                Agendar agora →
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>setTimeout(() => {
+        document.querySelectorAll('.toast-msg').forEach(t => {
+            t.style.opacity = '0'; t.style.transition = 'opacity 0.5s';
+            setTimeout(() => t.remove(), 500);
+        });
+    }, 4000);</script>

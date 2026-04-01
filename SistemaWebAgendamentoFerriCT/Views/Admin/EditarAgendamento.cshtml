@@ -1,0 +1,293 @@
+﻿@model SistemaWebAgendamentoFerriCT.Models.Agendamento
+
+@{
+    ViewBag.Title = "Editar Agendamento";
+    ViewBag.ActivePage = "agendamentos";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+        gap: 16px;
+        animation: fadeUp 0.4s ease forwards;
+    }
+
+    .page-eyebrow {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--accent);
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .page-title {
+        font-family: 'Bebas Neue',sans-serif;
+        font-size: 2rem;
+        letter-spacing: 1px;
+        line-height: 1;
+    }
+
+    .form-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        max-width: 560px;
+        animation: fadeUp 0.5s ease forwards;
+    }
+
+    .form-card-header {
+        padding: 18px 24px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-card-icon {
+        width: 36px;
+        height: 36px;
+        background: var(--accent-dim);
+        border: 1px solid rgba(232,197,71,0.2);
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent);
+    }
+
+    .form-card-title {
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
+
+    .form-card-body {
+        padding: 28px 24px;
+    }
+
+    .info-block {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 16px;
+        margin-bottom: 24px;
+    }
+
+    .info-row {
+        display: flex;
+        align-items: center;                                                    
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.875rem;
+    }
+
+        .info-row:last-child {
+            border: none;
+        }
+
+        .info-row i {
+            color: var(--accent);
+            width: 16px;
+        }
+
+    .info-label {
+        color: var(--text-secondary);
+        min-width: 100px;
+        font-size: 0.78rem;
+    }
+
+    .info-val {
+        font-weight: 600;
+    }
+
+    .field-block {
+        margin-bottom: 20px;
+    }
+
+    .status-options {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 10px;
+        margin-top: 8px;
+    }
+
+    .status-radio {
+        display: none;
+    }
+
+    .status-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 14px 10px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: all 0.25s;
+        text-align: center;
+        font-size: 0.78rem;
+        font-weight: 600;
+    }
+
+        .status-label .s-icon {
+            font-size: 1.3rem;
+        }
+
+    .status-radio:checked + .status-label {
+        border-width: 2px;
+    }
+
+    .status-radio[value="Confirmado"]:checked + .status-label {
+        border-color: var(--success);
+        background: rgba(76,175,130,0.1);
+        color: var(--success);
+    }
+
+    .status-radio[value="PendentePagamento"]:checked + .status-label {
+        border-color: var(--accent);
+        background: var(--accent-dim);
+        color: var(--accent);
+    }
+
+    .status-radio[value="Cancelado"]:checked + .status-label {
+        border-color: var(--danger);
+        background: rgba(224,80,80,0.1);
+        color: var(--danger);
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 24px;
+    }
+
+    .btn-save {
+        flex: 1;
+        background: var(--accent);
+        color: var(--bg-deep);
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 13px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-family: 'DM Sans',sans-serif;
+    }
+
+        .btn-save:hover {
+            background: #f5d465;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--accent-glow);
+        }
+
+    .btn-cancel {
+        background: transparent;
+        color: var(--text-secondary);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 13px 20px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .btn-cancel:hover {
+            color: var(--text-primary);
+        }
+</style>
+
+<div class="page-header">
+    <div>
+        <div class="page-eyebrow">Gestão de Agendamentos</div>
+        <div class="page-title">EDITAR AGENDAMENTO</div>
+    </div>
+    <a href="/Admin/Agendamentos" class="btn-outline-gold"><i class="bi bi-arrow-left"></i> Voltar</a>
+</div>
+
+<div class="form-card">
+    <div class="form-card-header">
+        <div class="form-card-icon"><i class="bi bi-calendar-check-fill"></i></div>
+        <div class="form-card-title">Detalhes do Agendamento</div>
+    </div>
+    <div class="form-card-body">
+
+        <div class="info-block">
+            <div class="info-row">
+                <i class="bi bi-person"></i>
+                <span class="info-label">Aluno</span>
+                <span class="info-val">@Model.Cliente?.Nome</span>
+            </div>
+            <div class="info-row">
+                <i class="bi bi-calendar3"></i>
+                <span class="info-label">Data</span>
+                <span class="info-val">@Model.DataAula.ToString("dd/MM/yyyy")</span>
+            </div>
+            <div class="info-row">
+                <i class="bi bi-clock"></i>
+                <span class="info-label">Horário</span>
+                <span class="info-val">@Model.HorarioTurma?.HoraInicio.ToString("hh\:mm")</span>
+            </div>
+            <div class="info-row">
+                <i class="bi bi-tag"></i>
+                <span class="info-label">Tipo</span>
+                <span class="info-val">@Model.TipoAula</span>
+            </div>
+        </div>
+
+        @using (Html.BeginForm("EditarAgendamento", "Admin", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="AgendamentoId" value="@Model.AgendamentoId" />
+
+            <div class="field-block">
+                <label class="form-label">Alterar Status</label>
+                <div class="status-options">
+                    <input type="radio" name="Status" value="PendentePagamento" id="s-pendente" class="status-radio"
+                           @(Model.Status == "PendentePagamento" ? "checked" : "") />
+                    <label for="s-pendente" class="status-label">
+                        <span class="s-icon">⏳</span>
+                        Pendente
+                    </label>
+
+                    <input type="radio" name="Status" value="Confirmado" id="s-confirmado" class="status-radio"
+                           @(Model.Status == "Confirmado" ? "checked" : "") />
+                    <label for="s-confirmado" class="status-label">
+                        <span class="s-icon">✅</span>
+                        Confirmado
+                    </label>
+
+                    <input type="radio" name="Status" value="Cancelado" id="s-cancelado" class="status-radio"
+                           @(Model.Status == "Cancelado" ? "checked" : "") />
+                    <label for="s-cancelado" class="status-label">
+                        <span class="s-icon">❌</span>
+                        Cancelado
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="/Admin/Agendamentos" class="btn-cancel"><i class="bi bi-x-lg"></i> Cancelar</a>
+                <button type="submit" class="btn-save"><i class="bi bi-check-lg"></i> Salvar Status</button>
+            </div>
+        }
+    </div>
+</div>

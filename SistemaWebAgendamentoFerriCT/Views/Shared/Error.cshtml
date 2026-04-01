@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erro — Ferri CT</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #E8C547;
+            --accent-glow: rgba(232,197,71,0.3);
+            --text-secondary: #7A7A85;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            min-height: 100vh;
+            background: #080809;
+            color: #F0EFE8;
+            font-family: 'DM Sans', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .error-wrapper {
+            text-align: center;
+            padding: 40px 24px;
+            max-width: 500px;
+        }
+
+        .error-code {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(100px, 20vw, 180px);
+            line-height: 1;
+            -webkit-text-stroke: 2px rgba(232,197,71,0.25);
+            color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .error-title {
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+        }
+
+        .error-desc {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 36px;
+        }
+
+        .error-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-gold {
+            background: var(--accent);
+            color: #080809;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s;
+        }
+
+            .btn-gold:hover {
+                background: #f5d465;
+                transform: translateY(-2px);
+                box-shadow: 0 8px 24px var(--accent-glow);
+            }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid rgba(232,197,71,0.4);
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s;
+        }
+
+            .btn-outline:hover {
+                background: rgba(232,197,71,0.1);
+            }
+
+        .brand {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            letter-spacing: 3px;
+            color: var(--accent);
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-wrapper">
+        <div class="brand">FERRI CT</div>
+        <div class="error-code">ERRO</div>
+        <h1 class="error-title">Ops! Algo deu errado.</h1>
+        <p class="error-desc">Ocorreu um erro ao processar sua solicitação.<br>Por favor, tente novamente ou volte ao início.</p>
+        <div class="error-actions">
+            <a href="/" class="btn-gold"><i class="bi bi-house-fill"></i> Ir para o Início</a>
+            <a href="javascript:history.back()" class="btn-outline"><i class="bi bi-arrow-left"></i> Voltar</a>
+        </div>
+    </div>
+</body>
+</html>

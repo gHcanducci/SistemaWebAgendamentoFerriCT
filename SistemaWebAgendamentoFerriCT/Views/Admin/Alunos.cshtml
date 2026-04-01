@@ -1,0 +1,527 @@
+﻿@model IEnumerable<SistemaWebAgendamentoFerriCT.Models.Cliente>
+
+@{
+    ViewBag.Title = "Alunos";
+    ViewBag.ActivePage = "alunos";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        gap: 16px;
+        animation: fadeUp 0.4s ease forwards;
+    }
+
+    .page-eyebrow {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--accent);
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .page-title {
+        font-family: 'Bebas Neue',sans-serif;
+        font-size: 2rem;
+        letter-spacing: 1px;
+        line-height: 1;
+    }
+
+    .mini-stats {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        animation: fadeUp 0.5s ease forwards;
+    }
+
+    .mini-stat {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 12px 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .mini-stat-icon {
+        color: var(--accent);
+        font-size: 1.2rem;
+    }
+
+    .mini-stat-value {
+        font-family: 'Bebas Neue',sans-serif;
+        font-size: 1.6rem;
+        line-height: 1;
+    }
+
+    .mini-stat-label {
+        font-size: 0.7rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .toolbar {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        animation: fadeUp 0.55s ease forwards;
+    }
+
+    .toolbar-search {
+        position: relative;
+        flex: 1;
+        min-width: 220px;
+    }
+
+        .toolbar-search i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .toolbar-search input {
+            padding-left: 36px !important;
+        }
+
+    .view-toggle {
+        display: flex;
+        gap: 4px;
+    }
+
+    .view-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: var(--radius-sm);
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .view-btn.active {
+            background: var(--accent-dim);
+            border-color: rgba(232,197,71,0.3);
+            color: var(--accent);
+        }
+
+    .table-container {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        animation: fadeUp 0.6s ease forwards;
+    }
+
+    .table-container-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .table-scroll {
+        overflow-x: auto;
+    }
+
+    .ferri-table {
+        min-width: 650px;
+    }
+
+    .aluno-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .aluno-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--accent-dim);
+        border: 1px solid rgba(232,197,71,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--accent);
+        flex-shrink: 0;
+    }
+
+    .aluno-name {
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    .aluno-since {
+        font-size: 0.72rem;
+        color: var(--text-secondary);
+        margin-top: 1px;
+    }
+
+    /* ─── BOTÕES DE AÇÃO ─── */
+    .action-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        font-size: 0.85rem;
+    }
+
+    .action-btn-edit {
+        background: rgba(232,197,71,0.1);
+        color: var(--accent);
+        border: 1px solid rgba(232,197,71,0.25);
+    }
+
+        .action-btn-edit:hover {
+            background: rgba(232,197,71,0.2);
+            color: var(--accent);
+        }
+
+    .action-btn-del {
+        background: rgba(224,80,80,0.1);
+        color: var(--danger);
+        border: 1px solid rgba(224,80,80,0.2);
+    }
+
+        .action-btn-del:hover {
+            background: rgba(224,80,80,0.2);
+            color: var(--danger);
+        }
+
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px,1fr));
+        gap: 14px;
+        padding: 16px;
+    }
+
+    .aluno-card {
+        background: rgba(255,255,255,0.02);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 20px;
+        transition: all 0.25s;
+    }
+
+        .aluno-card:hover {
+            border-color: rgba(232,197,71,0.2);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+        }
+
+    .card-avatar-lg {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: var(--accent-dim);
+        border: 2px solid rgba(232,197,71,0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 14px;
+    }
+
+    .card-name {
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 4px;
+    }
+
+    .card-info {
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+        margin-bottom: 2px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 14px;
+    }
+
+    .empty-state {
+        padding: 60px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        font-size: 3rem;
+        opacity: 0.25;
+        margin-bottom: 16px;
+    }
+
+    /* Toast de sucesso/erro */
+    .toast-msg {
+        position: fixed;
+        top: 80px;
+        right: 24px;
+        z-index: 9999;
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        animation: fadeUp 0.4s ease forwards;
+    }
+
+    .toast-sucesso {
+        background: rgba(76,175,130,0.15);
+        border: 1px solid rgba(76,175,130,0.4);
+        color: var(--success);
+    }
+
+    .toast-erro {
+        background: rgba(224,80,80,0.12);
+        border: 1px solid rgba(224,80,80,0.35);
+        color: #ff8a8a;
+    }
+</style>
+
+@* Toast de feedback *@
+@if (TempData["Sucesso"] != null)
+{
+    <div class="toast-msg toast-sucesso">
+        <i class="bi bi-check-circle-fill"></i> @TempData["Sucesso"]
+    </div>
+}
+@if (TempData["Erro"] != null)
+{
+    <div class="toast-msg toast-erro">
+        <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Erro"]
+    </div>
+}
+
+<div class="page-header">
+    <div>
+        <div class="page-eyebrow">Gestão</div>
+        <div class="page-title">ALUNOS</div>
+    </div>
+    <a href="/Admin/CriarAluno" class="btn-gold">
+        <i class="bi bi-person-plus-fill"></i> Novo Aluno
+    </a>
+</div>
+
+<!-- Mini Stats -->
+<div class="mini-stats">
+    <div class="mini-stat">
+        <i class="bi bi-people-fill mini-stat-icon"></i>
+        <div>
+            <div class="mini-stat-value">@(Model?.Count() ?? 0)</div>
+            <div class="mini-stat-label">Total de Alunos</div>
+        </div>
+    </div>
+    <div class="mini-stat">
+        <i class="bi bi-calendar-plus mini-stat-icon" style="color:var(--success)"></i>
+        <div>
+            <div class="mini-stat-value" style="color:var(--success)">
+                @(Model?.Count(a => a.DataCadastro.Month == DateTime.Now.Month) ?? 0)
+            </div>
+            <div class="mini-stat-label">Novos este mês</div>
+        </div>
+    </div>
+</div>
+
+<!-- Toolbar -->
+<div class="toolbar">
+    <div class="toolbar-search">
+        <i class="bi bi-search"></i>
+        <input type="text" class="form-control" id="searchInput" placeholder="Buscar por nome, e-mail ou telefone...">
+    </div>
+    <div class="view-toggle">
+        <button class="view-btn active" id="viewTable" title="Tabela"><i class="bi bi-list-ul"></i></button>
+        <button class="view-btn" id="viewGrid" title="Cards"><i class="bi bi-grid-3x3-gap-fill"></i></button>
+    </div>
+</div>
+
+<!-- Table View -->
+<div class="table-container" id="tableView">
+    <div class="table-container-header">
+        <div style="font-size:0.78rem;color:var(--text-secondary)">
+            <strong id="rowCount" style="color:var(--text-primary)">@(Model?.Count() ?? 0)</strong> alunos cadastrados
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-scroll">
+            <table class="ferri-table">
+                <thead>
+                    <tr>
+                        <th>Aluno</th>
+                        <th>E-mail</th>
+                        <th>Telefone</th>
+                        <th>CPF</th>
+                        <th>Cadastro</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    @foreach (var item in Model)
+                    {
+                        var initials = string.Join("", (item.Nome ?? "?").Split(' ')
+                            .Take(2).Select(w => w.Length > 0 ? w[0].ToString().ToUpper() : ""));
+                        <tr data-search="@((item.Nome + item.Email + item.Telefone).ToLower())">
+                            <td>
+                                <div class="aluno-cell">
+                                    <div class="aluno-avatar">@initials</div>
+                                    <div>
+                                        <div class="aluno-name">@item.Nome</div>
+                                        <div class="aluno-since">desde @item.DataCadastro.ToString("MMM/yyyy")</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="color:var(--text-secondary)">@item.Email</td>
+                            <td style="color:var(--text-secondary)">@item.Telefone</td>
+                            <td style="color:var(--text-secondary);font-size:0.8rem">@item.CPF</td>
+                            <td style="color:var(--text-secondary);font-size:0.8rem">
+                                @item.DataCadastro.ToString("dd/MM/yyyy")
+                            </td>
+                            <td>
+                                <div style="display:flex;gap:6px">
+                                    @* EXIBIR — link para ExibirAluno com o ID *@
+                                    <a href="@Url.Action("DetalhesAluno", "Admin", new { id = item.ClienteId })"
+                                       class="action-btn action-btn-view" title="Ver detalhes">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </a>
+                                    <a href="@Url.Action("EditarAluno", "Admin", new { id = item.ClienteId })"
+                                       class="action-btn action-btn-edit" title="Editar aluno">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+                                    <a href="@Url.Action("ExcluirAluno", "Admin", new { id = item.ClienteId })"
+                                       class="action-btn action-btn-del" title="Excluir aluno">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="empty-icon"><i class="bi bi-people"></i></div>
+            <div style="font-weight:700;margin-bottom:8px">Nenhum aluno cadastrado</div>
+            <div style="color:var(--text-secondary);font-size:0.875rem;margin-bottom:20px">Adicione o primeiro aluno ao sistema.</div>
+            <a href="/Admin/CriarAluno" class="btn-gold"><i class="bi bi-person-plus-fill"></i> Cadastrar Aluno</a>
+        </div>
+    }
+</div>
+
+<!-- Grid View -->
+@if (Model != null && Model.Any())
+{
+    <div id="gridView" style="display:none">
+        <div class="cards-grid" id="cardsGrid">
+            @foreach (var item in Model)
+            {
+                var initials2 = string.Join("", (item.Nome ?? "?").Split(' ')
+                    .Take(2).Select(w => w.Length > 0 ? w[0].ToString().ToUpper() : ""));
+                <div class="aluno-card" data-search="@((item.Nome + item.Email + item.Telefone).ToLower())">
+                    <div class="card-avatar-lg">@initials2</div>
+                    <div class="card-name">@item.Nome</div>
+                    <div class="card-info"><i class="bi bi-envelope"></i> @item.Email</div>
+                    <div class="card-info"><i class="bi bi-telephone"></i> @item.Telefone</div>
+                    <div class="card-info"><i class="bi bi-calendar3"></i> @item.DataCadastro.ToString("dd/MM/yyyy")</div>
+                    <div class="card-actions">
+                        <a href="@Url.Action("EditarAluno", "Admin", new { id = item.ClienteId })"
+                           class="action-btn action-btn-edit" style="flex:1;width:auto" title="Editar">
+                            <i class="bi bi-pencil-fill"></i>
+                        </a>
+                        <a href="@Url.Action("ExcluirAluno", "Admin", new { id = item.ClienteId })"
+                           class="action-btn action-btn-del" title="Excluir">
+                            <i class="bi bi-trash-fill"></i>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<script>
+    // View toggle
+    const tableView = document.getElementById('tableView');
+    const gridView = document.getElementById('gridView');
+    const btnTable = document.getElementById('viewTable');
+    const btnGrid = document.getElementById('viewGrid');
+
+    if (btnTable && btnGrid) {
+        btnTable.addEventListener('click', () => {
+            tableView.style.display = ''; gridView.style.display = 'none';
+            btnTable.classList.add('active'); btnGrid.classList.remove('active');
+        });
+        btnGrid.addEventListener('click', () => {
+            tableView.style.display = 'none'; gridView.style.display = '';
+            btnGrid.classList.add('active'); btnTable.classList.remove('active');
+        });
+    }
+
+    // Search
+    const search = document.getElementById('searchInput');
+    const rowCount = document.getElementById('rowCount');
+    if (search) {
+        search.addEventListener('input', () => {
+            const q = search.value.toLowerCase().trim();
+            let visible = 0;
+            document.querySelectorAll('#tableBody tr').forEach(r => {
+                const show = !q || (r.dataset.search || '').includes(q);
+                r.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+            document.querySelectorAll('#cardsGrid .aluno-card').forEach(c => {
+                c.style.display = !q || (c.dataset.search || '').includes(q) ? '' : 'none';
+            });
+            if (rowCount) rowCount.textContent = visible || document.querySelectorAll('#tableBody tr').length;
+        });
+    }
+
+    // Auto-esconder toast após 4s
+    setTimeout(() => {
+        document.querySelectorAll('.toast-msg').forEach(t => {
+            t.style.opacity = '0';
+            t.style.transition = 'opacity 0.5s';
+            setTimeout(() => t.remove(), 500);
+        });
+    }, 4000);
+</script>

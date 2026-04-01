@@ -1,0 +1,365 @@
+﻿@model IEnumerable<SistemaWebAgendamentoFerriCT.Models.Agendamento>
+
+@{
+    ViewBag.Title = "Agendamentos";
+    ViewBag.ActivePage = "agendamentos";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        gap: 16px;
+        animation: fadeUp 0.4s ease forwards;
+    }
+
+    .page-eyebrow {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--accent);
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .page-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 2rem;
+        letter-spacing: 1px;
+        line-height: 1;
+    }
+
+    /* Filter bar */
+    .filter-bar {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        animation: fadeUp 0.5s ease forwards;
+    }
+
+    .filter-search {
+        position: relative;
+        flex: 1;
+        min-width: 200px;
+    }
+
+        .filter-search i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .filter-search input {
+            padding-left: 36px !important;
+        }
+
+    .filter-chip {
+        padding: 6px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--text-secondary);
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+
+        .filter-chip:hover {
+            color: var(--text-primary);
+            border-color: rgba(255,255,255,0.15);
+        }
+
+        .filter-chip.active {
+            background: var(--accent-dim);
+            border-color: rgba(232,197,71,0.4);
+            color: var(--accent);
+        }
+
+    /* Table container */
+    .table-container {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        animation: fadeUp 0.6s ease forwards;
+    }
+
+    .table-container-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .table-count {
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+    }
+
+        .table-count strong {
+            color: var(--text-primary);
+        }
+
+    .table-scroll {
+        overflow-x: auto;
+    }
+
+    .ferri-table {
+        min-width: 700px;
+    }
+
+    /* Aluno info cell */
+    .aluno-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .aluno-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--accent-dim);
+        border: 1px solid rgba(232,197,71,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--accent);
+        flex-shrink: 0;
+    }
+
+    .aluno-name {
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    /* Action buttons */
+    .action-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        font-size: 0.85rem;
+    }
+
+    .action-btn-view {
+        background: rgba(110,176,255,0.1);
+        color: #6eb0ff;
+        border: 1px solid rgba(110,176,255,0.2);
+    }
+
+        .action-btn-view:hover {
+            background: rgba(110,176,255,0.2);
+            color: #6eb0ff;
+        }
+
+    .action-btn-edit {
+        background: rgba(232,197,71,0.1);
+        color: var(--accent);
+        border: 1px solid rgba(232,197,71,0.2);
+    }
+
+        .action-btn-edit:hover {
+            background: rgba(232,197,71,0.2);
+            color: var(--accent);
+        }
+
+    .action-btn-del {
+        background: rgba(224,80,80,0.1);
+        color: var(--danger);
+        border: 1px solid rgba(224,80,80,0.2);
+    }
+
+        .action-btn-del:hover {
+            background: rgba(224,80,80,0.2);
+            color: var(--danger);
+        }
+
+    /* Empty state */
+    .empty-state {
+        padding: 60px 20px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 16px;
+        opacity: 0.3;
+    }
+
+    .empty-title {
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .empty-desc {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+</style>
+
+<div class="page-header">
+    <div>
+        <div class="page-eyebrow">Gestão</div>
+        <div class="page-title">AGENDAMENTOS</div>
+    </div>
+    <a href="/Admin/Index" class="btn-outline-gold">
+        <i class="bi bi-arrow-left"></i> Dashboard
+    </a>
+</div>
+
+<!-- Filter Bar -->
+<div class="filter-bar">
+    <div class="filter-search">
+        <i class="bi bi-search"></i>
+        <input type="text" class="form-control" id="searchInput" placeholder="Buscar por aluno...">
+    </div>
+    <button class="filter-chip active" data-filter="todos">Todos</button>
+    <button class="filter-chip" data-filter="Confirmado">Confirmados</button>
+    <button class="filter-chip" data-filter="PendentePagamento">Pendentes</button>
+    <button class="filter-chip" data-filter="Cancelado">Cancelados</button>
+</div>
+
+<!-- Table -->
+<div class="table-container">
+    <div class="table-container-header">
+        <div class="table-count">
+            <strong id="rowCount">@(Model?.Count() ?? 0)</strong> agendamentos
+        </div>
+        <div style="font-size:0.75rem;color:var(--text-secondary)">
+            Atualizado em @DateTime.Now.ToString("HH:mm")
+        </div>
+    </div>
+
+    <div class="table-scroll">
+        @if (Model != null && Model.Any())
+        {
+            <table class="ferri-table" id="mainTable">
+                <thead>
+                    <tr>
+                        <th>Aluno</th>
+                        <th>Data da Aula</th>
+                        <th>Horário</th>
+                        <th>Tipo</th>
+                        <th>Status</th>
+                        <th>Solicitado em</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    @foreach (var item in Model)
+                    {
+                        var initials = string.Join("", item.Cliente?.Nome?.Split(' ')
+                            .Take(2).Select(w => w.Length > 0 ? w[0].ToString().ToUpper() : "") ?? new[] { "?" });
+                        var statusClass = item.Status == "Confirmado" ? "badge-confirmado"
+                                        : item.Status == "Cancelado" ? "badge-cancelado"
+                                        : "badge-pendente";
+                        <tr data-status="@item.Status" data-aluno="@item.Cliente?.Nome?.ToLower()">
+                            <td>
+                                <div class="aluno-cell">
+                                    <div class="aluno-avatar">@initials</div>
+                                    <div class="aluno-name">@item.Cliente?.Nome</div>
+                                </div>
+                            </td>
+                            <td style="font-weight:600">@item.DataAula.ToString("dd/MM/yyyy")</td>
+                            <td style="color:var(--text-secondary)">
+                                @item.HorarioTurma?.HoraInicio.ToString("hh\:mm")
+                            </td>
+                            <td style="font-size:0.8rem">@item.TipoAula</td>
+                            <td>
+                                <span class="badge-status @statusClass">@item.Status</span>
+                            </td>
+                            <td style="color:var(--text-secondary);font-size:0.8rem">
+                                @item.DataSolicitacao.ToString("dd/MM HH:mm")
+                            </td>
+                            <td>
+                                <div style="display:flex;gap:6px">
+                                    <a href="@Url.Action("DetalhesAgendamento","Admin", new { id = item.AgendamentoId })"
+                                       class="action-btn action-btn-view" title="Ver detalhes">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </a>
+                                    <a href="@Url.Action("EditarAgendamento","Admin", new { id = item.AgendamentoId })"
+                                       class="action-btn action-btn-edit" title="Editar status">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+                                    <a href="@Url.Action("ExcluirAgendamento","Admin", new { id = item.AgendamentoId })"
+                                       class="action-btn action-btn-del" title="Excluir">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-icon"><i class="bi bi-calendar-x"></i></div>
+                <div class="empty-title">Nenhum agendamento encontrado</div>
+                <div class="empty-desc">Os agendamentos realizados pelos alunos aparecerão aqui.</div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    // Filter chips
+    const chips = document.querySelectorAll('.filter-chip');
+    const rows = document.querySelectorAll('#tableBody tr');
+    const countEl = document.getElementById('rowCount');
+
+    function updateCount() {
+        const visible = document.querySelectorAll('#tableBody tr:not([style*="display: none"])').length;
+        if (countEl) countEl.textContent = visible;
+    }
+
+    chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            chips.forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            const f = chip.dataset.filter;
+            rows.forEach(r => {
+                r.style.display = (f === 'todos' || r.dataset.status === f) ? '' : 'none';
+            });
+            updateCount();
+        });
+    });
+
+    // Search
+    const search = document.getElementById('searchInput');
+    if (search) {
+        search.addEventListener('input', () => {
+            const q = search.value.toLowerCase().trim();
+            rows.forEach(r => {
+                const match = !q || (r.dataset.aluno || '').includes(q);
+                r.style.display = match ? '' : 'none';
+            });
+            updateCount();
+        });
+    }
+</script>

@@ -1,0 +1,228 @@
+﻿@model SistemaWebAgendamentoFerriCT.Models.Cliente
+
+@{
+    ViewBag.Title = "Excluir Conta";
+}
+
+<style>
+    .excluir-wrapper {
+        min-height: calc(100vh - 64px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 16px;
+    }
+
+    .excluir-card {
+        width: 100%;
+        max-width: 480px;
+        background: var(--bg-card);
+        border: 1px solid rgba(224,80,80,0.25);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        animation: fadeUp 0.5s ease forwards;
+    }
+
+    .excluir-header {
+        padding: 24px 28px;
+        border-bottom: 1px solid rgba(224,80,80,0.15);
+        background: rgba(224,80,80,0.06);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .excluir-header-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(224,80,80,0.15);
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--danger);
+        font-size: 1.1rem;
+    }
+
+    .excluir-header-title {
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--danger);
+    }
+
+    .excluir-header-sub {
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+    }
+
+    .excluir-body {
+        padding: 28px;
+    }
+
+    .user-summary {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+
+    .summary-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.875rem;
+    }
+
+        .summary-row:last-child {
+            border: none;
+        }
+
+        .summary-row i {
+            color: var(--accent);
+            width: 16px;
+            text-align: center;
+        }
+
+    .summary-label {
+        color: var(--text-secondary);
+        min-width: 70px;
+        font-size: 0.78rem;
+    }
+
+    .summary-val {
+        font-weight: 600;
+    }
+
+    .warning-box {
+        background: rgba(224,80,80,0.08);
+        border: 1px solid rgba(224,80,80,0.2);
+        border-radius: var(--radius-sm);
+        padding: 14px 16px;
+        font-size: 0.85rem;
+        color: #ff8a8a;
+        margin-bottom: 24px;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        line-height: 1.6;
+    }
+
+        .warning-box i {
+            font-size: 1rem;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-delete {
+        flex: 1;
+        background: rgba(224,80,80,0.9);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 13px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-family: 'DM Sans', sans-serif;
+    }
+
+        .btn-delete:hover {
+            background: var(--danger);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(224,80,80,0.3);
+        }
+
+    .btn-cancel {
+        background: transparent;
+        color: var(--text-secondary);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 13px 20px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .btn-cancel:hover {
+            color: var(--text-primary);
+        }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(24px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="excluir-wrapper">
+    <div class="excluir-card">
+        <div class="excluir-header">
+            <div class="excluir-header-icon"><i class="bi bi-trash-fill"></i></div>
+            <div>
+                <div class="excluir-header-title">Excluir Minha Conta</div>
+                <div class="excluir-header-sub">Esta ação é irreversível</div>
+            </div>
+        </div>
+        <div class="excluir-body">
+
+            <div class="user-summary">
+                <div class="summary-row">
+                    <i class="bi bi-person"></i>
+                    <span class="summary-label">Nome</span>
+                    <span class="summary-val">@Model.Nome</span>
+                </div>
+                <div class="summary-row">
+                    <i class="bi bi-envelope"></i>
+                    <span class="summary-label">E-mail</span>
+                    <span class="summary-val">@Model.Email</span>
+                </div>
+                <div class="summary-row">
+                    <i class="bi bi-calendar3"></i>
+                    <span class="summary-label">Cadastro</span>
+                    <span class="summary-val">@Model.DataCadastro.ToString("dd/MM/yyyy")</span>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span>
+                    Ao confirmar, sua conta e todos os seus agendamentos serão
+                    <strong>permanentemente excluídos</strong>. Não será possível recuperar os dados.
+                </span>
+            </div>
+
+            @using (Html.BeginForm("Excluir", "Cliente", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-actions">
+                    <a href="/Cliente/Perfil" class="btn-cancel"><i class="bi bi-x-lg"></i> Cancelar</a>
+                    <button type="submit" class="btn-delete"><i class="bi bi-trash-fill"></i> Excluir Conta</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,641 @@
+﻿@{
+    ViewBag.Title = "Ferri CT — Treine Boxe";
+}
+
+<style>
+    /* ═══════════════════════════════════════
+       HERO — FOTO DE FUNDO COM OVERLAY
+    ═══════════════════════════════════════ */
+    .hero-full {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        align-items: flex-end;
+        overflow: hidden;
+    }
+
+    /* Foto de fundo */
+    .hero-bg {
+        position: absolute;
+        inset: 0;
+        background-image: url('/Content/img/fachada.jpeg');
+        background-size: cover;
+        background-position: center 55%;
+        z-index: 0;
+    }
+
+        /* Overlay em camadas — cria profundidade */
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient( 135deg, rgba(8,8,9,0.92) 0%, rgba(8,8,9,0.75) 40%, rgba(8,8,9,0.45) 70%, rgba(8,8,9,0.65) 100% );
+            z-index: 1;
+        }
+
+        /* Gradiente forte na base para o conteúdo se destacar */
+        .hero-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient( to top, rgba(8,8,9,1) 0%, rgba(8,8,9,0.6) 30%, transparent 60% );
+            z-index: 2;
+        }
+
+    /* Glow dourado sutil no canto esquerdo */
+    .hero-glow {
+        position: absolute;
+        left: -100px;
+        bottom: 0;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(232,197,71,0.12) 0%, transparent 70%);
+        z-index: 3;
+        pointer-events: none;
+    }
+
+    /* Texto decorativo gigante no fundo */
+    .hero-watermark {
+        position: absolute;
+        right: -30px;
+        bottom: -20px;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: clamp(160px, 22vw, 320px);
+        line-height: 1;
+        color: rgba(232,197,71,0.06);
+        letter-spacing: -8px;
+        user-select: none;
+        pointer-events: none;
+        z-index: 3;
+    }
+
+    /* Conteúdo principal */
+    .hero-content {
+        position: relative;
+        z-index: 4;
+        width: 100%;
+        padding: 120px 0 80px;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(232,197,71,0.12);
+        border: 1px solid rgba(232,197,71,0.35);
+        border-radius: 999px;
+        padding: 6px 18px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 28px;
+    }
+
+        .hero-badge .pulse {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent);
+            animation: pulse-dot 1.5s infinite;
+        }
+
+    .hero-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: clamp(64px, 11vw, 160px);
+        line-height: 0.92;
+        letter-spacing: -3px;
+        margin-bottom: 28px;
+        text-shadow: 0 8px 60px rgba(0,0,0,0.8);
+    }
+
+        .hero-title .gold {
+            color: var(--accent);
+        }
+
+        .hero-title .outline {
+            -webkit-text-stroke: 2px rgba(240,239,232,0.5);
+            color: transparent;
+        }
+
+        .hero-title .white {
+            color: #F0EFE8;
+        }
+
+    .hero-desc {
+        color: rgba(240,239,232,0.6);
+        font-size: 1.05rem;
+        font-weight: 300;
+        max-width: 520px;
+        line-height: 1.75;
+        margin-bottom: 44px;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 64px;
+    }
+
+    .btn-hero-primary {
+        background: var(--accent);
+        color: #080809;
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 16px 36px;
+        font-weight: 700;
+        font-size: 1rem;
+        letter-spacing: 0.3px;
+        text-decoration: none;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .btn-hero-primary:hover {
+            background: #f5d465;
+            color: #080809;
+            transform: translateY(-3px);
+            box-shadow: 0 14px 36px rgba(232,197,71,0.4);
+        }
+
+    .btn-hero-secondary {
+        background: rgba(255,255,255,0.07);
+        color: var(--text-primary);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: var(--radius-sm);
+        padding: 16px 36px;
+        font-weight: 500;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        backdrop-filter: blur(8px);
+    }
+
+        .btn-hero-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(232,197,71,0.08);
+        }
+
+    /* Stats na base do hero */
+    .hero-stats {
+        display: flex;
+        gap: 0;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        padding-top: 32px;
+    }
+
+    .hero-stat {
+        flex: 1;
+        padding: 0 32px 0 0;
+        border-right: 1px solid rgba(255,255,255,0.08);
+    }
+
+        .hero-stat:first-child {
+            padding-left: 0;
+        }
+
+        .hero-stat:last-child {
+            border-right: none;
+        }
+
+    .stat-num {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 3.2rem;
+        color: var(--accent);
+        line-height: 1;
+        text-shadow: 0 0 30px rgba(232,197,71,0.3);
+    }
+
+    .stat-lbl {
+        font-size: 0.72rem;
+        color: rgba(240,239,232,0.45);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-top: 4px;
+        font-weight: 600;
+    }
+
+    /* Barra inferior fixa no hero */
+    .hero-bottom-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 5;
+        background: rgba(8,8,9,0.7);
+        backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(232,197,71,0.12);
+        padding: 12px 60px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .bar-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.78rem;
+        color: rgba(240,239,232,0.55);
+    }
+
+        .bar-item i {
+            color: var(--accent);
+            font-size: 0.9rem;
+        }
+
+        .bar-item strong {
+            color: rgba(240,239,232,0.85);
+        }
+
+    /* ─── FEATURES ─── */
+    .section-label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        color: var(--accent);
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .section-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: clamp(36px, 5vw, 60px);
+        line-height: 1;
+        margin-bottom: 16px;
+    }
+
+    .feature-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 36px 32px;
+        transition: all 0.35s;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(232,197,71,0.25);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+            .feature-card:hover::before {
+                opacity: 1;
+            }
+
+    .feature-icon {
+        width: 52px;
+        height: 52px;
+        background: var(--accent-dim);
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        border: 1px solid rgba(232,197,71,0.2);
+    }
+
+    .feature-title {
+        font-weight: 700;
+        font-size: 1.05rem;
+        margin-bottom: 10px;
+    }
+
+    .feature-desc {
+        color: var(--text-secondary);
+        line-height: 1.65;
+        font-size: 0.875rem;
+    }
+
+    /* ─── STEPS ─── */
+    .step-number {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 4rem;
+        -webkit-text-stroke: 1px rgba(232,197,71,0.3);
+        color: transparent;
+        line-height: 1;
+        margin-bottom: 14px;
+    }
+
+    .step-title {
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+
+    .step-desc {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        line-height: 1.6;
+    }
+
+    /* ─── CTA ─── */
+    .cta-section {
+        background: linear-gradient(135deg, rgba(232,197,71,0.1), rgba(232,197,71,0.03));
+        border: 1px solid rgba(232,197,71,0.2);
+        border-radius: var(--radius-lg);
+        padding: 80px 60px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .cta-section::before {
+            content: 'CT';
+            position: absolute;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 300px;
+            color: rgba(232,197,71,0.03);
+            right: -40px;
+            bottom: -60px;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+    .cta-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: clamp(40px, 6vw, 80px);
+        line-height: 1;
+        margin-bottom: 16px;
+    }
+
+        .cta-title .gold {
+            color: var(--accent);
+        }
+
+    /* Scroll reveal */
+    .reveal {
+        opacity: 0;
+        transform: translateY(40px);
+        transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+    @@keyframes pulse-dot {
+        0%, 100% {
+            box-shadow: 0 0 0 0 rgba(232,197,71,0.4);
+        }
+
+        50% {
+            box-shadow: 0 0 0 8px transparent;
+        }
+    }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .fade-up {
+        animation: fadeUp 0.7s ease forwards;
+    }
+
+    .fade-in {
+        animation: fadeIn 0.7s ease forwards;
+    }
+
+    .delay-1 {
+        animation-delay: 0.15s;
+        opacity: 0;
+    }
+
+    .delay-2 {
+        animation-delay: 0.3s;
+        opacity: 0;
+    }
+
+    .delay-3 {
+        animation-delay: 0.45s;
+        opacity: 0;
+    }
+
+    .delay-4 {
+        animation-delay: 0.6s;
+        opacity: 0;
+    }
+
+    .delay-5 {
+        animation-delay: 0.75s;
+        opacity: 0;
+    }
+
+    @@media (max-width: 768px) {
+        .hero-stats {
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .hero-stat {
+            border-right: none;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 0 0 20px;
+        }
+
+            .hero-stat:last-child {
+                border-bottom: none;
+            }
+
+        .hero-bottom-bar {
+            padding: 12px 20px;
+        }
+
+        .cta-section {
+            padding: 48px 24px;
+        }
+    }
+</style>
+
+<!-- ═══════════════════════════════════════
+     HERO — FOTO DE FUNDO FULL SCREEN
+═══════════════════════════════════════ -->
+<section class="hero-full">
+    <div class="hero-bg"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-watermark">CT</div>
+
+    <div class="hero-content container">
+        <div class="row">
+            <div class="col-lg-8 col-xl-7">
+
+                <div class="hero-badge fade-up">
+                    <span class="pulse"></span>
+                    Escola de Boxe — Presidente Prudente
+                </div>
+
+                <h1 class="hero-title fade-up delay-1">
+                    <span class="white">TREINE</span><br>
+                    <span class="gold">BOXE</span><br>
+                    <span class="outline">DE VERDADE</span>
+                </h1>
+
+                <p class="hero-desc fade-up delay-2">
+                    Centro de treinamento especializado em boxe. Aulas experimentais,
+                    turmas reduzidas e acompanhamento profissional para todos os níveis.
+                </p>
+
+                <div class="hero-actions fade-up delay-3">
+                    <a href="/Agendamento/Create" class="btn-hero-primary">
+                        <i class="bi bi-calendar-check-fill"></i>
+                        Agendar Aula Grátis
+                    </a>
+                    <a href="#diferenciais" class="btn-hero-secondary">
+                        Saiba mais <i class="bi bi-arrow-down"></i>
+                    </a>
+                </div>
+
+                <div class="hero-stats fade-up delay-4">
+                    <div class="hero-stat">
+                        <div class="stat-num">8+</div>
+                        <div class="stat-lbl">Anos de experiência</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="stat-num">500+</div>
+                        <div class="stat-lbl">Alunos formados</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="stat-num">100%</div>
+                        <div class="stat-lbl">Foco em você</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="stat-num">4</div>
+                        <div class="stat-lbl">Modalidades</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra de info na base -->
+    <div class="hero-bottom-bar">
+        <div class="bar-item">
+            <i class="bi bi-geo-alt-fill"></i>
+            <span><strong>Presidente Prudente</strong> — SP</span>
+        </div>
+        <div class="bar-item">
+            <i class="bi bi-whatsapp"></i>
+            <span><strong>(18) 98808-6628</strong></span>
+        </div>
+        <div class="bar-item">
+            <i class="bi bi-clock-fill"></i>
+            <span>Seg — Sáb <strong>06h às 22h</strong></span>
+        </div>
+        <div class="bar-item">
+            <i class="bi bi-instagram"></i>
+            <span><strong>@@ferrict</strong></span>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ FEATURES ═══════════════ -->
+<section class="container py-5 mt-4 reveal" id="diferenciais">
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="section-label">Por que o Ferri CT?</div>
+            <h2 class="section-title">DIFERENCIAIS QUE<br>FAZEM A DIFERENÇA</h2>
+        </div>
+        <div class="col-lg-6 d-flex align-items-end">
+            <p style="color:var(--text-secondary);line-height:1.7">
+                Mais do que uma academia, somos um ambiente de evolução. Cada detalhe é pensado
+                para que você alcance seu máximo potencial.
+            </p>
+        </div>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4 reveal"><div class="feature-card"><div class="feature-icon">🥊</div><div class="feature-title">Treino Profissional</div><div class="feature-desc">Metodologia estruturada com foco em técnica, condicionamento e evolução contínua.</div></div></div>
+        <div class="col-md-4 reveal"><div class="feature-card"><div class="feature-icon">⚡</div><div class="feature-title">Alta Performance</div><div class="feature-desc">Turmas com capacidade controlada para garantir atenção individualizada em cada sessão.</div></div></div>
+        <div class="col-md-4 reveal"><div class="feature-card"><div class="feature-icon">🧠</div><div class="feature-title">Mentalidade Forte</div><div class="feature-desc">O boxe transforma corpo e mente. Disciplina, foco e resiliência dentro e fora do ringue.</div></div></div>
+        <div class="col-md-4 reveal"><div class="feature-card"><div class="feature-icon">📅</div><div class="feature-title">Agendamento Fácil</div><div class="feature-desc">Reserve sua aula online em segundos. Escolha o horário e confirme instantaneamente.</div></div></div>
+        <div class="col-md-4 reveal"><div class="feature-card"><div class="feature-icon">🎯</div><div class="feature-title">Aula Experimental</div><div class="feature-desc">Primeira aula sem compromisso. Venha conhecer antes de decidir.</div></div></div>
+        <div class="col-md-4 reveal"><div class="feature-card"><div class="feature-icon">🏆</div><div class="feature-title">Resultados Reais</div><div class="feature-desc">Centenas de alunos transformados — de iniciantes a atletas competitivos.</div></div></div>
+    </div>
+</section>
+
+<!-- ═══════════════ COMO FUNCIONA ═══════════════ -->
+<section class="container py-5 reveal">
+    <div class="text-center mb-5">
+        <div class="section-label">Simples assim</div>
+        <h2 class="section-title">COMO FUNCIONA</h2>
+    </div>
+    <div class="row g-4 justify-content-center text-center">
+        <div class="col-md-3 reveal"><div class="step-number">01</div><div class="step-title">Crie sua Conta</div><div class="step-desc">Cadastro rápido com nome, e-mail e CPF. Menos de 1 minuto.</div></div>
+        <div class="col-md-3 reveal"><div class="step-number">02</div><div class="step-title">Escolha o Horário</div><div class="step-desc">Veja os horários disponíveis e selecione o melhor para você.</div></div>
+        <div class="col-md-3 reveal"><div class="step-number">03</div><div class="step-title">Confirme sua Aula</div><div class="step-desc">Experimental gratuita ou matrícula. Confirmação imediata.</div></div>
+        <div class="col-md-3 reveal"><div class="step-number">04</div><div class="step-title">Treine e Evolua</div><div class="step-desc">Apareça no CT e comece sua transformação.</div></div>
+    </div>
+</section>
+
+<!-- ═══════════════ CTA ═══════════════ -->
+<section class="container pb-5 reveal">
+    <div class="cta-section">
+        <div class="section-label">Dê o primeiro passo</div>
+        <h2 class="cta-title">PRONTO PARA<br><span class="gold">COMEÇAR?</span></h2>
+        <p style="color:var(--text-secondary);max-width:480px;margin:0 auto 36px;line-height:1.7">
+            Sua primeira aula é experimental e gratuita. Sem compromisso, sem mensalidade antecipada.
+        </p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a href="/Agendamento/Create" class="btn-hero-primary">
+                <i class="bi bi-calendar-check-fill"></i> Agendar Agora — É Grátis
+            </a>
+            <a href="/Cliente/Create" class="btn-hero-secondary">Criar minha conta</a>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+        });
+    }, { threshold: 0.1 });
+    reveals.forEach(r => observer.observe(r));
+</script>

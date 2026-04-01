@@ -1,0 +1,386 @@
+﻿@model SistemaWebAgendamentoFerriCT.Models.Agendamento
+
+@{
+    ViewBag.Title = "Detalhes do Agendamento";
+    ViewBag.ActivePage = "agendamentos";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+        gap: 16px;
+        animation: fadeUp 0.4s ease forwards;
+    }
+
+    .page-eyebrow {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--accent);
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .page-title {
+        font-family: 'Bebas Neue',sans-serif;
+        font-size: 2rem;
+        letter-spacing: 1px;
+        line-height: 1;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        max-width: 860px;
+    }
+
+    @@media (max-width:768px) {
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .info-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        animation: fadeUp 0.5s ease forwards;
+    }
+
+    .card-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .card-header-icon {
+        width: 34px;
+        height: 34px;
+        background: var(--accent-dim);
+        border: 1px solid rgba(232,197,71,0.2);
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent);
+    }
+
+    .card-header-title {
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .detail-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+        .detail-row:last-child {
+            border: none;
+        }
+
+    .dr-icon {
+        width: 32px;
+        height: 32px;
+        background: rgba(255,255,255,0.04);
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+
+    .dr-label {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-secondary);
+        font-weight: 700;
+        margin-bottom: 3px;
+    }
+
+    .dr-value {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    /* Status visual grande */
+    .status-display {
+        text-align: center;
+        padding: 28px 20px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .status-icon-lg {
+        font-size: 3rem;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    .status-label-lg {
+        font-family: 'Bebas Neue',sans-serif;
+        font-size: 1.8rem;
+        letter-spacing: 2px;
+    }
+
+    .status-desc {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        margin-top: 6px;
+    }
+
+    .badge-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+        .badge-status::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+    .badge-confirmado {
+        color: var(--success);
+        background: rgba(76,175,130,0.12);
+    }
+
+    .badge-pendente {
+        color: var(--accent);
+        background: var(--accent-dim);
+    }
+
+    .badge-cancelado {
+        color: var(--danger);
+        background: rgba(224,80,80,0.12);
+    }
+
+    .action-row {
+        display: flex;
+        gap: 10px;
+        padding: 16px 20px;
+        border-top: 1px solid var(--border);
+    }
+
+        .action-row a {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: var(--radius-sm);
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+    .btn-edit-ag {
+        background: var(--accent-dim);
+        border: 1px solid rgba(232,197,71,0.3);
+        color: var(--accent);
+    }
+
+        .btn-edit-ag:hover {
+            background: rgba(232,197,71,0.2);
+            color: var(--accent);
+        }
+
+    .btn-del-ag {
+        background: rgba(224,80,80,0.08);
+        border: 1px solid rgba(224,80,80,0.2);
+        color: var(--danger);
+    }
+
+        .btn-del-ag:hover {
+            background: rgba(224,80,80,0.15);
+            color: var(--danger);
+        }
+
+    /* Aluno mini card */
+    .aluno-mini {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 20px;
+    }
+
+    .aluno-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--accent-dim);
+        border: 2px solid rgba(232,197,71,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Bebas Neue',sans-serif;
+        font-size: 1.1rem;
+        color: var(--accent);
+        flex-shrink: 0;
+    }
+
+    .aluno-mini-name {
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
+
+    .aluno-mini-info {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        margin-top: 2px;
+    }
+
+    .aluno-mini-link {
+        margin-left: auto;
+        font-size: 0.78rem;
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+        .aluno-mini-link:hover {
+            text-decoration: underline;
+        }
+</style>
+
+<div class="page-header">
+    <div>
+        <div class="page-eyebrow">Gestão de Agendamentos</div>
+        <div class="page-title">DETALHES DO AGENDAMENTO</div>
+    </div>
+    <a href="/Admin/Agendamentos" class="btn-outline-gold"><i class="bi bi-arrow-left"></i> Voltar</a>
+</div>
+
+<div class="detail-grid">
+
+    <!-- Card agendamento -->
+    <div class="info-card">
+        <div class="card-header">
+            <div class="card-header-icon"><i class="bi bi-calendar-check-fill"></i></div>
+            <div class="card-header-title">Dados do Agendamento</div>
+        </div>
+
+        @{
+            var statusClass = Model.Status == "Confirmado" ? "badge-confirmado"
+                            : Model.Status == "Cancelado" ? "badge-cancelado"
+                            : "badge-pendente";
+            var statusIcon = Model.Status == "Confirmado" ? "✅"
+                            : Model.Status == "Cancelado" ? "❌" : "⏳";
+            var statusDescr = Model.Status == "Confirmado" ? "Agendamento confirmado e pago"
+                            : Model.Status == "Cancelado" ? "Agendamento cancelado"
+                            : "Aguardando confirmação de pagamento";
+        }
+
+        <div class="status-display">
+            <span class="status-icon-lg">@statusIcon</span>
+            <div class="status-label-lg">
+                <span class="badge-status @statusClass" style="font-size:1rem;padding:6px 18px">@Model.Status</span>
+            </div>
+            <div class="status-desc">@statusDescr</div>
+        </div>
+
+        <div class="card-body">
+            <div class="detail-row">
+                <div class="dr-icon"><i class="bi bi-hash"></i></div>
+                <div><div class="dr-label">ID</div><div class="dr-value">#@Model.AgendamentoId</div></div>
+            </div>
+            <div class="detail-row">
+                <div class="dr-icon"><i class="bi bi-tag-fill"></i></div>
+                <div><div class="dr-label">Tipo de Aula</div><div class="dr-value">@Model.TipoAula</div></div>
+            </div>
+            <div class="detail-row">
+                <div class="dr-icon"><i class="bi bi-calendar3"></i></div>
+                <div><div class="dr-label">Data da Aula</div><div class="dr-value">@Model.DataAula.ToString("dd/MM/yyyy")</div></div>
+            </div>
+            <div class="detail-row">
+                <div class="dr-icon"><i class="bi bi-clock-fill"></i></div>
+                <div>
+                    <div class="dr-label">Horário</div>
+                    <div class="dr-value">
+                        @Model.HorarioTurma?.HoraInicio.ToString("hh\:mm") —
+                        @Model.HorarioTurma?.HoraFim.ToString("hh\:mm")
+                    </div>
+                </div>
+            </div>
+            <div class="detail-row">
+                <div class="dr-icon"><i class="bi bi-send-fill"></i></div>
+                <div><div class="dr-label">Solicitado em</div><div class="dr-value">@Model.DataSolicitacao.ToString("dd/MM/yyyy HH:mm")</div></div>
+            </div>
+        </div>
+
+        <div class="action-row">
+            <a href="@Url.Action("EditarAgendamento","Admin", new { id=Model.AgendamentoId })" class="btn-edit-ag">
+                <i class="bi bi-pencil-fill"></i> Editar Status
+            </a>
+            <a href="@Url.Action("ExcluirAgendamento","Admin", new { id=Model.AgendamentoId })" class="btn-del-ag">
+                <i class="bi bi-trash-fill"></i> Excluir
+            </a>
+        </div>
+    </div>
+
+    <!-- Card aluno -->
+    <div>
+        <div class="info-card" style="animation-delay:0.1s">
+            <div class="card-header">
+                <div class="card-header-icon"><i class="bi bi-person-fill"></i></div>
+                <div class="card-header-title">Aluno Vinculado</div>
+            </div>
+
+            @if (Model.Cliente != null)
+            {
+                var ini = string.Join("", (Model.Cliente.Nome ?? "?").Split(' ')
+                    .Take(2).Select(w => w.Length > 0 ? w[0].ToString().ToUpper() : ""));
+                <div class="aluno-mini">
+                    <div class="aluno-avatar">@ini</div>
+                    <div>
+                        <div class="aluno-mini-name">@Model.Cliente.Nome</div>
+                        <div class="aluno-mini-info">@Model.Cliente.Email</div>
+                    </div>
+                    <a href="@Url.Action("DetalhesAluno","Admin", new { id=Model.Cliente.ClienteId })" class="aluno-mini-link">
+                        Ver perfil →
+                    </a>
+                </div>
+
+                <div class="card-body" style="padding-top:0">
+                    <div class="detail-row">
+                        <div class="dr-icon"><i class="bi bi-telephone-fill"></i></div>
+                        <div><div class="dr-label">Telefone</div><div class="dr-value">@Model.Cliente.Telefone</div></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="dr-icon"><i class="bi bi-person-vcard-fill"></i></div>
+                        <div><div class="dr-label">CPF</div><div class="dr-value">@Model.Cliente.CPF</div></div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+</div>

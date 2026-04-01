@@ -1,0 +1,230 @@
+﻿@{
+    ViewBag.Title = "Sobre o Ferri CT";
+}
+
+<style>
+    .about-hero {
+        padding: 80px 0 60px;
+        position: relative;
+    }
+
+        .about-hero::before {
+            content: 'SOBRE';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(80px, 14vw, 200px);
+            color: rgba(232,197,71,0.03);
+            pointer-events: none;
+            line-height: 1;
+        }
+
+    .section-label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        color: var(--accent);
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .section-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: clamp(36px, 5vw, 64px);
+        line-height: 1;
+        margin-bottom: 20px;
+    }
+
+    .about-text {
+        color: var(--text-secondary);
+        line-height: 1.8;
+        font-size: 1rem;
+        max-width: 520px;
+    }
+
+    .value-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 28px 24px;
+        transition: all 0.3s;
+    }
+
+        .value-card:hover {
+            border-color: rgba(232,197,71,0.2);
+            transform: translateY(-6px);
+        }
+
+    .value-icon {
+        font-size: 2rem;
+        margin-bottom: 14px;
+        display: block;
+    }
+
+    .value-title {
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+
+    .value-desc {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        line-height: 1.65;
+    }
+
+    .timeline {
+        position: relative;
+        padding-left: 32px;
+    }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: linear-gradient(to bottom, var(--accent), transparent);
+        }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 32px;
+    }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 6px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 0 4px var(--accent-dim);
+        }
+
+    .timeline-year {
+        color: var(--accent);
+        font-weight: 700;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+        margin-bottom: 4px;
+    }
+
+    .timeline-text {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        line-height: 1.6;
+    }
+
+    .timeline-event {
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s ease;
+    }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+</style>
+
+<div class="container">
+    <div class="about-hero">
+        <div class="row align-items-center">
+            <div class="col-lg-6 fade-up">
+                <div class="section-label">Conheça o Ferri CT</div>
+                <h1 class="section-title">NOSSA<br>HISTÓRIA</h1>
+                <p class="about-text">
+                    O Ferri CT nasceu da paixão pelo boxe e pelo desejo de criar um ambiente onde
+                    qualquer pessoa, independente do nível, pudesse aprender, evoluir e se transformar
+                    dentro e fora do ringue.
+                </p>
+                <p class="about-text mt-3">
+                    Com professores certificados, metodologia estruturada e turmas reduzidas,
+                    garantimos atenção individualizada e resultados reais para cada aluno.
+                </p>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block fade-up delay-2">
+                <div style="padding:40px">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-year">INÍCIO</div>
+                            <div class="timeline-event">Fundação do Ferri CT</div>
+                            <div class="timeline-text">Primeiras turmas com foco em boxe técnico e condicionamento físico.</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-year">CRESCIMENTO</div>
+                            <div class="timeline-event">Expansão das turmas</div>
+                            <div class="timeline-text">Novos horários, novos professores e mais de 200 alunos formados.</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-year">HOJE</div>
+                            <div class="timeline-event">Referência regional</div>
+                            <div class="timeline-text">Centro de referência em boxe, com agendamento online e atendimento profissional.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Values -->
+    <section class="py-5 reveal">
+        <div class="text-center mb-5">
+            <div class="section-label">O que nos move</div>
+            <h2 class="section-title" style="font-size:2.8rem">NOSSOS VALORES</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4 reveal">
+                <div class="value-card h-100">
+                    <span class="value-icon">🥊</span>
+                    <div class="value-title">Excelência Técnica</div>
+                    <div class="value-desc">Metodologia séria, focada em evolução real. Cada aula tem um propósito claro.</div>
+                </div>
+            </div>
+            <div class="col-md-4 reveal">
+                <div class="value-card h-100">
+                    <span class="value-icon">🤝</span>
+                    <div class="value-title">Comunidade</div>
+                    <div class="value-desc">Mais do que uma academia, somos uma família. O respeito é o pilar do Ferri CT.</div>
+                </div>
+            </div>
+            <div class="col-md-4 reveal">
+                <div class="value-card h-100">
+                    <span class="value-icon">💪</span>
+                    <div class="value-title">Transformação</div>
+                    <div class="value-desc">Cada aluno chega de um jeito e vai de outro. O boxe muda tudo: corpo, mente e caráter.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-5 text-center reveal">
+        <h2 style="font-family:'Bebas Neue',sans-serif;font-size:3rem;margin-bottom:12px">
+            FAÇA PARTE DESSA <span style="color:var(--accent)">HISTÓRIA</span>
+        </h2>
+        <p style="color:var(--text-secondary);margin-bottom:28px">
+            Sua primeira aula é gratuita. Sem compromisso.
+        </p>
+        <a href="/Agendamento/Create" class="btn-gold" style="padding:14px 36px;font-size:1rem">
+            <i class="bi bi-calendar-check"></i> Agendar Agora
+        </a>
+    </section>
+</div>
+
+<script>const reveals = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }});
+    }, { threshold: 0.1 });
+    reveals.forEach(r => obs.observe(r));</script>

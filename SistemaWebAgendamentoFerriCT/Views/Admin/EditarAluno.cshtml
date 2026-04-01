@@ -1,0 +1,212 @@
+﻿@model SistemaWebAgendamentoFerriCT.Models.Cliente
+
+@{
+    ViewBag.Title = "Editar Aluno";
+    ViewBag.ActivePage = "alunos";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+        gap: 16px;
+        animation: fadeUp 0.4s ease forwards;
+    }
+
+    .page-eyebrow {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--accent);
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .page-title {
+        font-family: 'Bebas Neue',sans-serif;
+        font-size: 2rem;
+        letter-spacing: 1px;
+        line-height: 1;
+    }
+
+    .form-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        max-width: 600px;
+        animation: fadeUp 0.5s ease forwards;
+    }
+
+    .form-card-header {
+        padding: 18px 24px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-card-icon {
+        width: 36px;
+        height: 36px;
+        background: var(--accent-dim);
+        border: 1px solid rgba(232,197,71,0.2);
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent);
+    }
+
+    .form-card-title {
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
+
+    .form-card-body {
+        padding: 28px 24px;
+    }
+
+    .field-block {
+        margin-bottom: 18px;
+    }
+
+    .input-with-icon {
+        position: relative;
+    }
+
+        .input-with-icon .fi {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        .input-with-icon .form-control {
+            padding-left: 38px !important;
+        }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 24px;
+    }
+
+    .btn-save {
+        flex: 1;
+        background: var(--accent);
+        color: var(--bg-deep);
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 13px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-family: 'DM Sans',sans-serif;
+    }
+
+        .btn-save:hover {
+            background: #f5d465;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--accent-glow);
+        }
+
+    .btn-cancel {
+        background: transparent;
+        color: var(--text-secondary);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 13px 20px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .btn-cancel:hover {
+            color: var(--text-primary);
+            border-color: rgba(255,255,255,0.15);
+        }
+</style>
+
+<div class="page-header">
+    <div>
+        <div class="page-eyebrow">Gestão de Alunos</div>
+        <div class="page-title">EDITAR ALUNO</div>
+    </div>
+    <a href="/Admin/Alunos" class="btn-outline-gold">
+        <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+</div>
+
+<div class="form-card">
+    <div class="form-card-header">
+        <div class="form-card-icon"><i class="bi bi-pencil-fill"></i></div>
+        <div class="form-card-title">Dados do Aluno</div>
+    </div>
+    <div class="form-card-body">
+
+        @using (Html.BeginForm("EditarAluno", "Admin", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.ClienteId)
+            @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3", style = "font-size:0.82rem" })
+
+            <div class="field-block">
+                <label class="form-label">Nome Completo</label>
+                <div class="input-with-icon">
+                    <i class="bi bi-person fi"></i>
+                    @Html.TextBoxFor(m => m.Nome, new { @class = "form-control", placeholder = "Nome completo" })
+                </div>
+                @Html.ValidationMessageFor(m => m.Nome, "", new { @class = "text-danger", style = "font-size:0.75rem" })
+            </div>
+
+            <div class="field-block">
+                <label class="form-label">CPF</label>
+                <div class="input-with-icon">
+                    <i class="bi bi-person-vcard fi"></i>
+                    @Html.TextBoxFor(m => m.CPF, new { @class = "form-control", placeholder = "000.000.000-00", maxlength = "14" })
+                </div>
+                @Html.ValidationMessageFor(m => m.CPF, "", new { @class = "text-danger", style = "font-size:0.75rem" })
+            </div>
+
+            <div class="field-block">
+                <label class="form-label">Telefone</label>
+                <div class="input-with-icon">
+                    <i class="bi bi-telephone fi"></i>
+                    @Html.TextBoxFor(m => m.Telefone, new { @class = "form-control", placeholder = "(00) 00000-0000" })
+                </div>
+                @Html.ValidationMessageFor(m => m.Telefone, "", new { @class = "text-danger", style = "font-size:0.75rem" })
+            </div>
+
+            <div class="field-block">
+                <label class="form-label">E-mail</label>
+                <div class="input-with-icon">
+                    <i class="bi bi-envelope fi"></i>
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "email@exemplo.com" })
+                </div>
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger", style = "font-size:0.75rem" })
+            </div>
+
+            <div class="form-actions">
+                <a href="/Admin/Alunos" class="btn-cancel"><i class="bi bi-x-lg"></i> Cancelar</a>
+                <button type="submit" class="btn-save"><i class="bi bi-check-lg"></i> Salvar Alterações</button>
+            </div>
+        }
+    </div>
+</div>

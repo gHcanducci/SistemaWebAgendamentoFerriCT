@@ -1,0 +1,339 @@
+﻿@model SistemaWebAgendamentoFerriCT.Models.Cliente
+
+@{
+    ViewBag.Title = "Novo Aluno";
+    ViewBag.ActivePage = "criar";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .page-header {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        margin-bottom: 28px; flex-wrap: wrap; gap: 16px;
+        animation: fadeUp 0.4s ease forwards;
+    }
+    .page-eyebrow { font-size:0.7rem; text-transform:uppercase; letter-spacing:2px; color:var(--accent); font-weight:700; margin-bottom:4px; }
+    .page-title { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:1px; line-height:1; }
+
+    .form-layout {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 20px;
+        animation: fadeUp 0.5s ease forwards;
+    }
+    media (max-width: 900px) { .form-layout { grid-template-columns: 1fr; } }
+
+    /* Form card */
+    .form-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+    }
+    .form-card-header {
+        padding: 18px 24px;
+        border-bottom: 1px solid var(--border);
+        display: flex; align-items: center; gap: 10px;
+    }
+    .form-card-icon {
+        width: 36px; height: 36px;
+        background: var(--accent-dim);
+        border: 1px solid rgba(232,197,71,0.2);
+        border-radius: var(--radius-sm);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--accent);
+    }
+    .form-card-title { font-weight: 700; font-size: 0.95rem; }
+    .form-card-body { padding: 24px; }
+
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    media (max-width: 600px) { .field-row { grid-template-columns: 1fr; } }
+
+    .field-block { margin-bottom: 18px; }
+    .field-block:last-child { margin-bottom: 0; }
+
+    .form-label {
+        font-size: 0.72rem; text-transform: uppercase;
+        letter-spacing: 1.2px; font-weight: 700;
+        color: var(--text-secondary); margin-bottom: 6px; display: block;
+    }
+    .input-with-icon { position: relative; }
+    .input-with-icon .fi {
+        position: absolute; left: 13px; top: 50%;
+        transform: translateY(-50%); color: var(--text-secondary); pointer-events: none;
+    }
+    .input-with-icon .form-control { padding-left: 38px !important; }
+
+    /* Preview card */
+    .preview-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+    }
+    .preview-header {
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--border);
+        font-weight: 700; font-size: 0.875rem;
+        display: flex; align-items: center; gap: 8px;
+        color: var(--text-secondary);
+    }
+    .preview-body { padding: 24px; }
+
+    .preview-avatar {
+        width: 72px; height: 72px; border-radius: 50%;
+        background: var(--accent-dim);
+        border: 2px solid rgba(232,197,71,0.25);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.6rem; font-weight: 700; color: var(--accent);
+        margin: 0 auto 16px;
+        transition: all 0.3s;
+    }
+    .preview-name {
+        font-weight: 700; font-size: 1.05rem; text-align: center;
+        margin-bottom: 4px; min-height: 1.5em;
+        color: var(--text-secondary);
+        transition: color 0.3s;
+    }
+    .preview-name.filled { color: var(--text-primary); }
+
+    .preview-fields { margin-top: 20px; }
+    .preview-field {
+        display: flex; align-items: center; gap: 10px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.825rem;
+    }
+    .preview-field:last-child { border: none; }
+    .preview-field i { color: var(--accent); width: 16px; text-align: center; }
+    .preview-field-val { color: var(--text-secondary); font-size: 0.8rem; }
+    .preview-field-val.filled { color: var(--text-primary); }
+
+    /* Form actions */
+    .form-actions {
+        display: flex; gap: 10px; margin-top: 24px;
+    }
+    .btn-save {
+        flex: 1; background: var(--accent); color: var(--bg-deep);
+        border: none; border-radius: var(--radius-sm); padding: 13px;
+        font-weight: 700; font-size: 0.9rem; cursor: pointer;
+        transition: all 0.3s; display: flex; align-items: center;
+        justify-content: center; gap: 8px;
+    }
+    .btn-save:hover {
+        background: #f5d465;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px var(--accent-glow);
+    }
+    .btn-cancel {
+        background: transparent; color: var(--text-secondary);
+        border: 1px solid var(--border); border-radius: var(--radius-sm);
+        padding: 13px 20px; font-weight: 600; font-size: 0.875rem;
+        cursor: pointer; transition: all 0.2s; text-decoration: none;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .btn-cancel:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.15); }
+
+    .required-note {
+        font-size: 0.72rem; color: var(--text-secondary);
+        margin-top: 16px;
+    }
+    .required-note span { color: var(--accent); }
+</style>
+
+<div class="page-header">
+    <div>
+        <div class="page-eyebrow">Gestão de Alunos</div>
+        <div class="page-title">NOVO ALUNO</div>
+    </div>
+    <a href="/Admin/Alunos" class="btn-outline-gold">
+        <i class="bi bi-arrow-left"></i> Lista de Alunos
+    </a>
+</div>
+
+<div class="form-layout">
+
+    <!-- Form -->
+    <div class="form-card">
+        <div class="form-card-header">
+            <div class="form-card-icon"><i class="bi bi-person-plus-fill"></i></div>
+            <div class="form-card-title">Dados do Aluno</div>
+        </div>
+        <div class="form-card-body">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3", style = "font-size:0.82rem" })
+
+                <div class="field-block">
+                    <label class="form-label">Nome Completo <span style="color:var(--accent)">*</span></label>
+                    <div class="input-with-icon">
+                        <i class="bi bi-person fi"></i>
+                        @Html.TextBoxFor(m => m.Nome, new
+                        {
+                            @class = "form-control",
+                            placeholder = "Nome completo do aluno",
+                            id = "previewNome"
+                        })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Nome, "", new { @class = "text-danger", style = "font-size:0.75rem" })
+                </div>
+
+                <div class="field-row">
+                    <div class="field-block">
+                        <label class="form-label">CPF <span style="color:var(--accent)">*</span></label>
+                        <div class="input-with-icon">
+                            <i class="bi bi-person-vcard fi"></i>
+                            @Html.TextBoxFor(m => m.CPF, new
+                            {
+                                @class = "form-control",
+                                placeholder = "000.000.000-00",
+                                id = "cpfField",
+                                maxlength = "14"
+                            })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.CPF, "", new { @class = "text-danger", style = "font-size:0.75rem" })
+                    </div>
+                    <div class="field-block">
+                        <label class="form-label">Telefone / WhatsApp <span style="color:var(--accent)">*</span></label>
+                        <div class="input-with-icon">
+                            <i class="bi bi-whatsapp fi"></i>
+                            @Html.TextBoxFor(m => m.Telefone, new
+                            {
+                                @class = "form-control",
+                                placeholder = "(00) 00000-0000",
+                                id = "telField",
+                                maxlength = "15"
+                            })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Telefone, "", new { @class = "text-danger", style = "font-size:0.75rem" })
+                    </div>
+                </div>
+
+                <div class="field-block">
+                    <label class="form-label">E-mail <span style="color:var(--accent)">*</span></label>
+                    <div class="input-with-icon">
+                        <i class="bi bi-envelope fi"></i>
+                        @Html.TextBoxFor(m => m.Email, new
+                        {
+                            @class = "form-control",
+                            placeholder = "email@exemplo.com",
+                            id = "previewEmail"
+                        })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger", style = "font-size:0.75rem" })
+                </div>
+
+                <div class="form-actions">
+                    <a href="/Admin/Alunos" class="btn-cancel">
+                        <i class="bi bi-x-lg"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn-save">
+                        <i class="bi bi-check-lg"></i> Salvar Aluno
+                    </button>
+                </div>
+
+                <div class="required-note">
+                    Campos marcados com <span>*</span> são obrigatórios.
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Preview -->
+    <div>
+        <div class="preview-card">
+            <div class="preview-header">
+                <i class="bi bi-eye"></i> Prévia do Cadastro
+            </div>
+            <div class="preview-body">
+                <div class="preview-avatar" id="previewAvatar">?</div>
+                <div class="preview-name" id="previewNameDisplay">Nome do Aluno</div>
+
+                <div class="preview-fields">
+                    <div class="preview-field">
+                        <i class="bi bi-envelope"></i>
+                        <span class="preview-field-val" id="previewEmailDisplay">—</span>
+                    </div>
+                    <div class="preview-field">
+                        <i class="bi bi-telephone"></i>
+                        <span class="preview-field-val" id="previewTelDisplay">—</span>
+                    </div>
+                    <div class="preview-field">
+                        <i class="bi bi-calendar3"></i>
+                        <span class="preview-field-val filled" id="previewDataDisplay">
+                            @DateTime.Now.ToString("dd/MM/yyyy")
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips -->
+        <div style="margin-top:14px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:18px 20px">
+            <div style="font-size:0.78rem;font-weight:700;margin-bottom:10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px">
+                <i class="bi bi-lightbulb" style="color:var(--accent)"></i> Dicas
+            </div>
+            <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.7">
+                • O CPF é usado como senha de acesso inicial.<br>
+                • O e-mail deve ser único por aluno.<br>
+                • O aluno pode atualizar seus dados após o login.
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>// Live preview
+    const nomeIn  = document.getElementById('previewNome');
+    const emailIn = document.getElementById('previewEmail');
+    const telIn   = document.getElementById('telField');
+    const avatar  = document.getElementById('previewAvatar');
+    const nameDisp = document.getElementById('previewNameDisplay');
+    const emailDisp = document.getElementById('previewEmailDisplay');
+    const telDisp   = document.getElementById('previewTelDisplay');
+
+    function getInitials(name) {
+        const parts = name.trim().split(' ').filter(Boolean);
+        if (parts.length === 0) return '?';
+        if (parts.length === 1) return parts[0][0].toUpperCase();
+        return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
+    }
+
+    if (nomeIn) {
+        nomeIn.addEventListener('input', () => {
+            const v = nomeIn.value.trim();
+            avatar.textContent = v ? getInitials(v) : '?';
+            nameDisp.textContent = v || 'Nome do Aluno';
+            nameDisp.classList.toggle('filled', !!v);
+        });
+    }
+    if (emailIn) {
+        emailIn.addEventListener('input', () => {
+            const v = emailIn.value.trim();
+            emailDisp.textContent = v || '—';
+            emailDisp.classList.toggle('filled', !!v);
+        });
+    }
+    if (telIn) {
+        telIn.addEventListener('input', function() {
+            let v = this.value.replace(/\D/g, '').substring(0, 11);
+            if (v.length > 6) v = v.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+            else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+            this.value = v;
+            telDisp.textContent = v || '—';
+            telDisp.classList.toggle('filled', !!v);
+        });
+    }
+
+    // CPF mask
+    const cpf = document.getElementById('cpfField');
+    if (cpf) {
+        cpf.addEventListener('input', function() {
+            let v = this.value.replace(/\D/g, '').substring(0, 11);
+            if (v.length > 9) v = v.replace(/^(\d{3})(\d{3})(\d{3})(\d{0,2})/, '$1.$2.$3-$4');
+            else if (v.length > 6) v = v.replace(/^(\d{3})(\d{3})(\d{0,3})/, '$1.$2.$3');
+            else if (v.length > 3) v = v.replace(/^(\d{3})(\d{0,3})/, '$1.$2');
+            this.value = v;
+        });
+    }</script>

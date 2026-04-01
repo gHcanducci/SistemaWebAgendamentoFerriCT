@@ -1,0 +1,278 @@
+﻿@model SistemaWebAgendamentoFerriCT.Models.Agendamento
+
+@{
+    ViewBag.Title = "Agendar Aula";
+}
+
+<style>
+    .schedule-wrapper {
+        min-height: calc(100vh - 64px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 16px;
+        position: relative;
+    }
+    .schedule-wrapper::before {
+        content: '';
+        position: fixed; bottom: 0; right: 0;
+        width: 500px; height: 500px;
+        background: radial-gradient(circle, rgba(232,197,71,0.04) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .schedule-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+        max-width: 900px;
+        width: 100%;
+        position: relative; z-index: 1;
+    }
+
+    media (max-width: 768px) {
+        .schedule-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Left panel - info */
+    .info-panel {
+        padding: 48px 40px;
+    }
+    .info-eyebrow {
+        font-size: 0.75rem; letter-spacing: 3px;
+        text-transform: uppercase; color: var(--accent);
+        font-weight: 600; margin-bottom: 16px;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .info-eyebrow::before {
+        content: ''; width: 24px; height: 1px; background: var(--accent);
+    }
+    .info-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 3rem; line-height: 1; margin-bottom: 16px;
+    }
+    .info-title .gold { color: var(--accent); }
+    .info-desc {
+        color: var(--text-secondary); line-height: 1.7; font-size: 0.9rem;
+        margin-bottom: 32px;
+    }
+
+    .info-features { list-style: none; padding: 0; }
+    .info-features li {
+        display: flex; align-items: flex-start; gap: 12px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.875rem; color: var(--text-secondary);
+    }
+    .info-features li:last-child { border: none; }
+    .info-features li i { color: var(--accent); font-size: 1rem; margin-top: 1px; flex-shrink: 0; }
+
+    /* Right panel - form */
+    .form-panel {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 48px 40px;
+        position: relative;
+        animation: fadeUp 0.5s ease forwards;
+    }
+    .form-panel::before {
+        content: '';
+        position: absolute; top: 0; left: 40px; right: 40px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    .form-panel h3 {
+        font-size: 1.3rem; font-weight: 700; margin-bottom: 4px;
+    }
+    .form-panel .subtitle {
+        color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 28px;
+    }
+
+    /* Tipo aula cards */
+    .tipo-selector {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+        margin-bottom: 20px;
+    }
+    .tipo-option { display: none; }
+    .tipo-label {
+        display: flex; flex-direction: column; align-items: center;
+        gap: 8px; padding: 16px 12px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        cursor: pointer; transition: all 0.25s;
+        text-align: center;
+    }
+    .tipo-label .tipo-icon { font-size: 1.5rem; }
+    .tipo-label .tipo-name { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.5px; }
+    .tipo-label .tipo-desc { font-size: 0.7rem; color: var(--text-secondary); }
+    .tipo-option:checked + .tipo-label {
+        border-color: var(--accent);
+        background: var(--accent-dim);
+        color: var(--text-primary);
+    }
+    .tipo-option:checked + .tipo-label .tipo-desc { color: rgba(232,197,71,0.7); }
+
+    .field-block { margin-bottom: 18px; }
+    .field-block .field-label {
+        font-size: 0.75rem; text-transform: uppercase;
+        letter-spacing: 1px; font-weight: 600;
+        color: var(--text-secondary); margin-bottom: 8px; display: block;
+    }
+
+    .btn-schedule {
+        width: 100%; background: var(--accent);
+        color: var(--bg-deep); border: none;
+        border-radius: var(--radius-sm); padding: 15px;
+        font-weight: 700; font-size: 1rem;
+        letter-spacing: 0.3px; transition: all 0.3s;
+        cursor: pointer; margin-top: 4px;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-schedule:hover {
+        background: #f5d465;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px var(--accent-glow);
+    }
+
+    .free-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: rgba(76,175,130,0.12);
+        border: 1px solid rgba(76,175,130,0.3);
+        color: var(--success);
+        border-radius: 999px; padding: 4px 12px;
+        font-size: 0.72rem; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 1px;
+        margin-bottom: 24px;
+    }
+
+    .back-link {
+        display: flex; align-items: center; gap: 6px;
+        color: var(--text-secondary); text-decoration: none;
+        font-size: 0.85rem; margin-top: 20px;
+        transition: color 0.2s; justify-content: center;
+    }
+    .back-link:hover { color: var(--text-primary); }
+</style>
+
+<div class="schedule-wrapper">
+    <div class="schedule-grid">
+
+        <!-- Info panel -->
+        <div class="info-panel fade-up">
+            <div class="info-eyebrow">Agendamento Online</div>
+            <h1 class="info-title">RESERVE<br>SUA <span class="gold">AULA</span></h1>
+            <p class="info-desc">
+                Escolha o tipo de aula, a data e o horário disponível. Confirme e apareça pronto para treinar.
+            </p>
+
+            <ul class="info-features">
+                <li>
+                    <i class="bi bi-shield-check"></i>
+                    <span><strong style="color:var(--text-primary)">Aula Experimental gratuita</strong> — sem compromisso, sem custo.</span>
+                </li>
+                <li>
+                    <i class="bi bi-people"></i>
+                    <span><strong style="color:var(--text-primary)">Turmas pequenas</strong> — atenção individualizada do professor.</span>
+                </li>
+                <li>
+                    <i class="bi bi-clock"></i>
+                    <span><strong style="color:var(--text-primary)">Flexibilidade</strong> — vários horários disponíveis por semana.</span>
+                </li>
+                <li>
+                    <i class="bi bi-check-circle"></i>
+                    <span><strong style="color:var(--text-primary)">Confirmação imediata</strong> — após envio, seu agendamento é registrado.</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Form panel -->
+        <div class="form-panel">
+            <div class="free-badge">
+                <i class="bi bi-star-fill"></i> 1ª Aula Gratuita
+            </div>
+
+            <h3>Detalhes do Agendamento</h3>
+            <p class="subtitle">Preencha as informações abaixo para reservar sua vaga</p>
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3", style = "font-size:0.85rem" })
+
+                <!-- Tipo de Aula - Visual cards -->
+                <div class="field-block">
+                    <span class="field-label">Tipo de Aula</span>
+                    <div class="tipo-selector">
+                        <input type="radio" name="TipoAula" value="Experimental"
+                               id="tipo-exp" class="tipo-option" checked />
+                        <label for="tipo-exp" class="tipo-label">
+                            <span class="tipo-icon">🥊</span>
+                            <span class="tipo-name">Experimental</span>
+                            <span class="tipo-desc">Grátis · Sem compromisso</span>
+                        </label>
+
+                        <input type="radio" name="TipoAula" value="Iniciacao"
+                               id="tipo-ini" class="tipo-option" />
+                        <label for="tipo-ini" class="tipo-label">
+                            <span class="tipo-icon">🏆</span>
+                            <span class="tipo-name">1ª Matrícula</span>
+                            <span class="tipo-desc">Início da jornada</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Data -->
+                <div class="field-block">
+                    <label class="field-label" for="DataAula">
+                        <i class="bi bi-calendar3 me-1"></i> Data da Aula
+                    </label>
+                    @Html.TextBoxFor(m => m.DataAula,
+                             "{0:yyyy-MM-dd}",
+                             new
+                             {
+                                 @type = "date",
+                                 @class = "form-control",
+                                 id = "DataAula",
+                                 min = DateTime.Now.ToString("yyyy-MM-dd")
+                             })
+                    @Html.ValidationMessageFor(m => m.DataAula, "", new { @class = "text-danger", style = "font-size:0.8rem" })
+                </div>
+
+                <!-- Horário -->
+                <div class="field-block">
+                    <label class="field-label" for="HorarioTurmaId">
+                        <i class="bi bi-clock me-1"></i> Horário Disponível
+                    </label>
+                    @Html.DropDownListFor(m => m.HorarioTurmaId,
+                             new SelectList(ViewBag.Horarios ?? new List<object>(), "HorarioTurmaId", "HorarioFormatado"),
+                             "— Selecione um horário —",
+                             new { @class = "form-select" })
+                    @Html.ValidationMessageFor(m => m.HorarioTurmaId, "", new { @class = "text-danger", style = "font-size:0.8rem" })
+                </div>
+
+                <button type="submit" class="btn-schedule">
+                    <i class="bi bi-calendar-check"></i>
+                    Confirmar Agendamento
+                </button>
+            }
+
+            <a href="/" class="back-link">
+                <i class="bi bi-arrow-left"></i> Voltar ao início
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>// Set min date to today
+    const dateInput = document.getElementById('DataAula');
+    if (dateInput && !dateInput.value) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        dateInput.min = `${yyyy}-${mm}-${dd}`;
+    }</script>
