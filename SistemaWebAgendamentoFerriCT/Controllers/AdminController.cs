@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web.Mvc;
 using SistemaWebAgendamentoFerriCT.Models;
 
@@ -9,7 +11,8 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
     public class AdminController : Controller
     {
         private const string UsuarioAdmin = "admin";
-        private const string SenhaAdmin = "123";
+        // SHA-256 de "123" — troque em produção
+        private const string SenhaAdminHash = "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3";
 
         private readonly SistemaContext db = new SistemaContext();
 
@@ -34,9 +37,11 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
         {
             try
             {
-                if (usuario == UsuarioAdmin && senha == SenhaAdmin)
+                if (usuario == UsuarioAdmin && HashPassword(senha) == SenhaAdminHash)
                 {
+                    // Token de sessão único para segurança adicional
                     Session["AdminLogado"] = true;
+                    Session["AdminToken"] = Guid.NewGuid().ToString("N");
                     return RedirectToAction("Index");
                 }
 
@@ -434,6 +439,20 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 db.Dispose();
 
             base.Dispose(disposing);
+        }
+
+
+        // ─── Utilitário de hash ─────────────────────────────────────
+        private static string HashPassword(string senha)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(senha));
+                var sb = new System.Text.StringBuilder();
+                foreach (var b in bytes)
+                    sb.Append(b.ToString("x2"));
+                return sb.ToString();
+            }
         }
     }
 }
