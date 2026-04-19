@@ -325,8 +325,8 @@
                 <div>
                     <div class="dr-label">Horário</div>
                     <div class="dr-value">
-                        @Model.HorarioTurma?.HoraInicio.ToString("hh\:mm") —
-                        @Model.HorarioTurma?.HoraFim.ToString("hh\:mm")
+                        @(Model.HorarioTurma != null ? Model.HorarioTurma.HoraInicio.ToString(@"hh\:mm") + " - " + Model.HorarioTurma.HoraFim.ToString(@"hh\:mm") : "—")
+                        
                     </div>
                 </div>
             </div>

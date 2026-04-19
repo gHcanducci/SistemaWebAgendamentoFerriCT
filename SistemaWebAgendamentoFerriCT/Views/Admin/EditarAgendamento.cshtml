@@ -234,7 +234,7 @@
             <div class="info-row">
                 <i class="bi bi-person"></i>
                 <span class="info-label">Aluno</span>
-                <span class="info-val">@Model.Cliente?.Nome</span>
+                <span class="info-val">@(Model.Cliente != null ? Model.Cliente.Nome : "—")</span>
             </div>
             <div class="info-row">
                 <i class="bi bi-calendar3"></i>
@@ -244,7 +244,7 @@
             <div class="info-row">
                 <i class="bi bi-clock"></i>
                 <span class="info-label">Horário</span>
-                <span class="info-val">@Model.HorarioTurma?.HoraInicio.ToString("hh\:mm")</span>
+                <span class="info-val">@(Model.HorarioTurma != null ? Model.HorarioTurma.HoraInicio.ToString(@"hh\:mm") + " - " + Model.HorarioTurma.HoraFim.ToString(@"hh\:mm") : "—")</span>
             </div>
             <div class="info-row">
                 <i class="bi bi-tag"></i>

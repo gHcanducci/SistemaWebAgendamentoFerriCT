@@ -1,136 +1,256 @@
 ﻿@{
     ViewBag.Title = "Painel Admin";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    int listaEspera = ViewBag.ListaEspera ?? 0;
 }
 
 <style>
     .dashboard-greeting {
-        margin-bottom: 32px;
+        margin-bottom: 28px;
         animation: fadeUp 0.5s ease forwards;
     }
-    .greeting-sub {
-        color: var(--text-secondary); font-size: 0.875rem;
-        display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
-    }
-    .greeting-sub .live-dot {
-        width: 8px; height: 8px; border-radius: 50%;
-        background: var(--success);
-        animation: pulse-dot 2s infinite;
-    }
-    .greeting-title {
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 2.4rem; letter-spacing: 1px; line-height: 1;
-    }
-    .greeting-title span { color: var(--accent); }
 
-    /* ─── STAT CARDS ─── */
-    .stat-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
-    media (max-width: 1100px) { .stat-cards { grid-template-columns: repeat(2, 1fr); } }
-    media (max-width: 600px)  { .stat-cards { grid-template-columns: 1fr; } }
+    .greeting-sub {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+    }
+
+        .greeting-sub .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse-dot 2s infinite;
+        }
+
+    .greeting-title {
+        font-family: 'Bebas Neue',sans-serif;
+        font-size: 2.4rem;
+        letter-spacing: 1px;
+        line-height: 1;
+    }
+
+        .greeting-title span {
+            color: var(--accent);
+        }
+
+    /* Notificação lista de espera */
+    .notif-espera {
+        background: rgba(245,158,11,0.08);
+        border: 1px solid rgba(245,158,11,0.3);
+        border-radius: var(--radius-md);
+        padding: 14px 20px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        animation: fadeUp 0.4s ease forwards;
+    }
+
+    .notif-espera-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-sm);
+        background: rgba(245,158,11,0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #f59e0b;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .notif-espera-text {
+        flex: 1;
+    }
+
+    .notif-espera-title {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #f59e0b;
+        margin-bottom: 2px;
+    }
+
+    .notif-espera-desc {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+
+    .notif-espera-btn {
+        background: rgba(245,158,11,0.15);
+        border: 1px solid rgba(245,158,11,0.3);
+        color: #f59e0b;
+        border-radius: var(--radius-sm);
+        padding: 8px 16px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: all 0.2s;
+    }
+
+        .notif-espera-btn:hover {
+            background: rgba(245,158,11,0.25);
+            color: #f59e0b;
+        }
+
+    /* Stat Cards */
+    .stat-cards {
+        display: grid;
+        grid-template-columns: repeat(4,1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
 
     .stat-card {
         background: var(--bg-card);
         border: 1px solid var(--border);
         border-radius: var(--radius-md);
-        padding: 24px;
+        padding: 20px;
         position: relative;
         overflow: hidden;
         transition: all 0.3s;
         animation: fadeUp 0.5s ease forwards;
     }
-    .stat-card:hover {
-        border-color: rgba(232,197,71,0.2);
-        transform: translateY(-4px);
-        box-shadow: 0 16px 40px rgba(0,0,0,0.3);
-    }
-    .stat-card::after {
-        content: '';
-        position: absolute; bottom: 0; left: 0; right: 0;
-        height: 2px;
-        background: linear-gradient(90deg, transparent, var(--card-color, var(--accent)), transparent);
-        opacity: 0.5;
-    }
+
+        .stat-card:hover {
+            border-color: rgba(232,197,71,0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--card-color, var(--accent)), transparent);
+            opacity: 0.5;
+        }
 
     .stat-card-top {
-        display: flex; justify-content: space-between;
-        align-items: flex-start; margin-bottom: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 14px;
     }
+
     .stat-icon {
-        width: 44px; height: 44px;
+        width: 40px;
+        height: 40px;
         border-radius: var(--radius-sm);
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
         background: var(--icon-bg, var(--accent-dim));
         color: var(--card-color, var(--accent));
     }
-    .stat-trend {
-        font-size: 0.72rem; font-weight: 600; padding: 4px 8px;
-        border-radius: 999px; display: flex; align-items: center; gap: 4px;
-    }
-    .trend-up   { background: rgba(76,175,130,0.12); color: var(--success); }
-    .trend-down { background: rgba(224,80,80,0.12);  color: var(--danger); }
-    .trend-flat { background: var(--accent-dim); color: var(--accent); }
 
     .stat-value {
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 2.6rem; line-height: 1;
-        color: var(--text-primary); margin-bottom: 4px;
-    }
-    .stat-label {
-        font-size: 0.78rem; color: var(--text-secondary);
-        text-transform: uppercase; letter-spacing: 1px; font-weight: 600;
+        font-family: 'Bebas Neue',sans-serif;
+        font-size: 2.4rem;
+        line-height: 1;
+        color: var(--text-primary);
+        margin-bottom: 4px;
     }
 
-    /* ─── QUICK ACTIONS ─── */
-    .quick-actions {
-        display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-        margin-bottom: 28px;
+    .stat-label {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
     }
-    media (max-width: 768px) { .quick-actions { grid-template-columns: 1fr; } }
+
+    /* Quick Actions */
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(3,1fr);
+        gap: 12px;
+        margin-bottom: 24px;
+    }
 
     .action-card {
         background: var(--bg-card);
         border: 1px solid var(--border);
         border-radius: var(--radius-md);
-        padding: 20px 24px;
+        padding: 18px 20px;
         text-decoration: none;
-        display: flex; align-items: center; gap: 16px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
         transition: all 0.3s;
         animation: fadeUp 0.6s ease forwards;
     }
-    .action-card:hover {
-        border-color: rgba(232,197,71,0.25);
-        background: rgba(232,197,71,0.04);
-        transform: translateX(6px);
-    }
-    .action-icon {
-        width: 48px; height: 48px; border-radius: var(--radius-sm);
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.3rem; flex-shrink: 0;
-    }
-    .action-icon.gold  { background: var(--accent-dim); color: var(--accent); }
-    .action-icon.green { background: rgba(76,175,130,0.15); color: var(--success); }
-    .action-icon.blue  { background: rgba(80,130,224,0.15); color: #6eb0ff; }
 
-    .action-info {}
-    .action-title { font-weight: 700; font-size: 0.95rem; color: var(--text-primary); }
-    .action-desc  { font-size: 0.78rem; color: var(--text-secondary); margin-top: 2px; }
+        .action-card:hover {
+            border-color: rgba(232,197,71,0.25);
+            background: rgba(232,197,71,0.04);
+            transform: translateX(4px);
+        }
+
+    .action-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+        .action-icon.gold {
+            background: var(--accent-dim);
+            color: var(--accent);
+        }
+
+        .action-icon.green {
+            background: rgba(76,175,130,0.15);
+            color: var(--success);
+        }
+
+        .action-icon.blue {
+            background: rgba(80,130,224,0.15);
+            color: #6eb0ff;
+        }
+
+    .action-title {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--text-primary);
+    }
+
+    .action-desc {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        margin-top: 2px;
+    }
 
     .action-arrow {
         margin-left: auto;
         color: var(--text-secondary);
         transition: all 0.3s;
     }
+
     .action-card:hover .action-arrow {
         color: var(--accent);
         transform: translateX(4px);
     }
 
-    /* ─── BOTTOM GRID ─── */
+    /* Bottom Grid */
     .bottom-grid {
-        display: grid; grid-template-columns: 1fr 340px; gap: 20px;
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 20px;
     }
-    media (max-width: 1000px) { .bottom-grid { grid-template-columns: 1fr; } }
 
     .panel {
         background: var(--bg-card);
@@ -138,79 +258,180 @@
         border-radius: var(--radius-md);
         overflow: hidden;
     }
-    .panel-header {
-        padding: 18px 24px;
-        border-bottom: 1px solid var(--border);
-        display: flex; align-items: center; justify-content: space-between;
-    }
-    .panel-title {
-        font-weight: 700; font-size: 0.95rem;
-        display: flex; align-items: center; gap: 10px;
-    }
-    .panel-title i { color: var(--accent); }
-    .panel-action {
-        font-size: 0.78rem; color: var(--accent);
-        text-decoration: none; font-weight: 600;
-    }
-    .panel-action:hover { text-decoration: underline; }
 
-    /* Activity feed */
-    .activity-item {
-        display: flex; align-items: center; gap: 14px;
-        padding: 16px 24px;
+    .panel-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .panel-title {
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .panel-title i {
+            color: var(--accent);
+        }
+
+    .panel-action {
+        font-size: 0.78rem;
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+        .panel-action:hover {
+            text-decoration: underline;
+        }
+
+    /* Lista de espera painel */
+    .espera-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 20px;
         border-bottom: 1px solid var(--border);
         transition: background 0.2s;
     }
-    .activity-item:last-child { border: none; }
-    .activity-item:hover { background: rgba(255,255,255,0.02); }
 
-    .activity-avatar {
-        width: 36px; height: 36px; border-radius: 50%;
-        background: linear-gradient(135deg, var(--accent-dim), rgba(232,197,71,0.05));
-        display: flex; align-items: center; justify-content: center;
-        font-size: 0.8rem; font-weight: 700; color: var(--accent);
-        flex-shrink: 0; border: 1px solid rgba(232,197,71,0.2);
+        .espera-item:last-child {
+            border: none;
+        }
+
+        .espera-item:hover {
+            background: rgba(255,255,255,0.02);
+        }
+
+    .espera-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: rgba(245,158,11,0.12);
+        border: 1px solid rgba(245,158,11,0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #f59e0b;
+        flex-shrink: 0;
     }
-    .activity-info { flex: 1; }
-    .activity-name { font-size: 0.875rem; font-weight: 600; }
-    .activity-detail { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; }
-    .activity-time { font-size: 0.72rem; color: var(--text-secondary); white-space: nowrap; }
 
-    /* Mini calendar widget */
-    .mini-calendar {}
+    .espera-info {
+        flex: 1;
+    }
+
+    .espera-name {
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .espera-detail {
+        font-size: 0.72rem;
+        color: var(--text-secondary);
+        margin-top: 2px;
+    }
+
+    .espera-badge {
+        font-size: 0.68rem;
+        font-weight: 600;
+        background: rgba(245,158,11,0.12);
+        border: 1px solid rgba(245,158,11,0.2);
+        color: #f59e0b;
+        border-radius: 999px;
+        padding: 3px 8px;
+        white-space: nowrap;
+    }
+
+    /* Mini calendar */
     .cal-header {
-        padding: 18px 24px;
+        padding: 16px 20px;
         border-bottom: 1px solid var(--border);
-        font-weight: 700; font-size: 0.9rem;
-        display: flex; align-items: center; gap: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
-    .cal-header i { color: var(--accent); }
-    .cal-content { padding: 20px 24px; }
+
+        .cal-header i {
+            color: var(--accent);
+        }
+
+    .cal-content {
+        padding: 20px;
+    }
+
     .cal-today {
         background: var(--accent-dim);
         border: 1px solid rgba(232,197,71,0.3);
         border-radius: var(--radius-sm);
         padding: 14px;
-        text-align: center; margin-bottom: 16px;
+        text-align: center;
+        margin-bottom: 14px;
     }
-    .cal-today .cal-day-num {
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 3.5rem; line-height: 1; color: var(--accent);
+
+    .cal-day-num {
+        font-family: 'Bebas Neue',sans-serif;
+        font-size: 3rem;
+        line-height: 1;
+        color: var(--accent);
     }
-    .cal-today .cal-day-name {
-        font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px;
+
+    .cal-day-name {
+        font-size: 0.72rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 2px;
     }
+
     .cal-stat-row {
-        display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
     }
+
     .cal-stat {
         background: rgba(255,255,255,0.03);
         border: 1px solid var(--border);
         border-radius: var(--radius-sm);
-        padding: 12px; text-align: center;
+        padding: 12px;
+        text-align: center;
     }
-    .cal-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--text-primary); line-height: 1; }
-    .cal-stat-label { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+    .cal-stat-num {
+        font-family: 'Bebas Neue',sans-serif;
+        font-size: 1.8rem;
+        line-height: 1;
+    }
+
+    .cal-stat-label {
+        font-size: 0.68rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 2px;
+    }
+
+    .empty-notif {
+        padding: 32px 20px;
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 0.83rem;
+    }
+
+        .empty-notif i {
+            font-size: 1.8rem;
+            opacity: 0.2;
+            display: block;
+            margin-bottom: 8px;
+        }
 </style>
 
 <!-- Greeting -->
@@ -219,47 +440,62 @@
         <span class="live-dot"></span>
         Sistema operacional · @DateTime.Now.ToString("dddd, dd 'de' MMMM", new System.Globalization.CultureInfo("pt-BR"))
     </div>
-    <div class="greeting-title">
-        BOM DIA, <span>ADMIN</span>
-    </div>
+    <div class="greeting-title">BOM DIA, <span>ADMIN</span></div>
 </div>
+
+<!-- Notificação Lista de Espera -->
+@if (listaEspera > 0)
+{
+    <div class="notif-espera">
+        <div class="notif-espera-icon">
+            <i class="bi bi-hourglass-split"></i>
+        </div>
+        <div class="notif-espera-text">
+            <div class="notif-espera-title">
+                @listaEspera aluno(s) na lista de espera
+            </div>
+            <div class="notif-espera-desc">
+                Há alunos aguardando vaga em turmas lotadas. Verifique e entre em contato.
+            </div>
+        </div>
+        <a href="/Admin/ListaEspera" class="notif-espera-btn">
+            <i class="bi bi-arrow-right me-1"></i> Ver lista
+        </a>
+    </div>
+}
 
 <!-- Stat Cards -->
 <div class="stat-cards">
-    <div class="stat-card delay-1" style="--card-color: var(--accent)">
+    <div class="stat-card delay-1" style="--card-color:var(--accent)">
         <div class="stat-card-top">
             <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
-            <div class="stat-trend trend-up"><i class="bi bi-arrow-up"></i> +12%</div>
         </div>
-        <div class="stat-value">@(ViewBag.TotalAlunos ?? "--")</div>
+        <div class="stat-value">@(ViewBag.TotalAlunos ?? 0)</div>
         <div class="stat-label">Total de Alunos</div>
     </div>
 
-    <div class="stat-card delay-2" style="--card-color: var(--success); --icon-bg: rgba(76,175,130,0.12)">
+    <div class="stat-card delay-2" style="--card-color:var(--success);--icon-bg:rgba(76,175,130,0.12)">
         <div class="stat-card-top">
             <div class="stat-icon" style="color:var(--success)"><i class="bi bi-calendar-check-fill"></i></div>
-            <div class="stat-trend trend-up"><i class="bi bi-arrow-up"></i> +5</div>
         </div>
-        <div class="stat-value">@(ViewBag.AgendamentosHoje ?? "--")</div>
+        <div class="stat-value">@(ViewBag.AgendamentosHoje ?? 0)</div>
         <div class="stat-label">Agendamentos Hoje</div>
     </div>
 
-    <div class="stat-card delay-3" style="--card-color: #6eb0ff; --icon-bg: rgba(80,130,224,0.12)">
+    <div class="stat-card delay-3" style="--card-color:#6eb0ff;--icon-bg:rgba(80,130,224,0.12)">
         <div class="stat-card-top">
             <div class="stat-icon" style="color:#6eb0ff"><i class="bi bi-clock-history"></i></div>
-            <div class="stat-trend trend-flat"><i class="bi bi-dash"></i> Estável</div>
         </div>
-        <div class="stat-value">@(ViewBag.PendentePagamento ?? "--")</div>
-        <div class="stat-label">Pagtos. Pendentes</div>
+        <div class="stat-value">@(ViewBag.PendentePagamento ?? 0)</div>
+        <div class="stat-label">Pend. Pagamento</div>
     </div>
 
-    <div class="stat-card delay-4" style="--card-color: #c080ff; --icon-bg: rgba(192,128,255,0.12)">
+    <div class="stat-card delay-4" style="--card-color:#f59e0b;--icon-bg:rgba(245,158,11,0.12)">
         <div class="stat-card-top">
-            <div class="stat-icon" style="color:#c080ff"><i class="bi bi-graph-up-arrow"></i></div>
-            <div class="stat-trend trend-up"><i class="bi bi-arrow-up"></i> +8%</div>
+            <div class="stat-icon" style="color:#f59e0b"><i class="bi bi-hourglass-split"></i></div>
         </div>
-        <div class="stat-value">@(ViewBag.TotalTurmas ?? "--")</div>
-        <div class="stat-label">Turmas Ativas</div>
+        <div class="stat-value">@listaEspera</div>
+        <div class="stat-label">Lista de Espera</div>
     </div>
 </div>
 
@@ -267,7 +503,7 @@
 <div class="quick-actions">
     <a href="/Admin/Alunos" class="action-card delay-1">
         <div class="action-icon gold"><i class="bi bi-person-lines-fill"></i></div>
-        <div class="action-info">
+        <div>
             <div class="action-title">Gerenciar Alunos</div>
             <div class="action-desc">Visualizar, criar e editar cadastros</div>
         </div>
@@ -276,7 +512,7 @@
 
     <a href="/Admin/Agendamentos" class="action-card delay-2">
         <div class="action-icon green"><i class="bi bi-calendar3"></i></div>
-        <div class="action-info">
+        <div>
             <div class="action-title">Ver Agendamentos</div>
             <div class="action-desc">Confirmar, cancelar e gerenciar</div>
         </div>
@@ -285,7 +521,7 @@
 
     <a href="/Admin/CriarAluno" class="action-card delay-3">
         <div class="action-icon blue"><i class="bi bi-person-plus-fill"></i></div>
-        <div class="action-info">
+        <div>
             <div class="action-title">Novo Aluno</div>
             <div class="action-desc">Cadastrar aluno manualmente</div>
         </div>
@@ -295,71 +531,67 @@
 
 <!-- Bottom Grid -->
 <div class="bottom-grid">
-    <!-- Recent activity -->
+
+    <!-- Painel de Lista de Espera -->
     <div class="panel">
         <div class="panel-header">
-            <div class="panel-title"><i class="bi bi-activity"></i> Atividade Recente</div>
-            <a href="/Admin/Agendamentos" class="panel-action">Ver todos →</a>
+            <div class="panel-title">
+                <i class="bi bi-hourglass-split"></i> Lista de Espera
+                @if (listaEspera > 0)
+                {
+                    <span style="background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);color:#f59e0b;border-radius:999px;padding:2px 10px;font-size:0.7rem;font-weight:700">
+                        @listaEspera
+                    </span>
+                }
+            </div>
+            <a href="/Admin/ListaEspera" class="panel-action">Ver todos →</a>
         </div>
 
-        <!-- Placeholder activities — em produção viriam do ViewBag/Model -->
-        <div class="activity-item">
-            <div class="activity-avatar">JM</div>
-            <div class="activity-info">
-                <div class="activity-name">João Mendes</div>
-                <div class="activity-detail">Agendou aula experimental · Turma A</div>
+        @{
+            var listaEsperaAgendamentos = ViewBag.ListaEsperaAgendamentos as IEnumerable<SistemaWebAgendamentoFerriCT.Models.Agendamento>;
+        }
+
+        @if (listaEsperaAgendamentos != null && listaEsperaAgendamentos.Any())
+        {
+            foreach (var ag in listaEsperaAgendamentos.Take(5))
+            {
+                var ini = string.Join("", (ag.Cliente?.Nome ?? "?").Split(' ')
+                    .Take(2).Select(w => w.Length > 0 ? w[0].ToString().ToUpper() : ""));
+                <div class="espera-item">
+                    <div class="espera-avatar">@ini</div>
+                    <div class="espera-info">
+                        <div class="espera-name">@ag.Cliente?.Nome</div>
+                        <div class="espera-detail">
+                            @ag.DataAula.ToString("dd/MM/yyyy") ·
+                            @(ag.HorarioTurma != null ? ag.HorarioTurma.HoraInicio.ToString(@"hh\:mm") : "—")
+                        </div>
+                    </div>
+                    <span class="espera-badge">Aguardando</span>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="empty-notif">
+                <i class="bi bi-check-circle"></i>
+                Nenhum aluno em lista de espera.
             </div>
-            <div class="activity-time">há 5min</div>
-        </div>
-        <div class="activity-item">
-            <div class="activity-avatar">CS</div>
-            <div class="activity-info">
-                <div class="activity-name">Carla Souza</div>
-                <div class="activity-detail">Realizou 1ª matrícula</div>
-            </div>
-            <div class="activity-time">há 22min</div>
-        </div>
-        <div class="activity-item">
-            <div class="activity-avatar">RP</div>
-            <div class="activity-info">
-                <div class="activity-name">Rafael Pinto</div>
-                <div class="activity-detail">Pagamento confirmado · R$ 150,00</div>
-            </div>
-            <div class="activity-time">há 1h</div>
-        </div>
-        <div class="activity-item">
-            <div class="activity-avatar">AL</div>
-            <div class="activity-info">
-                <div class="activity-name">Ana Lima</div>
-                <div class="activity-detail">Agendamento cancelado</div>
-            </div>
-            <div class="activity-time">há 3h</div>
-        </div>
-        <div class="activity-item">
-            <div class="activity-avatar">BF</div>
-            <div class="activity-info">
-                <div class="activity-name">Bruno Ferreira</div>
-                <div class="activity-detail">Novo cadastro realizado</div>
-            </div>
-            <div class="activity-time">hoje cedo</div>
-        </div>
+        }
     </div>
 
-    <!-- Mini calendar -->
-    <div class="panel mini-calendar">
+    <!-- Mini Calendar -->
+    <div class="panel">
         <div class="cal-header">
-            <i class="bi bi-calendar-event"></i>
-            Hoje
+            <i class="bi bi-calendar-event"></i> Hoje
         </div>
         <div class="cal-content">
             <div class="cal-today">
                 <div class="cal-day-num">@DateTime.Now.Day</div>
                 <div class="cal-day-name">@DateTime.Now.ToString("dddd", new System.Globalization.CultureInfo("pt-BR"))</div>
-                <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:4px">
+                <div style="font-size:0.72rem;color:var(--text-secondary);margin-top:4px">
                     @DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("pt-BR"))
                 </div>
             </div>
-
             <div class="cal-stat-row">
                 <div class="cal-stat">
                     <div class="cal-stat-num" style="color:var(--accent)">@(ViewBag.AgendamentosHoje ?? 0)</div>
@@ -370,12 +602,12 @@
                     <div class="cal-stat-label">Confirmadas</div>
                 </div>
             </div>
-
-            <div style="margin-top:16px">
-                <a href="/Admin/Agendamentos" class="btn-gold w-100 text-center text-decoration-none d-block" style="padding:10px;font-size:0.85rem">
-                    <i class="bi bi-calendar3 me-2"></i>Ver Agenda
+            <div style="margin-top:14px">
+                <a href="/Admin/Agendamentos" class="btn-gold w-100 text-center text-decoration-none d-block" style="padding:10px;font-size:0.83rem">
+                    <i class="bi bi-calendar3 me-1"></i> Ver Agenda Completa
                 </a>
             </div>
         </div>
     </div>
+
 </div>
