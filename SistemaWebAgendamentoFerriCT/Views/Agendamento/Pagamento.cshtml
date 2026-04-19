@@ -1,0 +1,496 @@
+﻿@model SistemaWebAgendamentoFerriCT.ViewModels.PagamentoViewModel
+
+@{
+    ViewBag.Title = "Pagamento";
+}
+
+<style>
+    .pag-wrapper {
+        min-height: calc(100vh - 64px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 16px;
+    }
+
+    .pag-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        max-width: 840px;
+        width: 100%;
+    }
+
+    @@media (max-width: 768px) {
+        .pag-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Resumo */
+    .resumo-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+    }
+
+        .resumo-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .resumo-card h4 i {
+                color: var(--accent);
+            }
+
+    .resumo-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.875rem;
+    }
+
+        .resumo-row:last-child {
+            border: none;
+        }
+
+        .resumo-row i {
+            color: var(--accent);
+            width: 16px;
+        }
+
+    .resumo-label {
+        color: var(--text-secondary);
+        min-width: 80px;
+        font-size: 0.78rem;
+    }
+
+    .resumo-val {
+        font-weight: 600;
+    }
+
+    .valor-total {
+        margin-top: 20px;
+        padding: 16px;
+        background: rgba(232,197,71,0.08);
+        border: 1px solid rgba(232,197,71,0.2);
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+        .valor-total span {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .valor-total strong {
+            font-size: 1.6rem;
+            color: var(--accent);
+            font-family: 'Bebas Neue',sans-serif;
+            letter-spacing: 1px;
+        }
+
+    /* Pagamento form */
+    .pag-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        position: relative;
+    }
+
+        .pag-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 30px;
+            right: 30px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+
+        .pag-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .pag-card .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            margin-bottom: 24px;
+        }
+
+    /* Seletor forma de pagamento */
+    .forma-selector {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 24px;
+    }
+
+    .forma-option {
+        display: none;
+    }
+
+    .forma-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 18px 12px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: all 0.25s;
+        text-align: center;
+    }
+
+        .forma-label .forma-icon {
+            font-size: 1.8rem;
+        }
+
+        .forma-label .forma-name {
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .forma-label .forma-desc {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+    .forma-option:checked + .forma-label {
+        border-color: var(--accent);
+        background: var(--accent-dim);
+    }
+
+        .forma-option:checked + .forma-label .forma-desc {
+            color: rgba(232,197,71,0.7);
+        }
+
+    /* Painel Pix */
+    .pix-panel {
+        display: none;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+        .pix-panel.ativo {
+            display: block;
+        }
+
+    .pix-qr {
+        width: 160px;
+        height: 160px;
+        background: white;
+        border-radius: var(--radius-sm);
+        margin: 0 auto 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px;
+    }
+
+        .pix-qr svg {
+            width: 100%;
+            height: 100%;
+        }
+
+    .pix-chave {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 10px 14px;
+        font-family: monospace;
+        font-size: 0.82rem;
+        color: var(--text-secondary);
+        word-break: break-all;
+        margin-bottom: 8px;
+    }
+
+    .pix-instrucao {
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+
+    /* Painel Cartão */
+    .cartao-panel {
+        display: none;
+        margin-bottom: 20px;
+    }
+
+        .cartao-panel.ativo {
+            display: block;
+        }
+
+    .field-block {
+        margin-bottom: 14px;
+    }
+
+    .field-label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .seguranca-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        margin-bottom: 20px;
+    }
+
+        .seguranca-info i {
+            color: var(--success);
+        }
+
+    .btn-pagar {
+        width: 100%;
+        background: var(--accent);
+        color: var(--bg-deep);
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 15px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-family: 'DM Sans',sans-serif;
+    }
+
+        .btn-pagar:hover {
+            background: #f5d465;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--accent-glow);
+        }
+
+    .cancelar-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.82rem;
+        margin-top: 16px;
+        transition: color 0.2s;
+    }
+
+        .cancelar-link:hover {
+            color: var(--danger);
+        }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(24px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="pag-wrapper">
+    <div class="pag-grid">
+
+        <!-- Resumo -->
+        <div class="resumo-card fade-up">
+            <h4><i class="bi bi-receipt"></i> Resumo do Agendamento</h4>
+
+            <div class="resumo-row">
+                <i class="bi bi-calendar3"></i>
+                <span class="resumo-label">Data</span>
+                <span class="resumo-val">@Model.DataAula.ToString("dd/MM/yyyy")</span>
+            </div>
+            <div class="resumo-row">
+                <i class="bi bi-clock"></i>
+                <span class="resumo-label">Horário</span>
+                <span class="resumo-val">@Model.HorarioFormatado</span>
+            </div>
+            <div class="resumo-row">
+                <i class="bi bi-tag"></i>
+                <span class="resumo-label">Tipo</span>
+                <span class="resumo-val">@Model.TipoAula</span>
+            </div>
+
+            <div class="valor-total">
+                <span>Total a pagar</span>
+                <strong>R$ @Model.Valor.ToString("N2")</strong>
+            </div>
+
+            <div style="margin-top:20px;font-size:0.78rem;color:var(--text-secondary);line-height:1.6">
+                <i class="bi bi-info-circle me-1" style="color:var(--accent)"></i>
+                O agendamento será <strong style="color:var(--text-primary)">confirmado automaticamente</strong>
+                após a aprovação do pagamento.
+            </div>
+        </div>
+
+        <!-- Pagamento -->
+        <div class="pag-card" style="animation:fadeUp 0.5s ease 0.1s both">
+            <h4>Forma de Pagamento</h4>
+            <p class="subtitle">Escolha como deseja pagar</p>
+
+            @using (Html.BeginForm("ProcessarPagamento", "Agendamento", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.AgendamentoId)
+                <input type="hidden" name="Valor" value="@Model.Valor.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
+                @Html.HiddenFor(m => m.TipoAula)
+                @Html.HiddenFor(m => m.DataAula)
+                @Html.HiddenFor(m => m.HorarioFormatado)
+           
+                <!-- Seletor -->
+                <div class="forma-selector">
+                    <input type="radio" name="FormaPagamento" value="Pix" id="forma-pix" class="forma-option" checked />
+                    <label for="forma-pix" class="forma-label">
+                        <span class="forma-icon">⚡</span>
+                        <span class="forma-name">Pix</span>
+                        <span class="forma-desc">Aprovação imediata</span>
+                    </label>
+
+                    <input type="radio" name="FormaPagamento" value="Cartao" id="forma-cartao" class="forma-option" />
+                    <label for="forma-cartao" class="forma-label">
+                        <span class="forma-icon">💳</span>
+                        <span class="forma-name">Cartão</span>
+                        <span class="forma-desc">Crédito ou débito</span>
+                    </label>
+                </div>
+
+                @Html.ValidationMessageFor(m => m.FormaPagamento, "", new { @class = "text-danger", style = "font-size:0.8rem" })
+
+                <!-- Painel Pix -->
+                <div class="pix-panel ativo" id="pixPanel">
+                    <div class="pix-qr">
+                        <!-- QR Code simulado — substituir por QR real do Mercado Pago -->
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="100" height="100" fill="white" />
+                            <rect x="10" y="10" width="30" height="30" fill="black" />
+                            <rect x="15" y="15" width="20" height="20" fill="white" />
+                            <rect x="20" y="20" width="10" height="10" fill="black" />
+                            <rect x="60" y="10" width="30" height="30" fill="black" />
+                            <rect x="65" y="15" width="20" height="20" fill="white" />
+                            <rect x="70" y="20" width="10" height="10" fill="black" />
+                            <rect x="10" y="60" width="30" height="30" fill="black" />
+                            <rect x="15" y="65" width="20" height="20" fill="white" />
+                            <rect x="20" y="70" width="10" height="10" fill="black" />
+                            <rect x="50" y="50" width="10" height="10" fill="black" />
+                            <rect x="65" y="55" width="10" height="10" fill="black" />
+                            <rect x="50" y="65" width="10" height="10" fill="black" />
+                            <rect x="65" y="70" width="10" height="10" fill="black" />
+                            <rect x="80" y="65" width="10" height="10" fill="black" />
+                            <rect x="55" y="80" width="10" height="10" fill="black" />
+                            <rect x="75" y="80" width="10" height="10" fill="black" />
+                        </svg>
+                    </div>
+                    <div class="pix-chave">ferrict@pagamento.com.br</div>
+                    <p class="pix-instrucao">
+                        Escaneie o QR Code ou copie a chave Pix acima.<br>
+                        Após o pagamento, clique em <strong>"Confirmar Pagamento"</strong>.
+                    </p>
+                </div>
+
+                <!-- Painel Cartão -->
+                <div class="cartao-panel" id="cartaoPanel">
+                    <div class="field-block">
+                        <label class="field-label">Número do Cartão</label>
+                        <input type="text" class="form-control" placeholder="0000 0000 0000 0000" maxlength="19" id="numCartao" />
+                    </div>
+                    <div class="field-block">
+                        <label class="field-label">Nome no Cartão</label>
+                        <input type="text" class="form-control" placeholder="Como está no cartão" />
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                        <div class="field-block">
+                            <label class="field-label">Validade</label>
+                            <input type="text" class="form-control" placeholder="MM/AA" maxlength="5" id="validade" />
+                        </div>
+                        <div class="field-block">
+                            <label class="field-label">CVV</label>
+                            <input type="text" class="form-control" placeholder="000" maxlength="3" />
+                        </div>
+                    </div>
+                    <p style="font-size:0.72rem;color:var(--text-secondary);margin-top:4px">
+                        ⚠️ Dados simulados — integração real com Mercado Pago em breve.
+                    </p>
+                </div>
+
+                <div class="seguranca-info">
+                    <i class="bi bi-shield-lock-fill"></i>
+                    Pagamento seguro — seus dados estão protegidos
+                </div>
+
+                <button type="submit" class="btn-pagar">
+                    <i class="bi bi-lock-fill"></i>
+                    Confirmar Pagamento — R$ @Model.Valor.ToString("N2")
+                </button>
+            }
+
+            <a href="/Cliente/Perfil" class="cancelar-link">
+                <i class="bi bi-x-circle"></i> Cancelar e voltar ao perfil
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>const formaPixEl    = document.getElementById('forma-pix');
+    const formaCartaoEl = document.getElementById('forma-cartao');
+    const pixPanel      = document.getElementById('pixPanel');
+    const cartaoPanel   = document.getElementById('cartaoPanel');
+
+    function alternarForma() {
+        if (formaPixEl.checked) {
+            pixPanel.classList.add('ativo');
+            cartaoPanel.classList.remove('ativo');
+        } else {
+            pixPanel.classList.remove('ativo');
+            cartaoPanel.classList.add('ativo');
+        }
+    }
+
+    formaPixEl.addEventListener('change', alternarForma);
+    formaCartaoEl.addEventListener('change', alternarForma);
+
+    // Máscara número do cartão
+    const numCartao = document.getElementById('numCartao');
+    if (numCartao) {
+        numCartao.addEventListener('input', function () {
+            let v = this.value.replace(/\D/g, '').substring(0, 16);
+            this.value = v.replace(/(.{4})/g, '$1 ').trim();
+        });
+    }
+
+    // Máscara validade
+    const validade = document.getElementById('validade');
+    if (validade) {
+        validade.addEventListener('input', function () {
+            let v = this.value.replace(/\D/g, '').substring(0, 4);
+            if (v.length > 2) v = v.substring(0, 2) + '/' + v.substring(2);
+            this.value = v;
+        });
+    }</script>

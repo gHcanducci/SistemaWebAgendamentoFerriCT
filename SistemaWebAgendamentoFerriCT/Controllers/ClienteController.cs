@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using SistemaWebAgendamentoFerriCT.Models;
+using SistemaWebAgendamentoFerriCT.ViewModels;
 
 namespace SistemaWebAgendamentoFerriCT.Controllers
 {
@@ -21,16 +22,20 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
             if (ClienteLogado())
                 return RedirectToAction("Index", "Home");
 
-            return View();
+            return View(new LoginViewModel());
         }
 
         [HttpPost]
-        public ActionResult Login(string email, string cpf)
+        [ValidateAntiForgeryToken]
+        public ActionResult Login(LoginViewModel vm)
         {
             try
             {
+                if (!ModelState.IsValid)
+                    return View(vm);
+
                 var cliente = db.Clientes
-                    .FirstOrDefault(c => c.Email == email && c.CPF == cpf);
+                    .FirstOrDefault(c => c.Email == vm.Email && c.CPF == vm.CPF);
 
                 if (cliente != null)
                 {
@@ -40,12 +45,12 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 }
 
                 ViewBag.Erro = "E-mail ou CPF inválidos. Verifique e tente novamente.";
-                return View();
+                return View(vm);
             }
             catch (Exception)
             {
                 ViewBag.Erro = "Erro ao realizar login. Tente novamente.";
-                return View();
+                return View(vm);
             }
         }
 
@@ -54,6 +59,7 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
             try
             {
                 Session.Clear();
+                Session.Abandon(); // Destrói a sessão no servidor (Aula 11)
                 return RedirectToAction("Login");
             }
             catch (Exception)
@@ -123,6 +129,7 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 var cliente = db.Clientes
                     .Include("Agendamentos")
                     .Include("Agendamentos.HorarioTurma")
+                    .Include("Agendamentos.Pagamentos")
                     .FirstOrDefault(c => c.ClienteId == id);
 
                 if (cliente == null)
@@ -189,7 +196,6 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                     cliente.Telefone = clienteAtualizado.Telefone;
 
                     db.SaveChanges();
-
                     Session["ClienteNome"] = cliente.Nome;
 
                     TempData["Sucesso"] = "Dados atualizados com sucesso!";
@@ -247,6 +253,8 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 db.SaveChanges();
 
                 Session.Clear();
+                Session.Abandon(); // Destrói a sessão no servidor (Aula 11)
+
                 TempData["Mensagem"] = "Sua conta foi excluída com sucesso.";
                 return RedirectToAction("Login");
             }

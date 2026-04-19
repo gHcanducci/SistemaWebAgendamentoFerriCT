@@ -440,7 +440,16 @@
                         </div>
                         <div class="ag-info">
                             <div class="ag-tipo">@ag.TipoAula</div>
-                            <div class="ag-hora"><i class="bi bi-clock"></i> @ag.HorarioTurma?.HoraInicio.ToString("hh\:mm")</div>
+                            <div class="ag-hora">
+                                <i class="bi bi-clock"></i>
+                                @(ag.HorarioTurma != null ? ag.HorarioTurma.HoraInicio.ToString(@"hh\:mm") + " - " + ag.HorarioTurma.HoraFim.ToString(@"hh\:mm") : "—")
+                                @if (ag.HorarioTurma?.Turma != null)
+                                {
+                                    <span style="background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:999px;padding:1px 7px;font-size:0.65rem;margin-left:4px">
+                                        @ag.HorarioTurma.Turma.NomeTurma
+                                    </span>
+                                }
+                            </div>
                         </div>
                         <span class="badge-status @sc">@ag.Status</span>
                         <a href="@Url.Action("EditarAgendamento","Admin", new { id=ag.AgendamentoId })"

@@ -7,14 +7,14 @@
 <style>
     .perfil-wrapper {
         min-height: calc(100vh - 64px);
-        padding: 60px 0;
+        padding: 48px 24px;
     }
 
     .perfil-grid {
         display: grid;
-        grid-template-columns: 280px 1fr;
-        gap: 24px;
-        max-width: 900px;
+        grid-template-columns: 260px 1fr;
+        gap: 20px;
+        max-width: 960px;
         margin: 0 auto;
     }
 
@@ -24,30 +24,31 @@
         }
     }
 
-    /* Card lateral */
+    /* ─── Card lateral ─── */
     .perfil-card {
         background: var(--bg-card);
         border: 1px solid var(--border);
         border-radius: var(--radius-lg);
-        padding: 32px 24px;
+        padding: 28px 20px;
         text-align: center;
         position: relative;
+        height: fit-content;
     }
 
         .perfil-card::before {
             content: '';
             position: absolute;
             top: 0;
-            left: 40px;
-            right: 40px;
+            left: 30px;
+            right: 30px;
             height: 2px;
             background: linear-gradient(90deg, transparent, var(--accent), transparent);
             border-radius: 999px;
         }
 
     .perfil-avatar {
-        width: 80px;
-        height: 80px;
+        width: 72px;
+        height: 72px;
         border-radius: 50%;
         background: var(--accent-dim);
         border: 2px solid rgba(232,197,71,0.3);
@@ -55,35 +56,35 @@
         align-items: center;
         justify-content: center;
         font-family: 'Bebas Neue', sans-serif;
-        font-size: 2rem;
+        font-size: 1.8rem;
         color: var(--accent);
-        margin: 0 auto 16px;
+        margin: 0 auto 14px;
     }
 
     .perfil-nome {
         font-weight: 700;
-        font-size: 1.1rem;
+        font-size: 1rem;
         margin-bottom: 4px;
     }
 
     .perfil-since {
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         color: var(--text-secondary);
-        margin-bottom: 20px;
+        margin-bottom: 16px;
     }
 
     .perfil-badge {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
+        gap: 5px;
         background: rgba(76,175,130,0.12);
         border: 1px solid rgba(76,175,130,0.25);
         color: var(--success);
         border-radius: 999px;
-        padding: 5px 14px;
-        font-size: 0.75rem;
+        padding: 4px 12px;
+        font-size: 0.72rem;
         font-weight: 600;
-        margin-bottom: 24px;
+        margin-bottom: 20px;
     }
 
     .perfil-actions {
@@ -99,10 +100,23 @@
             gap: 8px;
             padding: 10px;
             border-radius: var(--radius-sm);
-            font-size: 0.85rem;
+            font-size: 0.83rem;
             font-weight: 600;
             text-decoration: none;
             transition: all 0.2s;
+        }
+
+    .btn-agendar {
+        background: var(--accent);
+        color: var(--bg-deep);
+        border: none;
+    }
+
+        .btn-agendar:hover {
+            background: #f5d465;
+            color: var(--bg-deep);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px var(--accent-glow);
         }
 
     .btn-editar-perfil {
@@ -116,20 +130,6 @@
             color: var(--accent);
         }
 
-    .btn-agendar {
-        background: var(--accent);
-        color: var(--bg-deep);
-        border: none;
-        font-weight: 700;
-    }
-
-        .btn-agendar:hover {
-            background: #f5d465;
-            color: var(--bg-deep);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px var(--accent-glow);
-        }
-
     .btn-excluir-perfil {
         background: rgba(224,80,80,0.08);
         border: 1px solid rgba(224,80,80,0.2);
@@ -141,13 +141,13 @@
             color: var(--danger);
         }
 
-    /* Dados */
+    /* ─── Cards de info ─── */
     .info-card {
         background: var(--bg-card);
         border: 1px solid var(--border);
         border-radius: var(--radius-lg);
         overflow: hidden;
-        margin-bottom: 20px;
+        margin-bottom: 16px;
     }
 
         .info-card:last-child {
@@ -155,10 +155,10 @@
         }
 
     .info-header {
-        padding: 16px 24px;
+        padding: 14px 20px;
         border-bottom: 1px solid var(--border);
         font-weight: 700;
-        font-size: 0.9rem;
+        font-size: 0.875rem;
         display: flex;
         align-items: center;
         gap: 8px;
@@ -169,14 +169,14 @@
         }
 
     .info-body {
-        padding: 8px 24px 16px;
+        padding: 4px 20px 16px;
     }
 
     .info-row {
         display: flex;
         align-items: center;
-        gap: 16px;
-        padding: 14px 0;
+        gap: 14px;
+        padding: 12px 0;
         border-bottom: 1px solid var(--border);
     }
 
@@ -185,8 +185,8 @@
         }
 
     .info-icon {
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
         flex-shrink: 0;
         background: rgba(255,255,255,0.04);
         border: 1px solid var(--border);
@@ -195,36 +195,36 @@
         align-items: center;
         justify-content: center;
         color: var(--accent);
-        font-size: 0.95rem;
+        font-size: 0.875rem;
     }
 
     .info-label {
-        font-size: 0.72rem;
+        font-size: 0.68rem;
         text-transform: uppercase;
         letter-spacing: 1px;
         color: var(--text-secondary);
         font-weight: 700;
-        margin-bottom: 3px;
+        margin-bottom: 2px;
     }
 
     .info-value {
-        font-size: 0.9rem;
+        font-size: 0.875rem;
         font-weight: 600;
     }
 
-    /* Agendamentos */
+    /* ─── Tabela de agendamentos ─── */
     .ag-table {
         width: 100%;
         border-collapse: separate;
-        border-spacing: 0 4px;
+        border-spacing: 0 3px;
     }
 
         .ag-table thead th {
             color: var(--text-secondary);
-            font-size: 0.68rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            padding: 8px 14px;
+            padding: 8px 12px;
             font-weight: 700;
             border: none;
         }
@@ -239,10 +239,10 @@
             }
 
         .ag-table tbody td {
-            padding: 12px 14px;
+            padding: 11px 12px;
             border: none;
             vertical-align: middle;
-            font-size: 0.875rem;
+            font-size: 0.83rem;
         }
 
             .ag-table tbody td:first-child {
@@ -253,14 +253,16 @@
                 border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
             }
 
+    /* Badges de status */
     .badge-status {
         display: inline-flex;
         align-items: center;
         gap: 5px;
-        padding: 4px 10px;
+        padding: 3px 10px;
         border-radius: 999px;
-        font-size: 0.72rem;
+        font-size: 0.7rem;
         font-weight: 600;
+        white-space: nowrap;
     }
 
         .badge-status::before {
@@ -286,6 +288,23 @@
         background: rgba(224,80,80,0.12);
     }
 
+    .badge-espera {
+        color: #f59e0b;
+        background: rgba(245,158,11,0.12);
+    }
+
+    /* Turma pill */
+    .turma-pill {
+        display: inline-block;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 2px 8px;
+        font-size: 0.68rem;
+        color: var(--text-secondary);
+        margin-left: 4px;
+    }
+
     .empty-state {
         text-align: center;
         padding: 40px;
@@ -295,7 +314,7 @@
 
         .empty-state i {
             font-size: 2rem;
-            opacity: 0.25;
+            opacity: 0.2;
             display: block;
             margin-bottom: 10px;
         }
@@ -342,11 +361,10 @@
     </div>
 }
 
-<div class="perfil-wrapper container">
-
+<div class="perfil-wrapper">
     <div class="perfil-grid">
 
-        <!-- Coluna esquerda -->
+        <!-- ─── Coluna esquerda ─── -->
         <div>
             <div class="perfil-card fade-up">
                 @{
@@ -372,8 +390,9 @@
             </div>
         </div>
 
-        <!-- Coluna direita -->
+        <!-- ─── Coluna direita ─── -->
         <div>
+
             <!-- Dados pessoais -->
             <div class="info-card fade-up delay-1">
                 <div class="info-header"><i class="bi bi-person-lines-fill"></i> Dados Pessoais</div>
@@ -401,18 +420,19 @@
                 </div>
             </div>
 
-            <!-- Histórico de agendamentos -->
+            <!-- Meus Agendamentos -->
             <div class="info-card fade-up delay-2">
                 <div class="info-header">
                     <i class="bi bi-calendar-check-fill"></i> Meus Agendamentos
                     @if (Model.Agendamentos != null && Model.Agendamentos.Any())
                     {
-                        <span style="margin-left:auto;font-size:0.72rem;color:var(--text-secondary);font-weight:400">
-                            @Model.Agendamentos.Count() agendamento(s)
+                        <span style="margin-left:auto;font-size:0.7rem;color:var(--text-secondary);font-weight:400">
+                            @Model.Agendamentos.Count() registro(s)
                         </span>
                     }
                 </div>
-                <div class="info-body" style="padding:0">
+
+                <div style="padding:0">
                     @if (Model.Agendamentos != null && Model.Agendamentos.Any())
                     {
                         <table class="ag-table">
@@ -427,14 +447,42 @@
                             <tbody>
                                 @foreach (var ag in Model.Agendamentos.OrderByDescending(a => a.DataAula))
                                 {
-                                    var sc = ag.Status == "Confirmado" ? "badge-confirmado"
-                                           : ag.Status == "Cancelado" ? "badge-cancelado"
-                                           : "badge-pendente";
+                                    string sc;
+                                    if (ag.Status == "Confirmado") { sc = "badge-confirmado"; }
+                                    else if (ag.Status == "Cancelado") { sc = "badge-cancelado"; }
+                                    else if (ag.ListaEspera) { sc = "badge-espera"; }
+                                    else { sc = "badge-pendente"; }
+
+                                    string statusLabel;
+                                    if (ag.ListaEspera && ag.Status != "Confirmado" && ag.Status != "Cancelado") { statusLabel = "Lista de Espera"; }
+                                    else if (ag.Status == "PendentePagamento") { statusLabel = "Pend. Pagamento"; }
+                                    else { statusLabel = ag.Status; }
+
+                                    // Horário formatado
+                                    string horario = ag.HorarioTurma != null
+                                                        ? ag.HorarioTurma.HoraInicio.ToString(@"hh\:mm") + " - " + ag.HorarioTurma.HoraFim.ToString(@"hh\:mm")
+                                                        : "—";
+
+                                    // Nome da turma
+                                    string turma = ag.HorarioTurma?.Turma?.NomeTurma ?? "";
+
                                     <tr>
-                                        <td style="font-weight:600">@ag.DataAula.ToString("dd/MM/yyyy")</td>
-                                        <td style="color:var(--text-secondary)">@ag.HorarioTurma?.HoraInicio.ToString("hh\:mm")</td>
+                                        <td>
+                                            <span style="font-weight:600">@ag.DataAula.ToString("dd/MM/yyyy")</span>
+                                            <br>
+                                            <span style="font-size:0.68rem;color:var(--text-secondary)">
+                                                @ag.DataAula.ToString("dddd", new System.Globalization.CultureInfo("pt-BR"))
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span style="font-weight:600">@horario</span>
+                                            @if (!string.IsNullOrEmpty(turma))
+                                            {
+                                                <span class="turma-pill">@turma</span>
+                                            }
+                                        </td>
                                         <td style="color:var(--text-secondary)">@ag.TipoAula</td>
-                                        <td><span class="badge-status @sc">@ag.Status</span></td>
+                                        <td><span class="badge-status @sc">@statusLabel</span></td>
                                     </tr>
                                 }
                             </tbody>
@@ -453,14 +501,17 @@
                     }
                 </div>
             </div>
-        </div>
 
+        </div>
     </div>
 </div>
 
-<script>setTimeout(() => {
+<script>
+    setTimeout(() => {
         document.querySelectorAll('.toast-msg').forEach(t => {
-            t.style.opacity = '0'; t.style.transition = 'opacity 0.5s';
+            t.style.opacity = '0';
+            t.style.transition = 'opacity 0.5s';
             setTimeout(() => t.remove(), 500);
         });
-    }, 4000);</script>
+    }, 4000);
+</script>

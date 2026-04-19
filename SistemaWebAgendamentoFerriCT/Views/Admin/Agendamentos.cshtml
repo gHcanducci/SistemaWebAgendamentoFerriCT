@@ -27,13 +27,12 @@
     }
 
     .page-title {
-        font-family: 'Bebas Neue', sans-serif;
+        font-family: 'Bebas Neue',sans-serif;
         font-size: 2rem;
         letter-spacing: 1px;
         line-height: 1;
     }
 
-    /* Filter bar */
     .filter-bar {
         background: var(--bg-card);
         border: 1px solid var(--border);
@@ -89,7 +88,6 @@
             color: var(--accent);
         }
 
-    /* Table container */
     .table-container {
         background: var(--bg-card);
         border: 1px solid var(--border);
@@ -120,10 +118,9 @@
     }
 
     .ferri-table {
-        min-width: 700px;
+        min-width: 750px;
     }
 
-    /* Aluno info cell */
     .aluno-cell {
         display: flex;
         align-items: center;
@@ -150,7 +147,61 @@
         font-size: 0.875rem;
     }
 
-    /* Action buttons */
+    .horario-cell {
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    .turma-pill {
+        display: inline-block;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 2px 8px;
+        font-size: 0.68rem;
+        color: var(--text-secondary);
+        margin-top: 3px;
+    }
+
+    .badge-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+        .badge-status::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+    .badge-confirmado {
+        color: var(--success);
+        background: rgba(76,175,130,0.12);
+    }
+
+    .badge-pendente {
+        color: var(--accent);
+        background: var(--accent-dim);
+    }
+
+    .badge-cancelado {
+        color: var(--danger);
+        background: rgba(224,80,80,0.12);
+    }
+
+    .badge-espera {
+        color: #f59e0b;
+        background: rgba(245,158,11,0.12);
+    }
+
     .action-btn {
         width: 30px;
         height: 30px;
@@ -198,7 +249,6 @@
             color: var(--danger);
         }
 
-    /* Empty state */
     .empty-state {
         padding: 60px 20px;
         text-align: center;
@@ -241,13 +291,14 @@
     <button class="filter-chip" data-filter="Confirmado">Confirmados</button>
     <button class="filter-chip" data-filter="PendentePagamento">Pendentes</button>
     <button class="filter-chip" data-filter="Cancelado">Cancelados</button>
+    <button class="filter-chip" data-filter="espera">Lista de Espera</button>
 </div>
 
 <!-- Table -->
 <div class="table-container">
     <div class="table-container-header">
         <div class="table-count">
-            <strong id="rowCount">@(Model?.Count() ?? 0)</strong> agendamentos
+            <strong id="rowCount">@(Model?.Count() ?? 0)</strong> agendamento(s)
         </div>
         <div style="font-size:0.75rem;color:var(--text-secondary)">
             Atualizado em @DateTime.Now.ToString("HH:mm")
@@ -262,7 +313,7 @@
                     <tr>
                         <th>Aluno</th>
                         <th>Data da Aula</th>
-                        <th>Horário</th>
+                        <th>Horário / Turma</th>
                         <th>Tipo</th>
                         <th>Status</th>
                         <th>Solicitado em</th>
@@ -272,25 +323,65 @@
                 <tbody id="tableBody">
                     @foreach (var item in Model)
                     {
-                        var initials = string.Join("", item.Cliente?.Nome?.Split(' ')
-                            .Take(2).Select(w => w.Length > 0 ? w[0].ToString().ToUpper() : "") ?? new[] { "?" });
-                        var statusClass = item.Status == "Confirmado" ? "badge-confirmado"
-                                        : item.Status == "Cancelado" ? "badge-cancelado"
-                                        : "badge-pendente";
-                        <tr data-status="@item.Status" data-aluno="@item.Cliente?.Nome?.ToLower()">
+                        var initials = string.Join("", ((item.Cliente != null ? item.Cliente.Nome : "?")).Split(' ')
+                            .Take(2).Select(w => w.Length > 0 ? w[0].ToString().ToUpper() : ""));
+
+                        string statusClass;
+                        string statusLabel;
+
+                        if (item.Status == "Confirmado")
+                        {
+                            statusClass = "badge-confirmado";
+                            statusLabel = "Confirmado";
+                        }
+                        else if (item.Status == "Cancelado")
+                        {
+                            statusClass = "badge-cancelado";
+                            statusLabel = "Cancelado";
+                        }
+                        else if (item.ListaEspera)
+                        {
+                            statusClass = "badge-espera";
+                            statusLabel = "Lista de Espera";
+                        }
+                        else
+                        {
+                            statusClass = "badge-pendente";
+                            statusLabel = "Pend. Pagamento";
+                        }
+
+                        string horario = item.HorarioTurma != null
+                            ? item.HorarioTurma.HoraInicio.ToString(@"hh\:mm") + " - " + item.HorarioTurma.HoraFim.ToString(@"hh\:mm")
+                            : "—";
+
+                        string turma = item.HorarioTurma?.Turma?.NomeTurma ?? "";
+
+                        string filtroEspera = item.ListaEspera ? "espera" : item.Status;
+
+                        <tr data-status="@filtroEspera" data-aluno="@(item.Cliente != null ? item.Cliente.Nome.ToLower() : "")">
                             <td>
                                 <div class="aluno-cell">
                                     <div class="aluno-avatar">@initials</div>
-                                    <div class="aluno-name">@item.Cliente?.Nome</div>
+                                    <div class="aluno-name">@(item.Cliente != null ? item.Cliente.Nome : "—")</div>
                                 </div>
                             </td>
-                            <td style="font-weight:600">@item.DataAula.ToString("dd/MM/yyyy")</td>
-                            <td style="color:var(--text-secondary)">
-                                @item.HorarioTurma?.HoraInicio.ToString("hh\:mm")
-                            </td>
-                            <td style="font-size:0.8rem">@item.TipoAula</td>
                             <td>
-                                <span class="badge-status @statusClass">@item.Status</span>
+                                <span style="font-weight:600">@item.DataAula.ToString("dd/MM/yyyy")</span>
+                                <br>
+                                <span style="font-size:0.72rem;color:var(--text-secondary)">
+                                    @item.DataAula.ToString("dddd", new System.Globalization.CultureInfo("pt-BR"))
+                                </span>
+                            </td>
+                            <td>
+                                <div class="horario-cell">@horario</div>
+                                @if (!string.IsNullOrEmpty(turma))
+                                {
+                                    <span class="turma-pill">@turma</span>
+                                }
+                            </td>
+                            <td style="font-size:0.83rem;color:var(--text-secondary)">@item.TipoAula</td>
+                            <td>
+                                <span class="badge-status @statusClass">@statusLabel</span>
                             </td>
                             <td style="color:var(--text-secondary);font-size:0.8rem">
                                 @item.DataSolicitacao.ToString("dd/MM HH:mm")
@@ -328,7 +419,6 @@
 </div>
 
 <script>
-    // Filter chips
     const chips = document.querySelectorAll('.filter-chip');
     const rows = document.querySelectorAll('#tableBody tr');
     const countEl = document.getElementById('rowCount');
@@ -350,14 +440,12 @@
         });
     });
 
-    // Search
     const search = document.getElementById('searchInput');
     if (search) {
         search.addEventListener('input', () => {
             const q = search.value.toLowerCase().trim();
             rows.forEach(r => {
-                const match = !q || (r.dataset.aluno || '').includes(q);
-                r.style.display = match ? '' : 'none';
+                r.style.display = (!q || (r.dataset.aluno || '').includes(q)) ? '' : 'none';
             });
             updateCount();
         });

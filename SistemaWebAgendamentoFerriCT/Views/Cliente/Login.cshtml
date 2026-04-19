@@ -197,6 +197,7 @@
 
         @using (Html.BeginForm())
         {
+            @Html.AntiForgeryToken()
             <div class="input-group-icon">
                 <i class="bi bi-envelope input-icon"></i>
                 <input name="email" type="email" class="form-control" placeholder="Seu e-mail" autocomplete="email" />

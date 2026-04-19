@@ -1,7 +1,8 @@
-﻿@model SistemaWebAgendamentoFerriCT.Models.Agendamento
+﻿@model SistemaWebAgendamentoFerriCT.ViewModels.AgendamentoViewModel
 
 @{
     ViewBag.Title = "Agendar Aula";
+    bool jaAgendou = ViewBag.JaAgendou != null && (bool)ViewBag.JaAgendou;
 }
 
 <style>
@@ -13,13 +14,6 @@
         padding: 48px 16px;
         position: relative;
     }
-    .schedule-wrapper::before {
-        content: '';
-        position: fixed; bottom: 0; right: 0;
-        width: 500px; height: 500px;
-        background: radial-gradient(circle, rgba(232,197,71,0.04) 0%, transparent 70%);
-        pointer-events: none;
-    }
 
     .schedule-grid {
         display: grid;
@@ -27,47 +21,83 @@
         gap: 32px;
         max-width: 900px;
         width: 100%;
-        position: relative; z-index: 1;
+        position: relative;
+        z-index: 1;
     }
 
-    media (max-width: 768px) {
-        .schedule-grid { grid-template-columns: 1fr; }
+    @@media (max-width: 768px) {
+        .schedule-grid {
+            grid-template-columns: 1fr;
+        }
     }
 
-    /* Left panel - info */
     .info-panel {
         padding: 48px 40px;
     }
+
     .info-eyebrow {
-        font-size: 0.75rem; letter-spacing: 3px;
-        text-transform: uppercase; color: var(--accent);
-        font-weight: 600; margin-bottom: 16px;
-        display: flex; align-items: center; gap: 8px;
+        font-size: 0.75rem;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--accent);
+        font-weight: 600;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
-    .info-eyebrow::before {
-        content: ''; width: 24px; height: 1px; background: var(--accent);
-    }
+
+        .info-eyebrow::before {
+            content: '';
+            width: 24px;
+            height: 1px;
+            background: var(--accent);
+        }
+
     .info-title {
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 3rem; line-height: 1; margin-bottom: 16px;
+        font-family: 'Bebas Neue',sans-serif;
+        font-size: 3rem;
+        line-height: 1;
+        margin-bottom: 16px;
     }
-    .info-title .gold { color: var(--accent); }
+
+        .info-title .gold {
+            color: var(--accent);
+        }
+
     .info-desc {
-        color: var(--text-secondary); line-height: 1.7; font-size: 0.9rem;
+        color: var(--text-secondary);
+        line-height: 1.7;
+        font-size: 0.9rem;
         margin-bottom: 32px;
     }
 
-    .info-features { list-style: none; padding: 0; }
-    .info-features li {
-        display: flex; align-items: flex-start; gap: 12px;
-        padding: 12px 0;
-        border-bottom: 1px solid var(--border);
-        font-size: 0.875rem; color: var(--text-secondary);
+    .info-features {
+        list-style: none;
+        padding: 0;
     }
-    .info-features li:last-child { border: none; }
-    .info-features li i { color: var(--accent); font-size: 1rem; margin-top: 1px; flex-shrink: 0; }
 
-    /* Right panel - form */
+        .info-features li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+            .info-features li:last-child {
+                border: none;
+            }
+
+            .info-features li i {
+                color: var(--accent);
+                font-size: 1rem;
+                margin-top: 1px;
+                flex-shrink: 0;
+            }
+
     .form-panel {
         background: var(--bg-card);
         border: 1px solid var(--border);
@@ -76,152 +106,296 @@
         position: relative;
         animation: fadeUp 0.5s ease forwards;
     }
-    .form-panel::before {
-        content: '';
-        position: absolute; top: 0; left: 40px; right: 40px;
-        height: 2px;
-        background: linear-gradient(90deg, transparent, var(--accent), transparent);
-    }
 
-    .form-panel h3 {
-        font-size: 1.3rem; font-weight: 700; margin-bottom: 4px;
-    }
-    .form-panel .subtitle {
-        color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 28px;
-    }
+        .form-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 40px;
+            right: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
 
-    /* Tipo aula cards */
+        .form-panel h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .form-panel .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 28px;
+        }
+
     .tipo-selector {
-        display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
         margin-bottom: 20px;
     }
-    .tipo-option { display: none; }
+
+    .tipo-option {
+        display: none;
+    }
+
     .tipo-label {
-        display: flex; flex-direction: column; align-items: center;
-        gap: 8px; padding: 16px 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 16px 12px;
         background: rgba(255,255,255,0.03);
         border: 1px solid var(--border);
         border-radius: var(--radius-sm);
-        cursor: pointer; transition: all 0.25s;
+        cursor: pointer;
+        transition: all 0.25s;
         text-align: center;
     }
-    .tipo-label .tipo-icon { font-size: 1.5rem; }
-    .tipo-label .tipo-name { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.5px; }
-    .tipo-label .tipo-desc { font-size: 0.7rem; color: var(--text-secondary); }
+
+        .tipo-label .tipo-icon {
+            font-size: 1.5rem;
+        }
+
+        .tipo-label .tipo-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .tipo-label .tipo-desc {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
     .tipo-option:checked + .tipo-label {
         border-color: var(--accent);
         background: var(--accent-dim);
-        color: var(--text-primary);
     }
-    .tipo-option:checked + .tipo-label .tipo-desc { color: rgba(232,197,71,0.7); }
 
-    .field-block { margin-bottom: 18px; }
-    .field-block .field-label {
-        font-size: 0.75rem; text-transform: uppercase;
-        letter-spacing: 1px; font-weight: 600;
-        color: var(--text-secondary); margin-bottom: 8px; display: block;
+        .tipo-option:checked + .tipo-label .tipo-desc {
+            color: rgba(232,197,71,0.7);
+        }
+
+    .tipo-option:disabled + .tipo-label {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    .field-block {
+        margin-bottom: 18px;
+    }
+
+    .field-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .aviso-box {
+        border-radius: var(--radius-sm);
+        padding: 12px 16px;
+        font-size: 0.85rem;
+        display: none;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 16px;
+        line-height: 1.5;
+    }
+
+    .aviso-erro {
+        background: rgba(224,80,80,0.08);
+        border: 1px solid rgba(224,80,80,0.25);
+        color: #ff8a8a;
+    }
+
+    .aviso-ouro {
+        background: rgba(232,197,71,0.08);
+        border: 1px solid rgba(232,197,71,0.25);
+        color: var(--accent);
+    }
+
+    .aviso-info {
+        background: rgba(76,175,130,0.08);
+        border: 1px solid rgba(76,175,130,0.2);
+        color: var(--success);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+        .aviso-info strong {
+            font-size: 1.1rem;
+        }
+
+    .horarios-loading {
+        display: none;
+        color: var(--text-secondary);
+        font-size: 0.82rem;
+        padding: 8px 0;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .spinner {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgba(255,255,255,0.2);
+        border-top-color: var(--text-secondary);
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
     }
 
     .btn-schedule {
-        width: 100%; background: var(--accent);
-        color: var(--bg-deep); border: none;
-        border-radius: var(--radius-sm); padding: 15px;
-        font-weight: 700; font-size: 1rem;
-        letter-spacing: 0.3px; transition: all 0.3s;
-        cursor: pointer; margin-top: 4px;
-        display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
-    .btn-schedule:hover {
-        background: #f5d465;
-        transform: translateY(-2px);
-        box-shadow: 0 10px 30px var(--accent-glow);
+        width: 100%;
+        background: var(--accent);
+        color: var(--bg-deep);
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 15px;
+        font-weight: 700;
+        font-size: 1rem;
+        transition: all 0.3s;
+        cursor: pointer;
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-family: 'DM Sans',sans-serif;
     }
 
-    .free-badge {
-        display: inline-flex; align-items: center; gap: 6px;
-        background: rgba(76,175,130,0.12);
-        border: 1px solid rgba(76,175,130,0.3);
-        color: var(--success);
-        border-radius: 999px; padding: 4px 12px;
-        font-size: 0.72rem; font-weight: 600;
-        text-transform: uppercase; letter-spacing: 1px;
-        margin-bottom: 24px;
-    }
+        .btn-schedule:hover:not(:disabled) {
+            background: #f5d465;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+
+        .btn-schedule:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
 
     .back-link {
-        display: flex; align-items: center; gap: 6px;
-        color: var(--text-secondary); text-decoration: none;
-        font-size: 0.85rem; margin-top: 20px;
-        transition: color 0.2s; justify-content: center;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.85rem;
+        margin-top: 20px;
+        transition: color 0.2s;
+        justify-content: center;
     }
-    .back-link:hover { color: var(--text-primary); }
+
+        .back-link:hover {
+            color: var(--text-primary);
+        }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(24px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
 </style>
 
 <div class="schedule-wrapper">
     <div class="schedule-grid">
 
-        <!-- Info panel -->
+        <!-- Painel informativo -->
         <div class="info-panel fade-up">
             <div class="info-eyebrow">Agendamento Online</div>
             <h1 class="info-title">RESERVE<br>SUA <span class="gold">AULA</span></h1>
             <p class="info-desc">
-                Escolha o tipo de aula, a data e o horário disponível. Confirme e apareça pronto para treinar.
+                Escolha o tipo de aula, a data e o horário.
+                Os horários são filtrados automaticamente pelo dia da semana que você escolher.
             </p>
-
             <ul class="info-features">
                 <li>
                     <i class="bi bi-shield-check"></i>
-                    <span><strong style="color:var(--text-primary)">Aula Experimental gratuita</strong> — sem compromisso, sem custo.</span>
+                    <span><strong style="color:var(--text-primary)">Aula Experimental</strong> — exclusiva para novos alunos. Valor por aula avulsa de R$ 50,00.</span>
                 </li>
                 <li>
-                    <i class="bi bi-people"></i>
-                    <span><strong style="color:var(--text-primary)">Turmas pequenas</strong> — atenção individualizada do professor.</span>
+                    <i class="bi bi-trophy-fill"></i>
+                    <span><strong style="color:var(--text-primary)">1ª Matrícula</strong> — R$ 120,00 para iniciar os treinos regulares na academia.</span>
                 </li>
                 <li>
-                    <i class="bi bi-clock"></i>
-                    <span><strong style="color:var(--text-primary)">Flexibilidade</strong> — vários horários disponíveis por semana.</span>
+                    <i class="bi bi-calendar-week"></i>
+                    <span><strong style="color:var(--text-primary)">Horários por dia</strong> — os horários disponíveis mudam conforme o dia escolhido.</span>
                 </li>
                 <li>
-                    <i class="bi bi-check-circle"></i>
-                    <span><strong style="color:var(--text-primary)">Confirmação imediata</strong> — após envio, seu agendamento é registrado.</span>
+                    <i class="bi bi-credit-card-fill"></i>
+                    <span><strong style="color:var(--text-primary)">Pagamento seguro</strong> — Pix ou Cartão. Confirmação automática após aprovação.</span>
                 </li>
             </ul>
         </div>
 
-        <!-- Form panel -->
+        <!-- Formulário -->
         <div class="form-panel">
-            <div class="free-badge">
-                <i class="bi bi-star-fill"></i> 1ª Aula Gratuita
-            </div>
-
             <h3>Detalhes do Agendamento</h3>
             <p class="subtitle">Preencha as informações abaixo para reservar sua vaga</p>
 
-            @using (Html.BeginForm())
+            @using (Html.BeginForm("Create", "Agendamento", FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
                 @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3", style = "font-size:0.85rem" })
 
-                <!-- Tipo de Aula - Visual cards -->
+                <!-- Aviso experimental bloqueado -->
+                if (jaAgendou)
+                {
+                    <div class="aviso-box aviso-erro" style="display:flex">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        A aula Experimental é exclusiva para alunos que ainda não realizaram nenhum agendamento.
+                    </div>
+                }
+
+                <!-- Tipo de Aula -->
                 <div class="field-block">
                     <span class="field-label">Tipo de Aula</span>
                     <div class="tipo-selector">
                         <input type="radio" name="TipoAula" value="Experimental"
-                               id="tipo-exp" class="tipo-option" checked />
+                               id="tipo-exp" class="tipo-option"
+                               @(!jaAgendou ? "checked=\"checked\"" : "disabled=\"disabled\"") />
                         <label for="tipo-exp" class="tipo-label">
                             <span class="tipo-icon">🥊</span>
                             <span class="tipo-name">Experimental</span>
-                            <span class="tipo-desc">Grátis · Sem compromisso</span>
+                            <span class="tipo-desc">R$ 50,00 · Aula avulsa</span>
                         </label>
 
-                        <input type="radio" name="TipoAula" value="Iniciacao"
-                               id="tipo-ini" class="tipo-option" />
-                        <label for="tipo-ini" class="tipo-label">
+                        <input type="radio" name="TipoAula" value="Matricula"
+                               id="tipo-mat" class="tipo-option"
+                               @(jaAgendou ? "checked=\"checked\"" : "") />
+                        <label for="tipo-mat" class="tipo-label">
                             <span class="tipo-icon">🏆</span>
                             <span class="tipo-name">1ª Matrícula</span>
-                            <span class="tipo-desc">Início da jornada</span>
+                            <span class="tipo-desc">R$ 120,00 · Início da jornada</span>
                         </label>
                     </div>
+                    @Html.ValidationMessageFor(m => m.TipoAula, "", new { @class = "text-danger", style = "font-size:0.8rem" })
+                </div>
+
+                <!-- Valor da aula -->
+                <div class="aviso-box aviso-info" style="display:flex" id="valorAula">
+                    <span><i class="bi bi-tag-fill me-1"></i> Valor</span>
+                    <strong id="valorTexto">R$ @(jaAgendou ? "120,00" : "50,00")</strong>
                 </div>
 
                 <!-- Data -->
@@ -236,26 +410,42 @@
                                  @type = "date",
                                  @class = "form-control",
                                  id = "DataAula",
-                                 min = DateTime.Now.ToString("yyyy-MM-dd")
+                                 min = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")
                              })
                     @Html.ValidationMessageFor(m => m.DataAula, "", new { @class = "text-danger", style = "font-size:0.8rem" })
                 </div>
 
+                <!-- Aviso dia fechado -->
+                <div class="aviso-box aviso-erro" id="diaAviso">
+                    <i class="bi bi-x-circle-fill"></i>
+                    <span id="diaAvisoTexto"></span>
+                </div>
+
+                <!-- Loading horários -->
+                <div class="horarios-loading" id="horariosLoading">
+                    <span class="spinner"></span> Carregando horários disponíveis...
+                </div>
+
                 <!-- Horário -->
-                <div class="field-block">
+                <div class="field-block" id="horarioBlock">
                     <label class="field-label" for="HorarioTurmaId">
                         <i class="bi bi-clock me-1"></i> Horário Disponível
                     </label>
-                    @Html.DropDownListFor(m => m.HorarioTurmaId,
-                             new SelectList(ViewBag.Horarios ?? new List<object>(), "HorarioTurmaId", "HorarioFormatado"),
-                             "— Selecione um horário —",
-                             new { @class = "form-select" })
+                    <select name="HorarioTurmaId" id="HorarioTurmaId" class="form-select">
+                        <option value="">— Selecione uma data primeiro —</option>
+                    </select>
                     @Html.ValidationMessageFor(m => m.HorarioTurmaId, "", new { @class = "text-danger", style = "font-size:0.8rem" })
                 </div>
 
-                <button type="submit" class="btn-schedule">
+                <!-- Aviso lista de espera -->
+                <div class="aviso-box aviso-ouro" id="esperaAviso">
+                    <i class="bi bi-hourglass-split"></i>
+                    <span>Caso a turma esteja lotada, você entrará automaticamente na <strong>lista de espera</strong> e será avisado quando uma vaga abrir.</span>
+                </div>
+
+                <button type="submit" class="btn-schedule" id="btnAgendar" disabled>
                     <i class="bi bi-calendar-check"></i>
-                    Confirmar Agendamento
+                    Confirmar e ir para Pagamento
                 </button>
             }
 
@@ -267,12 +457,76 @@
     </div>
 </div>
 
-<script>// Set min date to today
-    const dateInput = document.getElementById('DataAula');
-    if (dateInput && !dateInput.value) {
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
-        dateInput.min = `${yyyy}-${mm}-${dd}`;
-    }</script>
+<script>
+    const dataInput = document.getElementById('DataAula');
+    const horarioSel = document.getElementById('HorarioTurmaId');
+    const diaAviso = document.getElementById('diaAviso');
+    const diaAvisoTxt = document.getElementById('diaAvisoTexto');
+    const esperaAviso = document.getElementById('esperaAviso');
+    const loading = document.getElementById('horariosLoading');
+    const btnAgendar = document.getElementById('btnAgendar');
+    const valorTexto = document.getElementById('valorTexto');
+    const tipoExp = document.getElementById('tipo-exp');
+    const tipoMat = document.getElementById('tipo-mat');
+
+    // Atualiza valor conforme tipo selecionado
+    function atualizarValor() {
+        valorTexto.textContent = (tipoMat && tipoMat.checked) ? 'R$ 120,00' : 'R$ 50,00';
+    }
+
+    if (tipoExp) tipoExp.addEventListener('change', atualizarValor);
+    if (tipoMat) tipoMat.addEventListener('change', atualizarValor);
+
+    // AJAX — carrega horários ao escolher data
+    dataInput.addEventListener('change', function () {
+        const data = this.value;
+        if (!data) return;
+
+        // Reseta UI
+        diaAviso.style.display = 'none';
+        esperaAviso.style.display = 'none';
+        loading.style.display = 'flex';
+        btnAgendar.disabled = true;
+        horarioSel.innerHTML = '<option value="">Carregando...</option>';
+
+        fetch('/Agendamento/HorariosPorData?data=' + data)
+            .then(r => r.json())
+            .then(res => {
+                loading.style.display = 'none';
+
+                if (res.erro) {
+                    horarioSel.innerHTML = '<option value="">Erro ao carregar</option>';
+                    return;
+                }
+
+                if (res.fechado) {
+                    diaAvisoTxt.textContent = res.motivo;
+                    diaAviso.style.display = 'flex';
+                    horarioSel.innerHTML = '<option value="">— Sem turmas neste dia —</option>';
+                    btnAgendar.disabled = true;
+                    return;
+                }
+
+                // Preenche horários disponíveis
+                horarioSel.innerHTML = '<option value="">— Selecione um horário —</option>';
+                res.horarios.forEach(h => {
+                    const opt = document.createElement('option');
+                    opt.value = h.HorarioTurmaId || h.horarioTurmaId;
+                    opt.textContent = h.HorarioFormatado || h.horarioFormatado;
+                    horarioSel.appendChild(opt);
+                });
+
+                btnAgendar.disabled = false;
+                esperaAviso.style.display = 'flex';
+            })
+            .catch(() => {
+                loading.style.display = 'none';
+                horarioSel.innerHTML = '<option value="">Erro ao buscar horários</option>';
+            });
+    });
+
+    // Habilita botão somente quando horário selecionado
+    horarioSel.addEventListener('change', function () {
+        btnAgendar.disabled = !this.value;
+    });
+</script>

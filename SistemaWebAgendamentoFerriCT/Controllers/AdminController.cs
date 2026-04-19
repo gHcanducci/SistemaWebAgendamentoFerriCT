@@ -1,63 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Web.Mvc;
+using SistemaWebAgendamentoFerriCT.Filtros;
 using SistemaWebAgendamentoFerriCT.Models;
+using SistemaWebAgendamentoFerriCT.ViewModels;
 
 namespace SistemaWebAgendamentoFerriCT.Controllers
 {
+    // [FiltroAcesso] protege TODAS as actions — exceto Login e Logout
+    // que ficam fora do filtro por herança direta
+    [FiltroAcesso]
     public class AdminController : Controller
     {
         private const string UsuarioAdmin = "admin";
-        // SHA-256 de "123" — troque em produção
-        private const string SenhaAdminHash = "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3";
+        private const string SenhaAdmin = "123";
 
         private readonly SistemaContext db = new SistemaContext();
 
-        // ─── Autenticação ───────────────────────────────────────────────
+        // ─── Autenticação (sem FiltroAcesso — são públicas) ─────────────
 
-        private bool AdminLogado()
-        {
-            return Session["AdminLogado"] != null && (bool)Session["AdminLogado"];
-        }
-
+        [OverrideActionFilters] // Remove o FiltroAcesso só nessas actions
         public ActionResult Login()
         {
-            if (AdminLogado())
+            if (Session["AdminLogado"] != null)
                 return RedirectToAction("Index");
 
-            return View();
+            return View(new AdminLoginViewModel());
         }
 
         [HttpPost]
+        [OverrideActionFilters]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(string usuario, string senha)
+        public ActionResult Login(AdminLoginViewModel vm)
         {
             try
             {
-                if (usuario == UsuarioAdmin && HashPassword(senha) == SenhaAdminHash)
+                if (!ModelState.IsValid)
+                    return View(vm);
+
+                if (vm.Usuario == UsuarioAdmin && vm.Senha == SenhaAdmin)
                 {
-                    // Token de sessão único para segurança adicional
                     Session["AdminLogado"] = true;
-                    Session["AdminToken"] = Guid.NewGuid().ToString("N");
+                    Session["AdminNome"] = "Administrador";
                     return RedirectToAction("Index");
                 }
 
                 ViewBag.Erro = "Usuário ou senha incorretos.";
-                return View();
+                return View(vm);
             }
             catch (Exception)
             {
                 ViewBag.Erro = "Erro ao realizar login. Tente novamente.";
-                return View();
+                return View(vm);
             }
         }
 
+        [OverrideActionFilters]
         public ActionResult Logout()
         {
             Session.Clear();
+            Session.Abandon(); // Destrói a sessão no servidor (Aula 11)
             return RedirectToAction("Login");
         }
 
@@ -65,9 +68,6 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
 
         public ActionResult Index()
         {
-            if (!AdminLogado())
-                return RedirectToAction("Login");
-
             try
             {
                 ViewBag.TotalAlunos = db.Clientes.Count();
@@ -75,6 +75,9 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 ViewBag.PendentePagamento = db.Agendamentos.Count(a => a.Status == "PendentePagamento");
                 ViewBag.TotalTurmas = db.Turmas.Count();
                 ViewBag.ConfirmadosHoje = db.Agendamentos.Count(a => a.DataAula == DateTime.Today && a.Status == "Confirmado");
+
+                // Notificações de lista de espera
+                ViewBag.ListaEspera = db.Agendamentos.Count(a => a.ListaEspera && a.Status == "PendentePagamento");
 
                 return View();
             }
@@ -89,15 +92,9 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
 
         public ActionResult Alunos()
         {
-            if (!AdminLogado())
-                return RedirectToAction("Login");
-
             try
             {
-                var alunos = db.Clientes
-                    .OrderByDescending(c => c.DataCadastro)
-                    .ToList();
-
+                var alunos = db.Clientes.OrderByDescending(c => c.DataCadastro).ToList();
                 return View(alunos);
             }
             catch (Exception)
@@ -109,19 +106,15 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
 
         public ActionResult DetalhesAluno(int id)
         {
-            if (!AdminLogado())
-                return RedirectToAction("Login");
-
             try
             {
                 var aluno = db.Clientes
                     .Include("Agendamentos")
                     .Include("Agendamentos.HorarioTurma")
+                    .Include("Agendamentos.HorarioTurma.Turma")
                     .FirstOrDefault(c => c.ClienteId == id);
 
-                if (aluno == null)
-                    return HttpNotFound();
-
+                if (aluno == null) return HttpNotFound();
                 return View(aluno);
             }
             catch (Exception)
@@ -133,9 +126,6 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
 
         public ActionResult CriarAluno()
         {
-            if (!AdminLogado())
-                return RedirectToAction("Login");
-
             return View();
         }
 
@@ -143,9 +133,6 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CriarAluno(Cliente cliente)
         {
-            if (!AdminLogado())
-                return RedirectToAction("Login");
-
             try
             {
                 if (ModelState.IsValid)
@@ -174,16 +161,10 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
 
         public ActionResult EditarAluno(int id)
         {
-            if (!AdminLogado())
-                return RedirectToAction("Login");
-
             try
             {
                 var aluno = db.Clientes.Find(id);
-
-                if (aluno == null)
-                    return HttpNotFound();
-
+                if (aluno == null) return HttpNotFound();
                 return View(aluno);
             }
             catch (Exception)
@@ -197,17 +178,12 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EditarAluno(Cliente cliente)
         {
-            if (!AdminLogado())
-                return RedirectToAction("Login");
-
             try
             {
                 if (ModelState.IsValid)
                 {
                     var aluno = db.Clientes.Find(cliente.ClienteId);
-
-                    if (aluno == null)
-                        return HttpNotFound();
+                    if (aluno == null) return HttpNotFound();
 
                     aluno.Nome = cliente.Nome;
                     aluno.Email = cliente.Email;
@@ -215,7 +191,6 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                     aluno.CPF = cliente.CPF;
 
                     db.SaveChanges();
-
                     TempData["Sucesso"] = "Aluno atualizado com sucesso!";
                     return RedirectToAction("Alunos");
                 }
@@ -230,16 +205,10 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
 
         public ActionResult ExcluirAluno(int id)
         {
-            if (!AdminLogado())
-                return RedirectToAction("Login");
-
             try
             {
                 var aluno = db.Clientes.Find(id);
-
-                if (aluno == null)
-                    return HttpNotFound();
-
+                if (aluno == null) return HttpNotFound();
                 return View(aluno);
             }
             catch (Exception)
@@ -253,15 +222,10 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ExcluirAlunoConfirmado(int id)
         {
-            if (!AdminLogado())
-                return RedirectToAction("Login");
-
             try
             {
                 var aluno = db.Clientes.Find(id);
-
-                if (aluno == null)
-                    return HttpNotFound();
+                if (aluno == null) return HttpNotFound();
 
                 db.Clientes.Remove(aluno);
                 db.SaveChanges();
@@ -280,14 +244,12 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
 
         public ActionResult Agendamentos()
         {
-            if (!AdminLogado())
-                return RedirectToAction("Login");
-
             try
             {
                 var agendamentos = db.Agendamentos
                     .Include("Cliente")
                     .Include("HorarioTurma")
+                    .Include("HorarioTurma.Turma")
                     .OrderByDescending(a => a.DataSolicitacao)
                     .ToList();
 
@@ -302,19 +264,16 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
 
         public ActionResult DetalhesAgendamento(int id)
         {
-            if (!AdminLogado())
-                return RedirectToAction("Login");
-
             try
             {
                 var agendamento = db.Agendamentos
                     .Include("Cliente")
                     .Include("HorarioTurma")
+                    .Include("HorarioTurma.Turma")
+                    .Include("Pagamentos")
                     .FirstOrDefault(a => a.AgendamentoId == id);
 
-                if (agendamento == null)
-                    return HttpNotFound();
-
+                if (agendamento == null) return HttpNotFound();
                 return View(agendamento);
             }
             catch (Exception)
@@ -326,18 +285,15 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
 
         public ActionResult EditarAgendamento(int id)
         {
-            if (!AdminLogado())
-                return RedirectToAction("Login");
-
             try
             {
                 var agendamento = db.Agendamentos
                     .Include("Cliente")
                     .Include("HorarioTurma")
+                    .Include("HorarioTurma.Turma")
                     .FirstOrDefault(a => a.AgendamentoId == id);
 
-                if (agendamento == null)
-                    return HttpNotFound();
+                if (agendamento == null) return HttpNotFound();
 
                 ViewBag.StatusOpcoes = new SelectList(
                     new[] { "PendentePagamento", "Confirmado", "Cancelado" },
@@ -357,15 +313,10 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EditarAgendamento(int agendamentoId, string status)
         {
-            if (!AdminLogado())
-                return RedirectToAction("Login");
-
             try
             {
                 var agendamento = db.Agendamentos.Find(agendamentoId);
-
-                if (agendamento == null)
-                    return HttpNotFound();
+                if (agendamento == null) return HttpNotFound();
 
                 agendamento.Status = status;
                 db.SaveChanges();
@@ -382,19 +333,15 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
 
         public ActionResult ExcluirAgendamento(int id)
         {
-            if (!AdminLogado())
-                return RedirectToAction("Login");
-
             try
             {
                 var agendamento = db.Agendamentos
                     .Include("Cliente")
                     .Include("HorarioTurma")
+                    .Include("HorarioTurma.Turma")
                     .FirstOrDefault(a => a.AgendamentoId == id);
 
-                if (agendamento == null)
-                    return HttpNotFound();
-
+                if (agendamento == null) return HttpNotFound();
                 return View(agendamento);
             }
             catch (Exception)
@@ -408,15 +355,10 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ExcluirAgendamentoConfirmado(int id)
         {
-            if (!AdminLogado())
-                return RedirectToAction("Login");
-
             try
             {
                 var agendamento = db.Agendamentos.Find(id);
-
-                if (agendamento == null)
-                    return HttpNotFound();
+                if (agendamento == null) return HttpNotFound();
 
                 db.Agendamentos.Remove(agendamento);
                 db.SaveChanges();
@@ -431,6 +373,28 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
             }
         }
 
+        // ─── Notificações de Lista de Espera ─────────────────────────────
+
+        public ActionResult ListaEspera()
+        {
+            try
+            {
+                var espera = db.Agendamentos
+                    .Include("Cliente")
+                    .Include("HorarioTurma")
+                    .Where(a => a.ListaEspera && a.Status == "PendentePagamento")
+                    .OrderBy(a => a.DataSolicitacao)
+                    .ToList();
+
+                return View(espera);
+            }
+            catch (Exception)
+            {
+                ViewBag.Erro = "Erro ao carregar lista de espera.";
+                return View(new List<Agendamento>());
+            }
+        }
+
         // ─── Dispose ────────────────────────────────────────────────────
 
         protected override void Dispose(bool disposing)
@@ -439,20 +403,6 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 db.Dispose();
 
             base.Dispose(disposing);
-        }
-
-
-        // ─── Utilitário de hash ─────────────────────────────────────
-        private static string HashPassword(string senha)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(senha));
-                var sb = new System.Text.StringBuilder();
-                foreach (var b in bytes)
-                    sb.Append(b.ToString("x2"));
-                return sb.ToString();
-            }
         }
     }
 }
