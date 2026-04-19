@@ -42,7 +42,7 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 if (!ModelState.IsValid)
                     return View(vm);
 
-                if (vm.Usuario == UsuarioAdmin && vm.Senha == SenhaAdmin)
+                if (vm.Usuario == UsuarioAdmin && HashPassword(vm.Senha) == SenhaAdminHash)
                 {
                     // Token de sessão único para segurança adicional
                     Session["AdminLogado"] = true;
