@@ -12,9 +12,11 @@ namespace SistemaWebAgendamentoFerriCT
     {
         protected void Application_Start()
         {
-            // Adicione esta linha:
-            System.Data.Entity.Database.SetInitializer(new
-           SistemaWebAgendamentoFerriCT.Models.InicializadorBD());
+            System.Data.Entity.Database.SetInitializer(
+                new System.Data.Entity.MigrateDatabaseToLatestVersion<
+                    SistemaWebAgendamentoFerriCT.Models.SistemaContext,
+                    SistemaWebAgendamentoFerriCT.Migrations.Configuration>());
+
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters
             );

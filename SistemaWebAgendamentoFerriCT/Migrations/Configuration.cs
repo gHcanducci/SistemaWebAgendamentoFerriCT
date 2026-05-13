@@ -14,10 +14,12 @@
 
         protected override void Seed(SistemaWebAgendamentoFerriCT.Models.SistemaContext context)
         {
-            //  This method will be called after migrating to the latest version.
-
-            //  You can use the DbSet<T>.AddOrUpdate() helper extension method
-            //  to avoid creating duplicate seed data.
+            context.Professores.AddOrUpdate(
+                p => p.Email,
+                new Models.Professor { Nome = "Carlos Silva",  Telefone = "(11) 99000-0001", Email = "carlos@ferri.ct", Especialidade = "Musculação" },
+                new Models.Professor { Nome = "Ana Oliveira",  Telefone = "(11) 99000-0002", Email = "ana@ferri.ct",    Especialidade = "Funcional"  }
+            );
+            context.SaveChanges();
         }
     }
 }
