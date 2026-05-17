@@ -126,7 +126,16 @@
     <Compile Include="Controllers\AgendamentoController.cs" />
     <Compile Include="Controllers\ClienteController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\PagamentoController.cs" />
     <Compile Include="Filtros\FiltroAcesso.cs" />
+    <Compile Include="MercadoPago\IMercadoPagoService.cs" />
+    <Compile Include="MercadoPago\MercadoPagoException.cs" />
+    <Compile Include="MercadoPago\MercadoPagoService.cs" />
+    <Compile Include="MercadoPago\MercadoPagoSettings.cs" />
+    <Compile Include="MercadoPago\PaymentInfo.cs" />
+    <Compile Include="MercadoPago\PreferenceCreatedResult.cs" />
+    <Compile Include="MercadoPago\WebhookSignatureValidator.cs" />
+    <Compile Include="Tasks\AgendamentoCleanupJob.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -142,11 +151,14 @@
     <Compile Include="Migrations\202604191526549_AdicionaCampoV2.Designer.cs">
       <DependentUpon>202604191526549_AdicionaCampoV2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202605172019119_AddMercadoPagoFields.cs" />
+    <Compile Include="Migrations\202605172019119_AddMercadoPagoFields.Designer.cs">
+      <DependentUpon>202605172019119_AddMercadoPagoFields.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Agendamento.cs" />
     <Compile Include="Models\CentroTreinamento.cs" />
     <Compile Include="Models\HorarioTurma.cs" />
-    <Compile Include="Data\InicializadorBD.cs" />
     <Compile Include="Models\Cliente.cs" />
     <Compile Include="Data\SistemaContext.cs" />
     <Compile Include="Models\Pagamento.cs" />
@@ -273,6 +285,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202604191526549_AdicionaCampoV2.resx">
       <DependentUpon>202604191526549_AdicionaCampoV2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605172019119_AddMercadoPagoFields.resx">
+      <DependentUpon>202605172019119_AddMercadoPagoFields.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

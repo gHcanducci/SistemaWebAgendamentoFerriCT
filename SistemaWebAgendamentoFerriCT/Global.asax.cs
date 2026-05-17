@@ -22,6 +22,9 @@ namespace SistemaWebAgendamentoFerriCT
             );
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            // Job de cleanup de agendamentos pendentes (timeout 1h)
+            Tasks.AgendamentoCleanupJob.Iniciar();
         }
     }
 }

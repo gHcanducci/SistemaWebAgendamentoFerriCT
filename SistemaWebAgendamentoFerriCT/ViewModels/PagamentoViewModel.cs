@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
+using System;
 
 namespace SistemaWebAgendamentoFerriCT.ViewModels
 {
-    // ─────────────────────────────────────────────────────────────────
-    // PagamentoViewModel — usado na tela de pagamento simulado
-    // ─────────────────────────────────────────────────────────────────
+    // Apresentação do resumo antes de redirecionar para o Mercado Pago.
+    // O cliente escolhe a forma de pagamento (PIX ou Débito) na página hospedada do MP.
     public class PagamentoViewModel
     {
         public int AgendamentoId { get; set; }
@@ -16,9 +11,5 @@ namespace SistemaWebAgendamentoFerriCT.ViewModels
         public string TipoAula { get; set; }
         public DateTime DataAula { get; set; }
         public string HorarioFormatado { get; set; }
-
-        [Required(ErrorMessage = "Selecione a forma de pagamento.")]
-        [Display(Name = "Forma de Pagamento")]
-        public string FormaPagamento { get; set; } // "Pix" ou "Cartao"
     }
 }

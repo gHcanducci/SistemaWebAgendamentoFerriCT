@@ -335,7 +335,7 @@
                 </li>
                 <li>
                     <i class="bi bi-trophy-fill"></i>
-                    <span><strong style="color:var(--text-primary)">1ª Matrícula</strong> — R$ 120,00 para iniciar os treinos regulares na academia.</span>
+                    <span><strong style="color:var(--text-primary)">Matrícula</strong> — R$ 50,00 + Mensalidade paga presencialmente antes do início das aulas.</span>
                 </li>
                 <li>
                     <i class="bi bi-calendar-week"></i>
@@ -385,8 +385,8 @@
                                @(jaAgendou ? "checked=\"checked\"" : "") />
                         <label for="tipo-mat" class="tipo-label">
                             <span class="tipo-icon">🏆</span>
-                            <span class="tipo-name">1ª Matrícula</span>
-                            <span class="tipo-desc">R$ 120,00 · Início da jornada</span>
+                            <span class="tipo-name">Matrícula</span>
+                            <span class="tipo-desc">R$ 50,00 · Início dos treinos</span>
                         </label>
                     </div>
                     @Html.ValidationMessageFor(m => m.TipoAula, "", new { @class = "text-danger", style = "font-size:0.8rem" })
@@ -395,7 +395,7 @@
                 <!-- Valor da aula -->
                 <div class="aviso-box aviso-info" style="display:flex" id="valorAula">
                     <span><i class="bi bi-tag-fill me-1"></i> Valor</span>
-                    <strong id="valorTexto">R$ @(jaAgendou ? "120,00" : "50,00")</strong>
+                    <strong id="valorTexto">R$ 50,00</strong>
                 </div>
 
                 <!-- Data -->
@@ -471,7 +471,7 @@
 
     // Atualiza valor conforme tipo selecionado
     function atualizarValor() {
-        valorTexto.textContent = (tipoMat && tipoMat.checked) ? 'R$ 120,00' : 'R$ 50,00';
+        valorTexto.textContent = 'R$ 50,00';
     }
 
     if (tipoExp) tipoExp.addEventListener('change', atualizarValor);

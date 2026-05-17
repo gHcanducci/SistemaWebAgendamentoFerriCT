@@ -1,0 +1,182 @@
+@model SistemaWebAgendamentoFerriCT.Models.Agendamento
+
+@{
+    ViewBag.Title = "Registrar Pagamento Manual";
+    ViewBag.ActivePage = "agendamentos";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    decimal valor = Model.TipoAula == "Experimental" ? 50.00m : 50.00m;
+}
+
+<style>
+    .pgm-wrapper { max-width: 540px; }
+
+    .pgm-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 28px;
+        animation: fadeUp 0.4s ease forwards;
+    }
+
+    .pgm-card h4 {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.5rem;
+        letter-spacing: 1px;
+        margin-bottom: 16px;
+    }
+
+    .pgm-resumo {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 14px 16px;
+        margin-bottom: 22px;
+        font-size: 0.86rem;
+    }
+
+    .pgm-resumo-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 4px 0;
+    }
+
+    .pgm-resumo-row span:first-child { color: var(--text-secondary); }
+
+    .pgm-valor {
+        margin-top: 8px;
+        padding-top: 10px;
+        border-top: 1px solid var(--border);
+        font-weight: 700;
+        color: var(--accent);
+        font-size: 1.1rem;
+    }
+
+    .pgm-forma {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 22px;
+    }
+
+    .pgm-forma input { display: none; }
+
+    .pgm-forma label {
+        padding: 14px 8px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        text-align: center;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+    .pgm-forma input:checked + label {
+        border-color: var(--accent);
+        background: var(--accent-dim);
+        color: var(--accent);
+    }
+
+    .pgm-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 6px;
+    }
+
+    .btn-confirmar, .btn-cancelar {
+        flex: 1;
+        padding: 12px 16px;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        font-size: 0.88rem;
+        cursor: pointer;
+        text-decoration: none;
+        text-align: center;
+        border: none;
+        transition: all 0.2s;
+    }
+
+    .btn-confirmar { background: var(--accent); color: var(--bg-deep); }
+    .btn-confirmar:hover { background: #f5d465; }
+
+    .btn-cancelar {
+        background: transparent;
+        color: var(--text-secondary);
+        border: 1px solid var(--border);
+    }
+    .btn-cancelar:hover { color: var(--text-primary); border-color: var(--accent); }
+
+    .pgm-aviso {
+        background: rgba(232,197,71,0.06);
+        border: 1px solid rgba(232,197,71,0.2);
+        padding: 10px 14px;
+        border-radius: var(--radius-sm);
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+        margin-bottom: 20px;
+        line-height: 1.5;
+    }
+
+    .pgm-aviso i { color: var(--accent); }
+</style>
+
+<div class="page-header">
+    <div>
+        <div class="page-eyebrow">Pagamento Manual</div>
+        <h1 class="page-title">Registrar pagamento no balcão</h1>
+    </div>
+</div>
+
+<div class="pgm-wrapper">
+    <div class="pgm-card">
+        <h4>Confirmar pagamento recebido fora do Mercado Pago</h4>
+
+        <div class="pgm-aviso">
+            <i class="bi bi-info-circle"></i>
+            Use esta opção apenas quando o aluno pagou diretamente na academia
+            (dinheiro, PIX da maquininha, débito presencial). O valor é calculado
+            automaticamente pelo tipo de aula.
+        </div>
+
+        <div class="pgm-resumo">
+            <div class="pgm-resumo-row"><span>Aluno</span><span>@Model.Cliente.Nome</span></div>
+            <div class="pgm-resumo-row"><span>Tipo</span><span>@Model.TipoAula</span></div>
+            <div class="pgm-resumo-row"><span>Data</span><span>@Model.DataAula.ToString("dd/MM/yyyy")</span></div>
+            <div class="pgm-resumo-row"><span>Turma</span><span>@Model.HorarioTurma.Turma.NomeTurma</span></div>
+            <div class="pgm-valor pgm-resumo-row">
+                <span>Valor</span><span>R$ @valor.ToString("N2")</span>
+            </div>
+        </div>
+
+        @using (Html.BeginForm("RegistrarPagamentoManual", "Admin", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="agendamentoId" value="@Model.AgendamentoId" />
+
+            <label class="form-label" style="font-size:0.78rem;text-transform:uppercase;letter-spacing:1px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;display:block">
+                Forma de pagamento
+            </label>
+
+            <div class="pgm-forma">
+                <input type="radio" id="fp-dinheiro" name="formaPagamento" value="Dinheiro" checked />
+                <label for="fp-dinheiro">💵 Dinheiro</label>
+
+                <input type="radio" id="fp-pix" name="formaPagamento" value="Pix" />
+                <label for="fp-pix">⚡ Pix</label>
+
+                <input type="radio" id="fp-debito" name="formaPagamento" value="Debito" />
+                <label for="fp-debito">💳 Débito</label>
+            </div>
+
+            <div class="pgm-actions">
+                <a href="@Url.Action("DetalhesAgendamento", new { id = Model.AgendamentoId })" class="btn-cancelar">
+                    Cancelar
+                </a>
+                <button type="submit" class="btn-confirmar">
+                    <i class="bi bi-check-lg"></i> Confirmar pagamento
+                </button>
+            </div>
+        }
+    </div>
+</div>

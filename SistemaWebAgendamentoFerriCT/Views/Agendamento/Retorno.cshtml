@@ -1,0 +1,206 @@
+@model SistemaWebAgendamentoFerriCT.Models.Agendamento
+
+@{
+    ViewBag.Title = "Retorno do Pagamento";
+    var statusMP = (ViewBag.StatusMP as string)?.ToLowerInvariant();
+    var statusAg = Model.Status;
+
+    // Cenários possíveis nesta página (já não chega aqui se Confirmado — redirect no action):
+    //   pendente     → webhook ainda não chegou OU pagamento em processamento
+    //   emAnalise    → MP segura o pagamento para análise antifraude
+    //   cancelado    → MP rejeitou OU cliente cancelou
+    //   aguardandoVaga → turma estava lotada (não deveria cair aqui mas tratamos)
+
+    string icone, titulo, mensagem, classeTema;
+    bool podeTentarNovamente = false;
+    bool autoRefresh = false;
+
+    if (statusAg == "Cancelado" || statusMP == "failure")
+    {
+        icone = "bi-x-circle-fill";
+        classeTema = "tema-erro";
+        titulo = "Pagamento não concluído";
+        mensagem = "Seu pagamento foi recusado ou cancelado. Você pode tentar novamente abaixo.";
+        podeTentarNovamente = true;
+    }
+    else if (statusAg == "EmAnalise" || statusMP == "pending")
+    {
+        icone = "bi-hourglass-split";
+        classeTema = "tema-aguardando";
+        titulo = "Pagamento em análise";
+        mensagem = "O Mercado Pago está analisando seu pagamento. Isso pode levar alguns minutos. Atualizaremos automaticamente.";
+        autoRefresh = true;
+    }
+    else // PendentePagamento + status=success (webhook ainda não chegou)
+    {
+        icone = "bi-arrow-repeat";
+        classeTema = "tema-aguardando";
+        titulo = "Confirmando pagamento...";
+        mensagem = "Estamos sincronizando com o Mercado Pago. Geralmente leva poucos segundos.";
+        autoRefresh = true;
+    }
+}
+
+@if (autoRefresh)
+{
+    <meta http-equiv="refresh" content="5">
+}
+
+<style>
+    .retorno-wrapper {
+        min-height: calc(100vh - 64px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 16px;
+    }
+
+    .retorno-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 48px 40px;
+        max-width: 520px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .retorno-icone {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        display: inline-block;
+    }
+
+    .tema-erro .retorno-icone { color: var(--danger); }
+    .tema-aguardando .retorno-icone { color: var(--accent); animation: spin 2s linear infinite; }
+
+    .retorno-card h3 {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.8rem;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+    }
+
+    .retorno-card p {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-bottom: 24px;
+    }
+
+    .resumo-mini {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 16px;
+        margin-bottom: 24px;
+        text-align: left;
+        font-size: 0.85rem;
+    }
+
+    .resumo-mini-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 4px 0;
+    }
+
+    .resumo-mini-row span:first-child { color: var(--text-secondary); }
+
+    .btn-acao {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-primario {
+        background: var(--accent);
+        color: var(--bg-deep);
+    }
+
+    .btn-primario:hover { background: #f5d465; transform: translateY(-2px); }
+
+    .btn-secundario {
+        background: transparent;
+        color: var(--text-primary);
+        border: 1px solid var(--border);
+    }
+
+    .btn-secundario:hover { border-color: var(--accent); color: var(--accent); }
+
+    .info-refresh {
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+        margin-top: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    @@keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+</style>
+
+<div class="retorno-wrapper">
+    <div class="retorno-card @classeTema">
+        <i class="bi @icone retorno-icone"></i>
+
+        <h3>@titulo</h3>
+        <p>@mensagem</p>
+
+        <div class="resumo-mini">
+            <div class="resumo-mini-row">
+                <span>Tipo</span>
+                <span>@Model.TipoAula</span>
+            </div>
+            <div class="resumo-mini-row">
+                <span>Data</span>
+                <span>@Model.DataAula.ToString("dd/MM/yyyy")</span>
+            </div>
+            <div class="resumo-mini-row">
+                <span>Horário</span>
+                <span>@($"{Model.HorarioTurma.HoraInicio:hh\\:mm} - {Model.HorarioTurma.HoraFim:hh\\:mm}")</span>
+            </div>
+        </div>
+
+        @if (podeTentarNovamente)
+        {
+            <form action="@Url.Action("IniciarPagamento", "Agendamento")" method="post" style="display:inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="agendamentoId" value="@Model.AgendamentoId" />
+                <button type="submit" class="btn-acao btn-primario">
+                    <i class="bi bi-arrow-clockwise"></i> Tentar pagamento novamente
+                </button>
+            </form>
+            <div style="margin-top:12px">
+                <a href="@Url.Action("Perfil", "Cliente")" class="btn-acao btn-secundario">
+                    <i class="bi bi-house"></i> Voltar ao perfil
+                </a>
+            </div>
+        }
+        else
+        {
+            <a href="@Url.Action("Retorno", "Agendamento", new { id = Model.AgendamentoId, status = statusMP })" class="btn-acao btn-secundario">
+                <i class="bi bi-arrow-clockwise"></i> Verificar agora
+            </a>
+
+            @if (autoRefresh)
+            {
+                <div class="info-refresh">
+                    <i class="bi bi-arrow-repeat"></i>
+                    Atualizando automaticamente a cada 5 segundos...
+                </div>
+            }
+        }
+    </div>
+</div>
