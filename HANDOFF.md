@@ -1,14 +1,62 @@
 # Handoff — Integração Mercado Pago
 
-**Data:** 2026-05-17
-**Sessão:** Implementação completa do código de integração Mercado Pago (Checkout Pro) com foco em segurança.
-**Status:** Código escrito. **Falta build + teste end-to-end no sandbox.**
+**Branch atual:** `feat/mercado-pago-integration`
+**Última sessão:** 2026-05-17
+**Status:** Código escrito e commitado. **Testes end-to-end no sandbox em andamento — travado em configuração de credenciais.**
+
+## Para retomar na próxima sessão
+
+```powershell
+git checkout feat/mercado-pago-integration
+```
+
+E diz pro Claude: "continua do HANDOFF.md, vamos retomar Task #9".
+
+---
+
+## ⚠️ Bloqueio atual (onde paramos)
+
+Durante o teste end-to-end (Task #9), descobrimos que a conta MP de produção do dev:
+- **PIX precisou ser habilitado** em `mercadopago.com.br/cobrar-com-pix` (já feito — chave aleatória criada)
+- **TEST tokens da aplicação MP foram trocados** durante a investigação por tokens de "test users" (caminho errado)
+
+**Próxima ação concreta** — restaurar credenciais corretas:
+
+1. Logar em `mercadopago.com.br/developers` com a **conta real** (não test user)
+2. Entrar na aplicação `Ferri CT — Agendamento`
+3. Navegar até **Credenciais de teste** (deve mostrar `TEST-...` AccessToken + PublicKey nessa página, possivelmente em uma aba específica)
+   - Se MP só estiver mostrando "Test users", procurar aba "Access Token" / "Credentials" ao lado
+   - Se realmente não existir, clicar em **Gerar credenciais de teste** (botão pode existir)
+4. Copiar AccessToken (`TEST-...`) e PublicKey (`TEST-...`) corretos
+5. Colar em `SistemaWebAgendamentoFerriCT/Web.secrets.config` nos campos `MercadoPago:AccessToken` e `MercadoPago:PublicKey`
+6. **NÃO mexer** em `WebhookSecret`, `NotificationUrl`, `BackUrlBase`
+7. Confirmar que a URL do túnel cloudflared ainda está ativa e que `NotificationUrl`/`BackUrlBase` batem (se diferente, atualizar nos dois — `Web.secrets.config` E painel Webhooks do MP)
+8. Shift+F5 + F5 no Visual Studio
+9. Testar de novo em janela anônima
+
+## ⚠️ NÃO usar tokens com prefixo `APP_USR-` no `Web.secrets.config`
+
+Esses são tokens de **produção** — cobram de verdade. Em desenvolvimento, sempre usar `TEST-*`.
 
 ---
 
 ## Resumo executivo
 
 Implementadas 8 das 9 tasks do plano. A única pendente é teste manual no sandbox (Task #9), que depende do ambiente local com Cloudflare Tunnel + `Web.secrets.config` real.
+
+### Sessão de teste 2026-05-17 — descobertas e fixes
+
+Durante o teste end-to-end, foram identificados e corrigidos 2 bugs na configuração da Preference:
+
+1. **`account_money` não pode ser excluído** — MP retornava 400 "account_money cannot be excluded". Fix: removido da lista de `excluded_payment_types` em `MercadoPagoService.cs`. Agora permite saldo MP Wallet (comportamento similar a PIX, baixo risco).
+
+2. **`installments: 1` filtra débito em sandbox** — apesar de documentado como genérico, esse campo é tratado pelo MP como específico de crédito e estava removendo opções de débito. Fix: removido `installments` da Preference em `MercadoPagoService.cs`.
+
+3. **Logging do erro real do MP** — `IniciarPagamento` no `AgendamentoController` agora loga `ex.StatusCode`, `ex.Message` e `ex.ResponseBody` via `Trace.TraceError`. Ajuda a debugar respostas de erro do MP via Output do VS.
+
+**Configurações da conta MP feitas hoje:**
+- PIX habilitado em `mercadopago.com.br/cobrar-com-pix` (chave aleatória cadastrada)
+- Webhook URL cadastrada no painel MP apontando para o túnel Cloudflare atual
 
 ### Tasks concluídas
 

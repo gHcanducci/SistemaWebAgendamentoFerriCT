@@ -390,13 +390,16 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 // Redireciona para a URL hospedada do Mercado Pago (init_point ou sandbox_init_point)
                 return Redirect(preference.InitPoint);
             }
-            catch (MercadoPagoException)
+            catch (MercadoPagoException ex)
             {
+                System.Diagnostics.Trace.TraceError(
+                    $"IniciarPagamento MP error: status={ex.StatusCode} msg={ex.Message} body={ex.ResponseBody}");
                 TempData["Erro"] = "Não foi possível iniciar o pagamento agora. Tente novamente em instantes.";
                 return RedirectToAction("Pagamento", new { id = agendamentoId });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                System.Diagnostics.Trace.TraceError("IniciarPagamento erro inesperado: " + ex);
                 TempData["Erro"] = "Erro inesperado ao iniciar o pagamento.";
                 return RedirectToAction("Pagamento", new { id = agendamentoId });
             }
