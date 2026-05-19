@@ -79,15 +79,18 @@ namespace SistemaWebAgendamentoFerriCT.MercadoPago
                 auto_return = "approved",
                 payment_methods = new
                 {
-                    // Bloqueia: crédito, boleto e ATM.
-                    // Permitidos: PIX (bank_transfer), débito, account_money (MP wallet).
+                    // Permitidos: PIX (bank_transfer) e débito apenas.
+                    // account_money NÃO pode ser excluído via API do MP (retorna 400);
+                    // só aparece se o comprador tiver saldo na carteira MP.
                     // installments NÃO é setado: MP trata esse campo como restrição
                     // específica de crédito que pode filtrar débito em sandbox.
                     excluded_payment_types = new[]
                     {
                         new { id = "credit_card" },
+                        new { id = "prepaid_card" },
                         new { id = "ticket" },
-                        new { id = "atm" }
+                        new { id = "atm" },
+                        new { id = "digital_currency" }
                     }
                 },
                 statement_descriptor = "FERRI CT",
