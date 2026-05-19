@@ -1,8 +1,8 @@
 # Handoff — Integração Mercado Pago
 
 **Branch atual:** `feat/mercado-pago-integration`
-**Última sessão:** 2026-05-17
-**Status:** Código escrito e commitado. **Testes end-to-end no sandbox em andamento — travado em configuração de credenciais.**
+**Última sessão:** 2026-05-19
+**Status:** Débito validado end-to-end no sandbox. PIX adiado pra validação em produção.
 
 ## Para retomar na próxima sessão
 
@@ -10,251 +10,216 @@
 git checkout feat/mercado-pago-integration
 ```
 
-E diz pro Claude: "continua do HANDOFF.md, vamos retomar Task #9".
+E diz pro Claude: "continua do HANDOFF.md".
 
 ---
 
-## ⚠️ Bloqueio atual (onde paramos)
+## ✅ Onde paramos (2026-05-19)
 
-Durante o teste end-to-end (Task #9), descobrimos que a conta MP de produção do dev:
-- **PIX precisou ser habilitado** em `mercadopago.com.br/cobrar-com-pix` (já feito — chave aleatória criada)
-- **TEST tokens da aplicação MP foram trocados** durante a investigação por tokens de "test users" (caminho errado)
+Sessão de hoje fechou os bloqueios da sessão anterior e validou o golden path:
 
-**Próxima ação concreta** — restaurar credenciais corretas:
+1. **Webhook funcionando** — pagamento aprovado no MP → webhook chega → status do agendamento muda pra `Confirmado` no dashboard ✅
+2. **Erro Razor em `Retorno.cshtml` corrigido** — `@if` interno de bloco `else { }` removido (commit `66d0b52`)
+3. **Métodos de pagamento filtrados** — agora bloqueia `prepaid_card` e `digital_currency` (commit `66d0b52`)
 
-1. Logar em `mercadopago.com.br/developers` com a **conta real** (não test user)
-2. Entrar na aplicação `Ferri CT — Agendamento`
-3. Navegar até **Credenciais de teste** (deve mostrar `TEST-...` AccessToken + PublicKey nessa página, possivelmente em uma aba específica)
-   - Se MP só estiver mostrando "Test users", procurar aba "Access Token" / "Credentials" ao lado
-   - Se realmente não existir, clicar em **Gerar credenciais de teste** (botão pode existir)
-4. Copiar AccessToken (`TEST-...`) e PublicKey (`TEST-...`) corretos
-5. Colar em `SistemaWebAgendamentoFerriCT/Web.secrets.config` nos campos `MercadoPago:AccessToken` e `MercadoPago:PublicKey`
-6. **NÃO mexer** em `WebhookSecret`, `NotificationUrl`, `BackUrlBase`
-7. Confirmar que a URL do túnel cloudflared ainda está ativa e que `NotificationUrl`/`BackUrlBase` batem (se diferente, atualizar nos dois — `Web.secrets.config` E painel Webhooks do MP)
-8. Shift+F5 + F5 no Visual Studio
-9. Testar de novo em janela anônima
+### O que faltou na Task #9
 
-## ⚠️ NÃO usar tokens com prefixo `APP_USR-` no `Web.secrets.config`
+Cenários ainda não exercitados no sandbox:
 
-Esses são tokens de **produção** — cobram de verdade. Em desenvolvimento, sempre usar `TEST-*`.
+- [ ] Cartão recusado (CVV inválido) — 2min
+- [ ] Webhook forjado (POST sem `x-signature`) — 5min, **segurança importante**
+- [ ] Pagamento manual admin — 3min
+- [ ] Ownership check (cliente A acessa agendamento B) — 5min, **segurança importante**
+- [ ] Timeout 1h (cleanup job) — espera longa, logs em VS Output
+- [ ] PIX — adiado pra validar em produção (sandbox MP quebrado, ver abaixo)
 
 ---
 
-## Resumo executivo
+## 🔑 Aprendizados críticos desta sessão (LEIA antes de retomar)
 
-Implementadas 8 das 9 tasks do plano. A única pendente é teste manual no sandbox (Task #9), que depende do ambiente local com Cloudflare Tunnel + `Web.secrets.config` real.
+### 1. Test users do MP — fluxo correto
 
-### Sessão de teste 2026-05-17 — descobertas e fixes
+O MP migrou (faz uns 2 anos) de tokens `TEST-*` direto na conta real para o modelo de **test users**:
 
-Durante o teste end-to-end, foram identificados e corrigidos 2 bugs na configuração da Preference:
+- Cria 2 test users no painel developers: **seller** (vendedor) e **buyer** (comprador)
+- Faz **logout** da conta real do MP
+- Faz **login com email/senha do test seller**
+- Dentro da conta dele, cria/abre uma **aplicação**
+- AccessToken e PublicKey aparecem como `APP_USR-...` (sandbox porque a conta é de teste)
+- Esse `APP_USR-...` é o que vai no `Web.secrets.config`
 
-1. **`account_money` não pode ser excluído** — MP retornava 400 "account_money cannot be excluded". Fix: removido da lista de `excluded_payment_types` em `MercadoPagoService.cs`. Agora permite saldo MP Wallet (comportamento similar a PIX, baixo risco).
+⚠️ NÃO confundir: `APP_USR-*` da conta REAL = produção (cobra dinheiro). `APP_USR-*` do test seller = sandbox.
 
-2. **`installments: 1` filtra débito em sandbox** — apesar de documentado como genérico, esse campo é tratado pelo MP como específico de crédito e estava removendo opções de débito. Fix: removido `installments` da Preference em `MercadoPagoService.cs`.
+### 2. WebhookSecret é separado do AccessToken
 
-3. **Logging do erro real do MP** — `IniciarPagamento` no `AgendamentoController` agora loga `ex.StatusCode`, `ex.Message` e `ex.ResponseBody` via `Trace.TraceError`. Ajuda a debugar respostas de erro do MP via Output do VS.
+Quando você cadastra o webhook no painel MP, o painel gera uma **chave secreta** específica do webhook. Ela:
 
-**Configurações da conta MP feitas hoje:**
-- PIX habilitado em `mercadopago.com.br/cobrar-com-pix` (chave aleatória cadastrada)
-- Webhook URL cadastrada no painel MP apontando para o túnel Cloudflare atual
+- **NÃO é** o AccessToken
+- Tem que ser copiada do painel → Sua aplicação → Webhooks → notificação cadastrada → **Chave secreta** (botão "Mostrar")
+- Vai em `MercadoPago:WebhookSecret` no `Web.secrets.config`
 
-### Tasks concluídas
+Se você recadastra o webhook (ou trocou de aplicação), o MP **gera uma chave secreta nova**. Tem que atualizar o `Web.secrets.config` ou todos os webhooks vão retornar 401.
 
-| # | Task | Arquivos chave |
-|---|---|---|
-| 1 | Setup MP + túnel HTTPS | `Web.config`, `Web.secrets.config.example`, `.gitignore` |
-| 2 | Migration `AddMercadoPagoFields` | `Migrations/202605172019119_AddMercadoPagoFields.cs`, `Models/Pagamento.cs` |
-| 3 | `MercadoPagoService` | `MercadoPago/MercadoPagoService.cs` + 5 outros em `MercadoPago/` |
-| 4 | Refactor `AgendamentoController` | `Controllers/AgendamentoController.cs`, `Views/Agendamento/Pagamento.cshtml`, `ViewModels/PagamentoViewModel.cs` |
-| 5 | Webhook + validação HMAC | `Controllers/PagamentoController.cs`, `MercadoPago/WebhookSignatureValidator.cs` |
-| 6 | Página de retorno | `Views/Agendamento/Retorno.cshtml` + action `Retorno` em `AgendamentoController` |
-| 7 | Job de cleanup automático | `Tasks/AgendamentoCleanupJob.cs`, `Global.asax.cs` |
-| 8 | Pagamento manual admin | `Views/Admin/RegistrarPagamentoManual.cshtml` + 2 actions em `AdminController` |
-| 9 | **Teste end-to-end no sandbox** | **Pendente — do lado do usuário** |
+**Sintoma**: painel MP → Webhooks → notificações mostram **"401 - Com erro"** em vermelho.
+
+### 3. Simulação de webhook do painel sempre dá 500
+
+Não é bug nosso. O simulador do MP manda `data.id: "123456"` (ID falso). Nosso código valida HMAC (passa ✅), depois tenta buscar o pagamento na API real do MP, que retorna 404 → 500.
+
+**Como saber se HMAC funcionou pela simulação:** olha o Output do VS. Se aparecer `Webhook MP: falha ao consultar payment 123456` → HMAC OK. Se aparecer `assinatura inválida` → WebhookSecret errado.
+
+### 4. PIX em sandbox do MP é quebrado pra test sellers
+
+Cadastro de chave PIX no painel do test seller retorna erro genérico `PKF03-VYL8CGTZPHCP`. Confirmado depois de várias tentativas com tipos diferentes de chave (aleatória/email/CPF).
+
+**Decisão tomada:** validar PIX só em produção, com transação de **R$ 0,50–1,00**, depois do deploy. A conta real do MP já tem PIX habilitado.
+
+### 5. account_money não dá pra excluir via API
+
+MP retorna 400 "account_money cannot be excluded" se a gente tentar. O comprador vê **"Saldo em conta"** se tiver saldo na carteira MP. Em produção, raramente é problema (comprador comum não tem saldo). Aceitável.
 
 ---
 
-## Como continuar (próxima sessão)
+## ⚙️ Estado do código
 
-### 1. Build do projeto
+### Mudanças commitadas hoje (`66d0b52`)
 
-No Visual Studio: **Ctrl+Shift+B**. Se houver erro de compilação, ele indica algo que ficou pendurado de uma das tasks acima. Provavelmente algum `<Compile Include>` faltando no `.csproj` — eu adicionei todos os que precisava, mas confira.
+**`Views/Agendamento/Retorno.cshtml`** (linha 197):
+```csharp
+// Antes
+@if (autoRefresh)  // ❌ erro: já estamos em contexto C# (dentro de else { })
 
-### 2. Confirmar que `Web.secrets.config` existe e tem valores
+// Depois
+if (autoRefresh)   // ✅ sem @, porque já estamos em código
+```
 
-Em `SistemaWebAgendamentoFerriCT/Web.secrets.config` (NÃO versionado), com:
+**`MercadoPago/MercadoPagoService.cs`** (~linha 86):
+```csharp
+excluded_payment_types = new[]
+{
+    new { id = "credit_card" },
+    new { id = "prepaid_card" },     // NOVO — bloqueia cartões pré-pagos
+    new { id = "ticket" },
+    new { id = "atm" },
+    new { id = "digital_currency" }  // NOVO — bloqueia cripto
+}
+```
 
+### Web.secrets.config (não versionado)
+
+Estado funcional confirmado hoje:
 ```xml
-<add key="MercadoPago:AccessToken" value="TEST-..." />
-<add key="MercadoPago:PublicKey" value="TEST-..." />
-<add key="MercadoPago:WebhookSecret" value="..." />
+<add key="MercadoPago:AccessToken" value="APP_USR-..." />     <!-- test seller -->
+<add key="MercadoPago:PublicKey" value="APP_USR-..." />       <!-- test seller -->
+<add key="MercadoPago:WebhookSecret" value="..." />            <!-- chave secreta do webhook -->
 <add key="MercadoPago:NotificationUrl" value="https://<tunel>/Pagamento/Webhook" />
 <add key="MercadoPago:BackUrlBase" value="https://<tunel>" />
 ```
 
-### 3. Subir o túnel Cloudflare
+---
 
-```powershell
-$env:GODEBUG = "netdns=cgo"
-& "$env:USERPROFILE\cloudflared\cloudflared.exe" tunnel --url https://localhost:44358 --no-tls-verify --http-host-header localhost:44358
-```
+## 🔁 Como retomar testes na próxima sessão
 
-URL muda a cada execução. Atualize `Web.secrets.config` e webhook no painel MP se mudar.
+### Pré-requisitos
 
-### 4. Rodar o projeto (F5) e testar Task #9
+1. **Subir túnel Cloudflare**
+   ```powershell
+   $env:GODEBUG = "netdns=cgo"
+   & "$env:USERPROFILE\cloudflared\cloudflared.exe" tunnel --url https://localhost:44358 --no-tls-verify --http-host-header localhost:44358
+   ```
 
-Cenários a validar:
+2. **A URL do túnel muda a cada execução.** Atualize:
+   - `Web.secrets.config` → `NotificationUrl` e `BackUrlBase`
+   - Painel MP do test seller → Webhooks → editar URL pra novo túnel
 
-- [ ] **PIX aprovado:** cria agendamento → clica Pagar → escolhe PIX no MP → simula pagamento → webhook chega → status muda para Confirmado
-- [ ] **Débito aprovado:** mesmo fluxo com cartão de teste do MP
-- [ ] **Cartão recusado:** cartão de teste com CVV inválido → status Cancelado
-- [ ] **Timeout 1h:** criar agendamento, NÃO pagar, esperar 1h05min → cleanup job marca Cancelado (logs em Output do VS)
-- [ ] **Webhook duplicado:** MP reenvia o mesmo evento → segundo retorna `"Already processed"` (idempotência por `WebhookEventoId`)
-- [ ] **Webhook forjado:** mandar POST sem `x-signature` (via curl/Postman) → 401
-- [ ] **Pagamento manual admin:** painel admin → DetalhesAgendamento → URL `/Admin/RegistrarPagamentoManual/{id}` → forma=Dinheiro → status Confirmado
-- [ ] **Lista de espera:** criar agendamento em turma lotada → fica `AguardandoVaga`, sem fluxo MP
-- [ ] **Cliente A não acessa agendamento de B:** tentar `/Agendamento/Pagamento/{idDeOutroCliente}` → 403
+3. **Build + F5** (Visual Studio)
 
-### 5. Cartões/PIX de teste do MP (sandbox)
+### Cartão de teste pra Débito
 
-- **Cartão débito aprovado:** 5031 4332 1540 6351, CVV 123, validade qualquer futura. Nome `APRO` ou `OTHE` para outros cenários.
-- **PIX:** o MP gera QR Code → clicar em "Aprovar pagamento" no painel sandbox.
-- Documentação: https://www.mercadopago.com.br/developers/pt/docs/checkout-pro/test-integration
+- Aprovado: `5031 4332 1540 6351`, CVV `123`, validade futura, nome `APRO`
+- Recusado: mesmo cartão, nome `OTHE` (ou CVV inválido)
+
+### Comprador
+
+Logar no checkout do MP com o **test buyer** (não a conta real). Email/senha estão no arquivo local `SistemaWebAgendamentoFerriCT/contas teste MP.txt` (gitignored).
+
+### Cenários sugeridos (em ordem de prioridade)
+
+1. **Webhook forjado** (segurança):
+   ```powershell
+   Invoke-WebRequest -Uri "https://<tunel>/Pagamento/Webhook" -Method POST -Body '{"type":"payment","data":{"id":"123"}}' -ContentType "application/json"
+   ```
+   Esperado: HTTP 401 "Invalid signature"
+
+2. **Ownership check** (segurança): tentar acessar `/Agendamento/Pagamento/{idDeOutroCliente}` logado como cliente X → esperado 403
+
+3. **Cartão recusado**: cartão de teste com nome `OTHE` → status `Cancelado`
+
+4. **Pagamento manual admin**: `/Admin/RegistrarPagamentoManual/{id}` → forma=Dinheiro → status `Confirmado`
+
+5. **Timeout 1h**: cria agendamento sem pagar, espera, vê no Output `AgendamentoCleanupJob` cancelando
 
 ---
 
-## Arquivos criados/modificados nesta sessão
+## 📦 Tasks concluídas (visão geral)
 
-### Novos
-```
-SistemaWebAgendamentoFerriCT/
-├── MercadoPago/
-│   ├── MercadoPagoSettings.cs
-│   ├── MercadoPagoException.cs
-│   ├── IMercadoPagoService.cs
-│   ├── MercadoPagoService.cs
-│   ├── PreferenceCreatedResult.cs
-│   ├── PaymentInfo.cs
-│   └── WebhookSignatureValidator.cs
-├── Controllers/
-│   └── PagamentoController.cs
-├── Tasks/
-│   └── AgendamentoCleanupJob.cs
-├── Views/
-│   ├── Agendamento/Retorno.cshtml
-│   └── Admin/RegistrarPagamentoManual.cshtml
-├── Migrations/
-│   └── 202605172019119_AddMercadoPagoFields.{cs,Designer.cs,resx}
-└── Web.secrets.config.example
-```
-
-E na raiz:
-```
-CLAUDE.md
-HANDOFF.md (este arquivo)
-```
-
-### Modificados
-```
-SistemaWebAgendamentoFerriCT/
-├── Web.config                       (appSettings file=Web.secrets.config + 5 keys MP)
-├── Global.asax.cs                   (chama AgendamentoCleanupJob.Iniciar)
-├── SistemaWebAgendamentoFerriCT.csproj  (Compile Includes dos novos arquivos)
-├── Controllers/
-│   ├── AgendamentoController.cs    (Refactor: IniciarPagamento async, Retorno, guards)
-│   └── AdminController.cs          (RegistrarPagamentoManual + ValorMatricula consts)
-├── Models/Pagamento.cs              (5 campos novos: PreferenceId, WebhookEventoId, etc)
-├── ViewModels/PagamentoViewModel.cs (removido FormaPagamento)
-└── Views/Agendamento/Pagamento.cshtml (refeita — botão MP em vez de form PIX/Cartão simulado)
-
-.gitignore                           (ignora Web.secrets.config, mantém .example)
-```
+| # | Task | Status |
+|---|---|---|
+| 1 | Setup MP + túnel HTTPS | ✅ |
+| 2 | Migration `AddMercadoPagoFields` | ✅ |
+| 3 | `MercadoPagoService` | ✅ |
+| 4 | Refactor `AgendamentoController` | ✅ |
+| 5 | Webhook + validação HMAC | ✅ |
+| 6 | Página de retorno | ✅ (bug Razor corrigido hoje) |
+| 7 | Job de cleanup automático | ✅ |
+| 8 | Pagamento manual admin | ✅ |
+| 9 | **Teste end-to-end no sandbox** | 🟡 Débito validado, outros cenários pendentes |
 
 ---
 
-## Defesas de segurança implementadas (lista de verificação)
+## 🚧 Pontos de atenção / dívidas técnicas
+
+1. **`SenhaAdminHash` hardcoded** em `AdminController` (SHA-256 de "123"). Em produção, mover para `Web.secrets.config` e usar bcrypt/Argon2.
+
+2. **`FormaPagamento` em `Pagamento` ainda é `[Required]`** mas usamos placeholder `"Aguardando"`. Aceitável; poderia virar nullable.
+
+3. **`MapearFormaPagamento`** não trata `prepaid_card` — retorna `"Aguardando"`. Como agora bloqueamos prepaid via Preference, isso só importa se algum gateway escapar. Baixa prioridade.
+
+4. **`AgendamentoCleanupJob` usa `Timer` estático** — em IIS com app pool recycle agressivo pode perder ticks. Considerar Hangfire para produção.
+
+5. **Sem logging estruturado** — usando `System.Diagnostics.Trace`. NLog/Serilog em produção.
+
+6. **Sem testes automatizados** — prioridade alta: `WebhookSignatureValidator` (HMAC).
+
+7. **URL do túnel Cloudflare muda** — em produção haverá domínio fixo. Em dev, lembrar de atualizar webhook + secrets a cada execução.
+
+8. **PIX em produção não foi validado ainda** — depois do deploy, fazer uma transação real de R$ 0,50–1,00 pra confirmar que o fluxo funciona.
+
+9. **Sandbox MP às vezes demora** alguns segundos pra webhook chegar. A página `Retorno.cshtml` tem auto-refresh de 5s pra cobrir isso.
+
+---
+
+## 💰 Defesas de segurança implementadas
 
 | # | Defesa | Local |
 |---|---|---|
-| 1 | Access Token em arquivo `Web.secrets.config` gitignored | `Web.config` + `.gitignore` |
+| 1 | Access Token em `Web.secrets.config` gitignored | `Web.config` + `.gitignore` |
 | 2 | HMAC-SHA256 do `x-signature` em **constant time** | `WebhookSignatureValidator.cs` |
 | 3 | Tolerância de timestamp 5min (anti-replay) | `WebhookSignatureValidator.MaxClockSkew` |
 | 4 | `WebhookEventoId` UNIQUE filtrado (idempotência) | Migration + `PagamentoController.Webhook` |
 | 5 | `CodigoTransacao` UNIQUE filtrado (anti-replay de paymentId) | Migration |
 | 6 | `PreferenceId` UNIQUE filtrado | Migration |
 | 7 | Re-busca via `/v1/payments/{id}` antes de confirmar | `PagamentoController.Webhook` step 5 |
-| 8 | Validação `transaction_amount` == valor server-side (anti-tampering) | `PagamentoController.Webhook` step 7 |
+| 8 | Validação `transaction_amount` == valor server-side | `PagamentoController.Webhook` step 7 |
 | 9 | `X-Idempotency-Key` na criação de Preference | `MercadoPagoService.CriarPreferenceAsync` |
-| 10 | `excluded_payment_types`: bloqueia crédito/boleto/ATM/wallet | `MercadoPagoService.CriarPreferenceAsync` |
-| 11 | Ownership check (cliente A não acessa agendamento B) → 403 | `AgendamentoController.Pagamento`/`IniciarPagamento`/`Retorno` |
+| 10 | `excluded_payment_types`: bloqueia crédito/prepaid/boleto/ATM/cripto | `MercadoPagoService.CriarPreferenceAsync` |
+| 11 | Ownership check (cliente A não acessa B) → 403 | `AgendamentoController.Pagamento`/`IniciarPagamento`/`Retorno` |
 | 12 | Guard "1 PendentePagamento por cliente" | `AgendamentoController.Create` POST |
 | 13 | Pagamentos antigos cancelados ao recriar Preference | `AgendamentoController.IniciarPagamento` |
-| 14 | Botão `disabled` ao submeter (mitiga duplo-click) | `Pagamento.cshtml` JS |
+| 14 | Botão `disabled` ao submeter (anti duplo-click) | `Pagamento.cshtml` JS |
 | 15 | Webhook **sem** `[ValidateAntiForgeryToken]` (defesa = HMAC) | `PagamentoController.Webhook` |
-| 16 | Valor recalculado server-side em todo lugar (nunca confiar no client) | controllers |
-| 17 | `[FiltroAcesso]` herdado em `RegistrarPagamentoManual` | `AdminController` (class-level filter) |
-| 18 | Forma de pagamento manual via whitelist (`Dinheiro`/`Pix`/`Debito`) | `AdminController.RegistrarPagamentoManual` POST |
+| 16 | Valor recalculado server-side em todo lugar | controllers |
+| 17 | `[FiltroAcesso]` herdado em `RegistrarPagamentoManual` | `AdminController` |
+| 18 | Forma de pagamento manual via whitelist | `AdminController.RegistrarPagamentoManual` POST |
 | 19 | CPF sanitizado (só dígitos) antes de mandar pro MP | `MercadoPagoService.SomenteDigitos` |
 | 20 | TLS 1.2 forçado no HttpClient | `MercadoPagoService.CriarHttpClient` |
-
----
-
-## Pontos de atenção / dívidas técnicas
-
-1. **`SenhaAdminHash` hardcoded** em `AdminController` (SHA-256 de "123"). Em produção, mover para `Web.secrets.config` e usar algoritmo mais robusto (bcrypt/Argon2 via NuGet).
-
-2. **`FormaPagamento` em `Pagamento` ainda é `[Required]`** mas usamos string placeholder `"Aguardando"` enquanto não houver confirmação MP. Aceitável, mas poderia virar nullable em migration futura.
-
-3. **Sem logging estruturado** — usando `System.Diagnostics.Trace`. Para produção, considerar NLog ou Serilog.
-
-4. **Job de cleanup usa `Timer` estático** — em ambientes com app pool recycle agressivo (IIS), pode perder ticks. Para produção robusta, considerar Hangfire.
-
-5. **Sem testes automatizados** — toda validação até aqui é manual. Sugestão de prioridade: testes do `WebhookSignatureValidator` (lógica criptográfica é onde bugs sutis machucam mais).
-
-6. **A URL do túnel Cloudflare muda a cada execução** — em produção haverá domínio fixo. Em dev, lembre de atualizar webhook no painel MP + `Web.secrets.config` quando reiniciar.
-
-7. **MP Sandbox às vezes demora** alguns segundos para enviar webhook após pagamento. A página `Retorno.cshtml` tem auto-refresh de 5s pra cobrir isso.
-
----
-
-## Para commitar no fim da sessão atual
-
-```bash
-git add CLAUDE.md HANDOFF.md
-git add SistemaWebAgendamentoFerriCT/Web.config
-git add SistemaWebAgendamentoFerriCT/Web.secrets.config.example
-git add SistemaWebAgendamentoFerriCT/Global.asax.cs
-git add SistemaWebAgendamentoFerriCT/SistemaWebAgendamentoFerriCT.csproj
-git add SistemaWebAgendamentoFerriCT/Controllers/
-git add SistemaWebAgendamentoFerriCT/Models/Pagamento.cs
-git add SistemaWebAgendamentoFerriCT/ViewModels/PagamentoViewModel.cs
-git add SistemaWebAgendamentoFerriCT/MercadoPago/
-git add SistemaWebAgendamentoFerriCT/Tasks/
-git add SistemaWebAgendamentoFerriCT/Migrations/202605172019119_AddMercadoPagoFields*
-git add SistemaWebAgendamentoFerriCT/Views/Agendamento/Pagamento.cshtml
-git add SistemaWebAgendamentoFerriCT/Views/Agendamento/Retorno.cshtml
-git add SistemaWebAgendamentoFerriCT/Views/Admin/RegistrarPagamentoManual.cshtml
-git add .gitignore
-
-git status   # confira que Web.secrets.config NÃO está sendo commitado
-```
-
-Sugestão de mensagem:
-
-```
-feat: integra Mercado Pago Checkout Pro (PIX + Débito) com defesas anti-fraude
-
-- MercadoPagoService cria Preference e consulta Payment via API oficial
-- PagamentoController.Webhook valida HMAC-SHA256 em constant time
-- Idempotência de webhook via WebhookEventoId UNIQUE filtrado
-- Re-busca de payment antes de confirmar (não confia em payload)
-- Validação de transaction_amount contra valor server-side
-- Job de cleanup automático: cancela agendamentos pendentes >1h
-- Admin pode registrar pagamento manual no balcão (CodigoTransacao=MANUAL-{Guid})
-- Cleanup de tentativas anteriores ao recriar Preference
-- Guard de 1 PendentePagamento por cliente
-- Ownership check em todos os endpoints de pagamento
-
-Falta apenas teste end-to-end no sandbox (Task #9 do plano).
-Ver HANDOFF.md para detalhes e próximos passos.
-```
