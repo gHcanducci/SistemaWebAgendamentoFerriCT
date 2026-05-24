@@ -15,6 +15,31 @@
 
         protected override void Seed(SistemaWebAgendamentoFerriCT.Models.SistemaContext context)
         {
+            // ─── 0. Clientes de demo (login = Email + CPF) ────────────────
+            // CPFs válidos pelo algoritmo módulo 11 (necessário porque vão
+            // pro Mercado Pago como `identification.number` do payer) e
+            // armazenados FORMATADOS (com pontos e traço) — assim como a
+            // máscara JS do formulário de cadastro/login salva no banco.
+            // O MercadoPagoService.SomenteDigitos() remove a pontuação
+            // antes de mandar pro MP.
+            context.Clientes.AddOrUpdate(c => c.Email,
+                new Models.Cliente
+                {
+                    Nome = "Cliente Demo",
+                    Email = "demo@ferrict.com.br",
+                    CPF = "529.982.247-25",
+                    Telefone = "(18) 99999-0000"
+                },
+                new Models.Cliente
+                {
+                    Nome = "Maria Aluna",
+                    Email = "maria@ferrict.com.br",
+                    CPF = "111.444.777-35",
+                    Telefone = "(18) 99999-0001"
+                }
+            );
+            context.SaveChanges();
+
             // ─── 1. Professores ───────────────────────────────────────────
             context.Professores.AddOrUpdate(p => p.Email,
                 new Models.Professor { Nome = "Instrutor Boxe",     Email = "boxe@ferrict.com.br",     Especialidade = "Boxe" },
