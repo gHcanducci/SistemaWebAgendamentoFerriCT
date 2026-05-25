@@ -49,7 +49,7 @@
         bottom: 0;
         width: 600px;
         height: 600px;
-        background: radial-gradient(circle, rgba(232,197,71,0.12) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(255,204,0,0.12) 0%, transparent 70%);
         z-index: 3;
         pointer-events: none;
     }
@@ -62,7 +62,7 @@
         font-family: 'Bebas Neue', sans-serif;
         font-size: clamp(160px, 22vw, 320px);
         line-height: 1;
-        color: rgba(232,197,71,0.06);
+        color: rgba(255,204,0,0.06);
         letter-spacing: -8px;
         user-select: none;
         pointer-events: none;
@@ -81,8 +81,8 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: rgba(232,197,71,0.12);
-        border: 1px solid rgba(232,197,71,0.35);
+        background: rgba(255,204,0,0.12);
+        border: 1px solid rgba(255,204,0,0.35);
         border-radius: 999px;
         padding: 6px 18px;
         font-size: 0.72rem;
@@ -156,10 +156,10 @@
     }
 
         .btn-hero-primary:hover {
-            background: #f5d465;
+            background: var(--accent-hover);
             color: #080809;
             transform: translateY(-3px);
-            box-shadow: 0 14px 36px rgba(232,197,71,0.4);
+            box-shadow: 0 14px 36px rgba(255,204,0,0.4);
         }
 
     .btn-hero-secondary {
@@ -181,7 +181,7 @@
         .btn-hero-secondary:hover {
             border-color: var(--accent);
             color: var(--accent);
-            background: rgba(232,197,71,0.08);
+            background: rgba(255,204,0,0.08);
         }
 
     /* Stats na base do hero */
@@ -211,7 +211,7 @@
         font-size: 3.2rem;
         color: var(--accent);
         line-height: 1;
-        text-shadow: 0 0 30px rgba(232,197,71,0.3);
+        text-shadow: 0 0 30px rgba(255,204,0,0.3);
     }
 
     .stat-lbl {
@@ -232,7 +232,7 @@
         z-index: 5;
         background: rgba(8,8,9,0.7);
         backdrop-filter: blur(20px);
-        border-top: 1px solid rgba(232,197,71,0.12);
+        border-top: 1px solid rgba(255,204,0,0.12);
         padding: 12px 60px;
         display: flex;
         align-items: center;
@@ -299,7 +299,7 @@
         }
 
         .feature-card:hover {
-            border-color: rgba(232,197,71,0.25);
+            border-color: rgba(255,204,0,0.25);
             transform: translateY(-6px);
             box-shadow: 0 20px 60px rgba(0,0,0,0.4);
         }
@@ -318,7 +318,7 @@
         justify-content: center;
         font-size: 1.5rem;
         margin-bottom: 20px;
-        border: 1px solid rgba(232,197,71,0.2);
+        border: 1px solid rgba(255,204,0,0.2);
     }
 
     .feature-title {
@@ -337,7 +337,7 @@
     .step-number {
         font-family: 'Bebas Neue', sans-serif;
         font-size: 4rem;
-        -webkit-text-stroke: 1px rgba(232,197,71,0.3);
+        -webkit-text-stroke: 1px rgba(255,204,0,0.3);
         color: transparent;
         line-height: 1;
         margin-bottom: 14px;
@@ -357,8 +357,8 @@
 
     /* ─── CTA ─── */
     .cta-section {
-        background: linear-gradient(135deg, rgba(232,197,71,0.1), rgba(232,197,71,0.03));
-        border: 1px solid rgba(232,197,71,0.2);
+        background: linear-gradient(135deg, rgba(255,204,0,0.1), rgba(255,204,0,0.03));
+        border: 1px solid rgba(255,204,0,0.2);
         border-radius: var(--radius-lg);
         padding: 80px 60px;
         text-align: center;
@@ -371,7 +371,7 @@
             position: absolute;
             font-family: 'Bebas Neue', sans-serif;
             font-size: 300px;
-            color: rgba(232,197,71,0.03);
+            color: rgba(255,204,0,0.03);
             right: -40px;
             bottom: -60px;
             line-height: 1;
@@ -403,7 +403,7 @@
 
     @@keyframes pulse-dot {
         0%, 100% {
-            box-shadow: 0 0 0 0 rgba(232,197,71,0.4);
+            box-shadow: 0 0 0 0 rgba(255,204,0,0.4);
         }
 
         50% {

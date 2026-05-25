@@ -11,20 +11,41 @@
 
     <style>
         :root {
-            --bg-deep: #080809;
-            --bg-surface: #111114;
-            --bg-card: #18181d;
-            --border: rgba(255,255,255,0.07);
-            --accent: #E8C547;
-            --accent-dim: rgba(232,197,71,0.15);
-            --accent-glow: rgba(232,197,71,0.35);
-            --text-primary: #F0EFE8;
-            --text-secondary: #7A7A85;
-            --danger: #E05050;
+            /* Surface */
+            --bg-deep:       #07070A;
+            --bg-surface:    #0F0F14;
+            --bg-card:       #15151C;
+            --bg-elevated:   #1B1B23;
+            --border:        rgba(255,255,255,0.07);
+            --border-strong: rgba(255,255,255,0.12);
+
+            /* Accent — Signal Yellow */
+            --accent:        #FFCC00;
+            --accent-hover:  #FFDA33;
+            --accent-soft:   rgba(255,204,0,0.08);
+            --accent-dim:    rgba(255,204,0,0.15);
+            --accent-glow:   rgba(255,204,0,0.35);
+
+            /* Text */
+            --text-primary:   #F4F3EE;
+            --text-secondary: #8A8A95;
+            --text-muted:     #5A5A65;
+
+            /* States */
+            --danger:  #E05050;
             --success: #4CAF82;
+            --warning: #F59E0B;
+
+            /* Radius */
             --radius-sm: 8px;
             --radius-md: 14px;
             --radius-lg: 22px;
+
+            /* Shadow */
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.35);
+            --shadow-lg: 0 18px 48px rgba(0,0,0,0.5);
+            --shadow-accent: 0 8px 28px rgba(255,204,0,0.25);
         }
 
         *, *::before, *::after {
@@ -139,7 +160,7 @@
         }
 
             .nav-cta:hover {
-                background: #f5d465 !important;
+                background: var(--accent-hover) !important;
                 transform: translateY(-1px);
                 box-shadow: 0 6px 20px var(--accent-glow);
             }
@@ -168,8 +189,8 @@
         }
 
             .nav-user-btn:hover {
-                border-color: rgba(232,197,71,0.3);
-                background: rgba(232,197,71,0.06);
+                border-color: rgba(255,204,0,0.3);
+                background: rgba(255,204,0,0.06);
                 color: var(--text-primary);
             }
 
@@ -178,7 +199,7 @@
             height: 30px;
             border-radius: 50%;
             background: var(--accent-dim);
-            border: 1px solid rgba(232,197,71,0.3);
+            border: 1px solid rgba(255,204,0,0.3);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -345,7 +366,7 @@
         }
 
             .btn-gold:hover {
-                background: #f5d465;
+                background: var(--accent-hover);
                 color: var(--bg-deep);
                 transform: translateY(-2px);
                 box-shadow: 0 8px 24px var(--accent-glow);
@@ -425,7 +446,7 @@
             }
 
                 .ferri-table tbody tr:hover {
-                    background: rgba(232,197,71,0.06);
+                    background: rgba(255,204,0,0.06);
                     transform: translateX(4px);
                 }
 

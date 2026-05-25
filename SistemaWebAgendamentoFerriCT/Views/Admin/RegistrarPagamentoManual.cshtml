@@ -1,4 +1,4 @@
-@model SistemaWebAgendamentoFerriCT.Models.Agendamento
+﻿@model SistemaWebAgendamentoFerriCT.Models.Agendamento
 
 @{
     ViewBag.Title = "Registrar Pagamento Manual";
@@ -98,7 +98,7 @@
     }
 
     .btn-confirmar { background: var(--accent); color: var(--bg-deep); }
-    .btn-confirmar:hover { background: #f5d465; }
+    .btn-confirmar:hover { background: var(--accent-hover); }
 
     .btn-cancelar {
         background: transparent;
@@ -108,8 +108,8 @@
     .btn-cancelar:hover { color: var(--text-primary); border-color: var(--accent); }
 
     .pgm-aviso {
-        background: rgba(232,197,71,0.06);
-        border: 1px solid rgba(232,197,71,0.2);
+        background: rgba(255,204,0,0.06);
+        border: 1px solid rgba(255,204,0,0.2);
         padding: 10px 14px;
         border-radius: var(--radius-sm);
         font-size: 0.78rem;

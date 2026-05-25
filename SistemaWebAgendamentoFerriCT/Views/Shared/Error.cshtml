@@ -9,8 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --accent: #E8C547;
-            --accent-glow: rgba(232,197,71,0.3);
+            --accent: var(--accent);
+            --accent-glow: rgba(255,204,0,0.3);
             --text-secondary: #7A7A85;
         }
 
@@ -40,7 +40,7 @@
             font-family: 'Bebas Neue', sans-serif;
             font-size: clamp(100px, 20vw, 180px);
             line-height: 1;
-            -webkit-text-stroke: 2px rgba(232,197,71,0.25);
+            -webkit-text-stroke: 2px rgba(255,204,0,0.25);
             color: transparent;
             margin-bottom: 8px;
         }
@@ -79,7 +79,7 @@
         }
 
             .btn-gold:hover {
-                background: #f5d465;
+                background: var(--accent-hover);
                 transform: translateY(-2px);
                 box-shadow: 0 8px 24px var(--accent-glow);
             }
@@ -87,7 +87,7 @@
         .btn-outline {
             background: transparent;
             color: var(--accent);
-            border: 1px solid rgba(232,197,71,0.4);
+            border: 1px solid rgba(255,204,0,0.4);
             border-radius: 8px;
             padding: 12px 24px;
             font-weight: 600;
@@ -99,7 +99,7 @@
         }
 
             .btn-outline:hover {
-                background: rgba(232,197,71,0.1);
+                background: rgba(255,204,0,0.1);
             }
 
         .brand {

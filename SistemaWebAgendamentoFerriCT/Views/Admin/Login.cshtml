@@ -13,9 +13,10 @@
             --bg-deep: #07070A;
             --bg-card: #13131A;
             --border: rgba(255,255,255,0.07);
-            --accent: #E8C547;
-            --accent-dim: rgba(232,197,71,0.12);
-            --accent-glow: rgba(232,197,71,0.3);
+            --accent: #FFCC00;
+            --accent-hover: #FFDA33;
+            --accent-dim: rgba(255,204,0,0.12);
+            --accent-glow: rgba(255,204,0,0.3);
             --text-primary: #F0EFE8;
             --text-secondary: #6A6A75;
         }
@@ -44,7 +45,7 @@
                 transform: translate(-50%, -50%);
                 width: 600px;
                 height: 600px;
-                background: radial-gradient(circle, rgba(232,197,71,0.05) 0%, transparent 70%);
+                background: radial-gradient(circle, rgba(255,204,0,0.05) 0%, transparent 70%);
                 pointer-events: none;
             }
 
@@ -178,7 +179,7 @@
         }
 
             .btn-login:hover {
-                background: #f5d465;
+                background: var(--accent-hover);
                 transform: translateY(-2px);
                 box-shadow: 0 8px 24px var(--accent-glow);
             }
@@ -211,18 +212,15 @@
                     color: var(--text-primary);
                 }
 
-        keyframes fadeUp {
-            from
-
-        {
-            opacity: 0;
-            transform: translateY(24px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        @@keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>

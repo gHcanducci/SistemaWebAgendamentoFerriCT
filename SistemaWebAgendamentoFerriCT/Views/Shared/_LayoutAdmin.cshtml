@@ -11,21 +11,44 @@
 
     <style>
         :root {
-            --bg-deep:    #07070A;
-            --bg-surface: #0F0F14;
-            --bg-card:    #15151C;
-            --bg-sidebar: #0A0A0F;
-            --border:     rgba(255,255,255,0.07);
-            --accent:     #E8C547;
-            --accent-dim: rgba(232,197,71,0.12);
-            --accent-glow:rgba(232,197,71,0.3);
-            --text-primary:   #F0EFE8;
-            --text-secondary: #6A6A75;
+            /* Surface */
+            --bg-deep:       #07070A;
+            --bg-surface:    #0F0F14;
+            --bg-card:       #15151C;
+            --bg-elevated:   #1B1B23;
+            --bg-sidebar:    #0A0A0F;
+            --border:        rgba(255,255,255,0.07);
+            --border-strong: rgba(255,255,255,0.12);
+
+            /* Accent — Signal Yellow */
+            --accent:        #FFCC00;
+            --accent-hover:  #FFDA33;
+            --accent-soft:   rgba(255,204,0,0.08);
+            --accent-dim:    rgba(255,204,0,0.15);
+            --accent-glow:   rgba(255,204,0,0.3);
+
+            /* Text */
+            --text-primary:   #F4F3EE;
+            --text-secondary: #8A8A95;
+            --text-muted:     #5A5A65;
+
+            /* States */
             --danger:  #E05050;
             --success: #4CAF82;
+            --warning: #F59E0B;
+
+            /* Radius */
             --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 20px;
+
+            /* Shadow */
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.35);
+            --shadow-lg: 0 18px 48px rgba(0,0,0,0.5);
+            --shadow-accent: 0 8px 28px rgba(255,204,0,0.25);
+
+            /* Layout */
             --sidebar-w: 240px;
         }
 
@@ -52,21 +75,21 @@
         }
         .sidebar-logo { padding: 28px 24px 24px; border-bottom: 1px solid var(--border); }
         .logo-mark { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 3px; color: var(--accent); display: block; line-height: 1; }
-        .logo-badge { display: inline-block; background: var(--accent-dim); border: 1px solid rgba(232,197,71,0.25); color: var(--accent); font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; padding: 2px 8px; border-radius: 999px; margin-top: 6px; }
+        .logo-badge { display: inline-block; background: var(--accent-dim); border: 1px solid rgba(255,204,0,0.25); color: var(--accent); font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; padding: 2px 8px; border-radius: 999px; margin-top: 6px; }
         .sidebar-nav { flex: 1; padding: 20px 12px; overflow-y: auto; }
         .nav-section-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-secondary); padding: 0 12px 8px; margin-top: 16px; }
         .nav-section-label:first-child { margin-top: 0; }
         .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: var(--radius-sm); text-decoration: none; color: var(--text-secondary); font-size: 0.875rem; font-weight: 500; transition: all 0.2s; margin-bottom: 2px; }
         .nav-item i { font-size: 1.05rem; width: 20px; text-align: center; }
         .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
-        .nav-item.active { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(232,197,71,0.15); }
+        .nav-item.active { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(255,204,0,0.15); }
         .nav-item.active i { color: var(--accent); }
         .nav-badge { margin-left: auto; background: var(--accent); color: var(--bg-deep); font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; }
 
         /* ─── SIDEBAR FOOTER ─── */
         .sidebar-footer { padding: 16px 12px; border-top: 1px solid var(--border); }
         .sidebar-user { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: var(--radius-sm); }
-        .user-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-dim); border: 1px solid rgba(232,197,71,0.3); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: var(--accent); }
+        .user-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-dim); border: 1px solid rgba(255,204,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: var(--accent); }
         .user-info .user-name { font-weight: 600; font-size: 0.825rem; color: var(--text-primary); }
         .user-info .user-role { font-size: 0.7rem; color: var(--text-secondary); }
 
@@ -108,7 +131,7 @@
         .notif-dot { position: relative; }
         .notif-dot::after { content: ''; position: absolute; top: 4px; right: 4px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
         .topbar-cta { background: var(--accent); color: var(--bg-deep) !important; border: none !important; font-weight: 700; font-size: 0.78rem; padding: 0 14px; width: auto; letter-spacing: 0.3px; }
-        .topbar-cta:hover { background: #f5d465 !important; color: var(--bg-deep) !important; }
+        .topbar-cta:hover { background: var(--accent-hover) !important; color: var(--bg-deep) !important; }
 
         /* ─── TOPBAR LOGOUT ─── */
         .topbar-logout {
@@ -128,8 +151,8 @@
         .glass { background: rgba(21,21,28,0.8); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: var(--radius-lg); }
         .glass-sm { background: rgba(21,21,28,0.6); backdrop-filter: blur(8px); border: 1px solid var(--border); border-radius: var(--radius-md); }
         .btn-gold { background: var(--accent); color: var(--bg-deep); border: none; border-radius: var(--radius-sm); padding: 9px 20px; font-weight: 700; font-size: 0.85rem; transition: all 0.25s; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
-        .btn-gold:hover { background: #f5d465; color: var(--bg-deep); transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
-        .btn-outline-gold { background: transparent; color: var(--accent); border: 1px solid rgba(232,197,71,0.4); border-radius: var(--radius-sm); padding: 9px 20px; font-weight: 600; font-size: 0.85rem; transition: all 0.25s; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-gold:hover { background: var(--accent-hover); color: var(--bg-deep); transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
+        .btn-outline-gold { background: transparent; color: var(--accent); border: 1px solid rgba(255,204,0,0.4); border-radius: var(--radius-sm); padding: 9px 20px; font-weight: 600; font-size: 0.85rem; transition: all 0.25s; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
         .btn-outline-gold:hover { background: var(--accent-dim); color: var(--accent); }
         .btn-danger-soft { background: rgba(224,80,80,0.1); color: #ff8a8a; border: 1px solid rgba(224,80,80,0.25); border-radius: var(--radius-sm); padding: 9px 20px; font-weight: 600; font-size: 0.85rem; transition: all 0.25s; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
         .btn-danger-soft:hover { background: rgba(224,80,80,0.2); color: #ff8a8a; }
@@ -146,7 +169,7 @@
         .ferri-table { width: 100%; border-collapse: separate; border-spacing: 0 4px; }
         .ferri-table thead th { color: var(--text-secondary); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.5px; padding: 8px 14px; font-weight: 700; border: none; }
         .ferri-table tbody tr { background: var(--bg-card); transition: all 0.2s; }
-        .ferri-table tbody tr:hover { background: rgba(232,197,71,0.05); }
+        .ferri-table tbody tr:hover { background: rgba(255,204,0,0.05); }
         .ferri-table tbody td { padding: 13px 14px; border: none; vertical-align: middle; }
         .ferri-table tbody td:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
         .ferri-table tbody td:last-child  { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
