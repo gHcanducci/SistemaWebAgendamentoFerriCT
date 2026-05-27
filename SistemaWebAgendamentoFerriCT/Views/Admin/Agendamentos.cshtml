@@ -269,6 +269,64 @@
         color: var(--text-secondary);
         font-size: 0.875rem;
     }
+
+    .row-actions { display: flex; gap: 6px; }
+
+    /* ─── MOBILE: cada <tr> vira um card ─── */
+    @@media (max-width: 768px) {
+        .table-scroll { overflow-x: visible; }
+        .ferri-table  { min-width: 0; border-spacing: 0; }
+        .ferri-table thead { display: none; }
+
+        .ferri-table tbody tr {
+            display: block;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            margin-bottom: 10px;
+        }
+
+        .ferri-table tbody td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 0 !important;
+            border: none !important;
+            border-radius: 0 !important;
+        }
+
+        .ferri-table tbody td::before {
+            content: attr(data-label);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-secondary);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* Aluno (primeira célula) fica como header do card, sem label */
+        .ferri-table tbody td[data-label="Aluno"] {
+            justify-content: flex-start;
+            padding-bottom: 10px !important;
+            margin-bottom: 6px;
+            border-bottom: 1px solid var(--border) !important;
+        }
+        .ferri-table tbody td[data-label="Aluno"]::before { display: none; }
+
+        /* Ações ficam centralizadas no rodapé do card */
+        .ferri-table tbody td[data-label="Ações"] {
+            justify-content: center;
+            padding-top: 10px !important;
+            margin-top: 6px;
+            border-top: 1px solid var(--border) !important;
+        }
+        .ferri-table tbody td[data-label="Ações"]::before { display: none; }
+        .row-actions { gap: 10px; }
+        .action-btn { width: 36px; height: 36px; }
+    }
 </style>
 
 <div class="page-header">
@@ -359,35 +417,35 @@
                         string filtroEspera = item.ListaEspera ? "espera" : item.Status;
 
                         <tr data-status="@filtroEspera" data-aluno="@(item.Cliente != null ? item.Cliente.Nome.ToLower() : "")">
-                            <td>
+                            <td data-label="Aluno">
                                 <div class="aluno-cell">
                                     <div class="aluno-avatar">@initials</div>
                                     <div class="aluno-name">@(item.Cliente != null ? item.Cliente.Nome : "—")</div>
                                 </div>
                             </td>
-                            <td>
+                            <td data-label="Data">
                                 <span style="font-weight:600">@item.DataAula.ToString("dd/MM/yyyy")</span>
                                 <br>
                                 <span style="font-size:0.72rem;color:var(--text-secondary)">
                                     @item.DataAula.ToString("dddd", new System.Globalization.CultureInfo("pt-BR"))
                                 </span>
                             </td>
-                            <td>
+                            <td data-label="Horário">
                                 <div class="horario-cell">@horario</div>
                                 @if (!string.IsNullOrEmpty(turma))
                                 {
                                     <span class="turma-pill">@turma</span>
                                 }
                             </td>
-                            <td style="font-size:0.83rem;color:var(--text-secondary)">@item.TipoAula</td>
-                            <td>
+                            <td data-label="Tipo" style="font-size:0.83rem;color:var(--text-secondary)">@item.TipoAula</td>
+                            <td data-label="Status">
                                 <span class="badge-status @statusClass">@statusLabel</span>
                             </td>
-                            <td style="color:var(--text-secondary);font-size:0.8rem">
+                            <td data-label="Solicitado" style="color:var(--text-secondary);font-size:0.8rem">
                                 @item.DataSolicitacao.ToString("dd/MM HH:mm")
                             </td>
-                            <td>
-                                <div style="display:flex;gap:6px">
+                            <td data-label="Ações">
+                                <div class="row-actions">
                                     <a href="@Url.Action("DetalhesAgendamento","Admin", new { id = item.AgendamentoId })"
                                        class="action-btn action-btn-view" title="Ver detalhes">
                                         <i class="bi bi-eye-fill"></i>
