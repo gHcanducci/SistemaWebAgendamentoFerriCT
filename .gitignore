@@ -369,3 +369,9 @@ FodyWeavers.xsd
 
 # Claude Code — estado local, não versionar
 **/.claude/
+
+# Andaime de verificacao visual (screenshots Playwright + scripts)
+.verify-evidence/
+package.json
+package-lock.json
+node_modules/

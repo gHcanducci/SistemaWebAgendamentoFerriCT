@@ -122,15 +122,15 @@
         /* ─── MAIN ─── */
         .admin-main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
         .admin-topbar { height: 60px; background: rgba(7,7,10,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 28px; gap: 16px; position: sticky; top: 0; z-index: 50; }
-        .topbar-title { font-weight: 700; font-size: 0.95rem; }
+        .topbar-title { font-weight: 700; font-size: 0.95rem; white-space: nowrap; }
         .topbar-sep { color: var(--text-secondary); }
-        .topbar-page { color: var(--text-secondary); font-size: 0.875rem; }
-        .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-        .topbar-btn { width: 36px; height: 36px; border-radius: var(--radius-sm); background: rgba(255,255,255,0.04); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; text-decoration: none; font-size: 1rem; }
+        .topbar-page { color: var(--text-secondary); font-size: 0.875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+        .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+        .topbar-btn { width: 36px; height: 36px; border-radius: var(--radius-sm); background: rgba(255,255,255,0.04); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; text-decoration: none; font-size: 1rem; flex-shrink: 0; }
         .topbar-btn:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.15); }
         .notif-dot { position: relative; }
         .notif-dot::after { content: ''; position: absolute; top: 4px; right: 4px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
-        .topbar-cta { background: var(--accent); color: var(--bg-deep) !important; border: none !important; font-weight: 700; font-size: 0.78rem; padding: 0 14px; width: auto; letter-spacing: 0.3px; }
+        .topbar-cta { background: var(--accent); color: var(--bg-deep) !important; border: none !important; font-weight: 700; font-size: 0.78rem; padding: 0 14px; width: auto; letter-spacing: 0.3px; white-space: nowrap; }
         .topbar-cta:hover { background: var(--accent-hover) !important; color: var(--bg-deep) !important; }
 
         /* ─── TOPBAR LOGOUT ─── */
@@ -141,7 +141,7 @@
             border: 1px solid rgba(224,80,80,0.2);
             color: #ff8a8a; text-decoration: none;
             font-size: 0.78rem; font-weight: 600;
-            transition: all 0.2s;
+            transition: all 0.2s; white-space: nowrap; flex-shrink: 0;
         }
         .topbar-logout:hover { background: rgba(224,80,80,0.16); color: #ff8a8a; }
 
@@ -192,6 +192,22 @@
             .sidebar { transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
             .admin-main { margin-left: 0; }
+        }
+
+        @@media (max-width: 768px) {
+            .admin-content { padding: 16px; }
+            .admin-topbar  { padding: 0 14px; gap: 10px; }
+            .topbar-cta i  { margin-right: 2px; }
+            .topbar-page   { display: none; }
+            .topbar-sep    { display: none; }
+        }
+
+        @@media (max-width: 480px) {
+            .admin-content { padding: 12px; }
+            .topbar-cta    { padding: 0 10px; font-size: 0.72rem; }
+            .topbar-cta-label  { display: none; }
+            .topbar-logout-label { display: none; }
+            .topbar-logout { padding: 0 10px; gap: 0; }
         }
     </style>
 </head>
@@ -261,12 +277,12 @@
                     <a href="/Admin/Agendamentos" class="topbar-btn notif-dot" title="Notificações">
                         <i class="bi bi-bell"></i>
                     </a>
-                    <a href="/Admin/CriarAluno" class="topbar-btn topbar-cta">
-                        <i class="bi bi-plus-lg"></i> Novo Aluno
+                    <a href="/Admin/CriarAluno" class="topbar-btn topbar-cta" title="Novo Aluno">
+                        <i class="bi bi-plus-lg"></i><span class="topbar-cta-label"> Novo Aluno</span>
                     </a>
-                    
+
                     <a href="@Url.Action("Logout", "Admin")" class="topbar-logout" title="Sair">
-                        <i class="bi bi-box-arrow-right"></i> Sair
+                        <i class="bi bi-box-arrow-right"></i><span class="topbar-logout-label"> Sair</span>
                     </a>
                 </div>
             </header>
