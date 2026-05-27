@@ -119,6 +119,24 @@
     }
 
     .pgm-aviso i { color: var(--accent); }
+
+    @@media (max-width: 768px) {
+        .pgm-card { padding: 22px 18px; }
+        .pgm-card h4 { font-size: 1.3rem; }
+        .pgm-forma label { padding: 12px 6px; font-size: 0.78rem; }
+    }
+
+    @@media (max-width: 480px) {
+        .pgm-card { padding: 18px 14px; }
+        .pgm-card h4 { font-size: 1.2rem; }
+        .pgm-resumo { padding: 12px 14px; font-size: 0.82rem; }
+        .pgm-resumo-row { flex-wrap: wrap; gap: 2px; }
+        .pgm-resumo-row span:first-child { flex: 0 0 100%; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .pgm-forma { grid-template-columns: 1fr; gap: 8px; }
+        .pgm-forma label { text-align: left; padding: 12px 14px; }
+        .pgm-actions { flex-direction: column-reverse; gap: 8px; }
+        .btn-confirmar, .btn-cancelar { width: 100%; }
+    }
 </style>
 
 <div class="page-header">

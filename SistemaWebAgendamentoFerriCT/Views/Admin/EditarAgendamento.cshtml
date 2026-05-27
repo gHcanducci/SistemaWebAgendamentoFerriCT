@@ -213,6 +213,28 @@
         .btn-cancel:hover {
             color: var(--text-primary);
         }
+
+    @@media (max-width: 768px) {
+        .page-title { font-size: 1.6rem; }
+        .form-card-body { padding: 22px 18px; }
+        .status-label { padding: 12px 6px; font-size: 0.72rem; }
+        .status-label .s-icon { font-size: 1.15rem; }
+    }
+
+    @@media (max-width: 480px) {
+        .page-header { margin-bottom: 18px; }
+        .page-title { font-size: 1.4rem; }
+        .form-card-header { padding: 14px 16px; }
+        .form-card-body { padding: 18px 14px; }
+        .info-block { padding: 12px; }
+        .info-row { flex-wrap: wrap; gap: 6px; padding: 6px 0; font-size: 0.82rem; }
+        .info-label { min-width: 0; flex: 0 0 100%; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .status-options { grid-template-columns: 1fr; gap: 8px; }
+        .status-label { flex-direction: row; justify-content: flex-start; padding: 12px 14px; gap: 12px; }
+        .form-actions { flex-direction: column-reverse; gap: 8px; }
+        .form-actions .btn-save,
+        .form-actions .btn-cancel { width: 100%; justify-content: center; padding: 12px; }
+    }
 </style>
 
 <div class="page-header">

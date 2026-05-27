@@ -142,6 +142,21 @@
             color: var(--text-primary);
             border-color: rgba(255,255,255,0.15);
         }
+
+    @@media (max-width: 768px) {
+        .page-title { font-size: 1.6rem; }
+        .form-card-body { padding: 22px 18px; }
+    }
+
+    @@media (max-width: 480px) {
+        .page-header { margin-bottom: 18px; }
+        .page-title { font-size: 1.4rem; }
+        .form-card-header { padding: 14px 16px; }
+        .form-card-body { padding: 18px 14px; }
+        .form-actions { flex-direction: column-reverse; gap: 8px; }
+        .form-actions .btn-save,
+        .form-actions .btn-cancel { width: 100%; justify-content: center; padding: 12px; }
+    }
 </style>
 
 <div class="page-header">
