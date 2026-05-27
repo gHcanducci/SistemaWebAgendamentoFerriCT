@@ -212,7 +212,7 @@
         <!-- Pagamento -->
         <div class="pag-card" style="animation:fadeUp 0.5s ease 0.1s both">
             <h4><i class="bi bi-credit-card-2-front"></i> Pagamento</h4>
-            <p class="subtitle">Você será redirecionado para o ambiente seguro do Mercado Pago.</p>
+            <p class="subtitle">Escolha a forma de pagamento para confirmar seu agendamento.</p>
 
             @if (TempData["Erro"] != null)
             {
@@ -221,30 +221,35 @@
                 </div>
             }
 
-            <div class="metodos-aceitos">
-                <div class="metodo-chip">
-                    <span class="icon">⚡</span>
-                    <span>Pix</span>
-                </div>
-                <div class="metodo-chip">
-                    <span class="icon">💳</span>
-                    <span>Cartão de Débito</span>
-                </div>
-            </div>
-
             <div class="seguranca-info">
-                <i class="bi bi-shield-lock-fill"></i>
-                Pagamento processado pelo Mercado Pago — seus dados não passam por nossos servidores.
+                <i class="bi bi-info-circle-fill"></i>
+                Modo demonstração: o pagamento é confirmado automaticamente para fins de apresentação.
             </div>
 
-            @using (Html.BeginForm("IniciarPagamento", "Agendamento", FormMethod.Post, new { id = "form-pagar" }))
+            @using (Html.BeginForm("IniciarPagamento", "Agendamento", FormMethod.Post, new { id = "form-pix", @class = "form-pgto" }))
             {
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="agendamentoId" value="@Model.AgendamentoId" />
+                <input type="hidden" name="formaPagamento" value="PIX" />
 
-                <button type="submit" class="btn-pagar" id="btn-pagar">
-                    <i class="bi bi-lock-fill"></i>
-                    Pagar com Mercado Pago — R$ @Model.Valor.ToString("N2")
+                <button type="submit" class="btn-pagar" data-btn-pgto>
+                    <span class="icon" style="font-size:1.2rem">⚡</span>
+                    Pagar com PIX — R$ @Model.Valor.ToString("N2")
+                </button>
+            }
+
+            <div style="height:12px"></div>
+
+            @using (Html.BeginForm("IniciarPagamento", "Agendamento", FormMethod.Post, new { id = "form-debito", @class = "form-pgto" }))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="agendamentoId" value="@Model.AgendamentoId" />
+                <input type="hidden" name="formaPagamento" value="Debito" />
+
+                <button type="submit" class="btn-pagar" data-btn-pgto
+                        style="background:transparent;color:var(--accent);border:1px solid var(--accent)">
+                    <i class="bi bi-credit-card-2-front"></i>
+                    Pagar com Débito — R$ @Model.Valor.ToString("N2")
                 </button>
             }
 
@@ -257,10 +262,14 @@
 </div>
 
 <script>
-    // Evita duplo clique no botão de pagar (cliente clicando 2x = 2 preferences no MP)
-    document.getElementById('form-pagar').addEventListener('submit', function () {
-        var btn = document.getElementById('btn-pagar');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Redirecionando...';
+    // Evita duplo clique e desabilita o outro botão enquanto processa
+    document.querySelectorAll('.form-pgto').forEach(function (form) {
+        form.addEventListener('submit', function () {
+            document.querySelectorAll('[data-btn-pgto]').forEach(function (b) {
+                b.disabled = true;
+            });
+            var btn = form.querySelector('[data-btn-pgto]');
+            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Confirmando...';
+        });
     });
 </script>

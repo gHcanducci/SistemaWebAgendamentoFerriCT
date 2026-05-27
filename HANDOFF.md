@@ -9,7 +9,8 @@ Documento de contexto operacional para Claude e para o usuário. Pensado pra **r
 - **Branch ativa:** `feat/mercado-pago-integration`
 - **Demo:** 03/06/2026 (PC do professor, `git clone` + F5)
 - **Integração MP:** end-to-end validada em sandbox (Saldo em conta funcional, 2026-05-24)
-- **Próximo passo:** continuar do plano em `C:\Users\User\.claude\plans\d-user-downloads-requisitos-do-professor-curried-bird.md` a partir da **etapa 2** (hero da home no mobile)
+- **Uncommitted intencional** (21 arquivos `M`): Etapa 5c+5d aplicada — `--text-muted #5A5A65→#8A8A95` nos 2 layouts + `font-size` mínimo subido pra 0.72rem em 19 views + 2 layouts. BOM UTF-8 confirmado em todos. Aguardando smoke test visual do usuário (F5) antes de commitar.
+- **Próximo passo:** após smoke test OK → commitar 5c+5d → seguir com Etapa 3 (CSS externo) ou Etapa 5a+5b (ARIA) ou Etapa 2 (hero home). Plano completo em `C:\Users\User\.claude\plans\d-user-downloads-requisitos-do-professor-curried-bird.md`.
 
 Para reabrir contexto numa nova sessão, basta dizer ao Claude: **"continua do HANDOFF.md"** ou apontar a etapa do plano.
 
@@ -203,7 +204,7 @@ Arquivo completo: `C:\Users\User\.claude\plans\d-user-downloads-requisitos-do-pr
 2. 🟠 Etapa 2 — hero da home no mobile (`Views/Home/Index.cshtml`)
 3. 🟠 Etapa 3 — CSS externo (escopo médio: design system + 5 views-chave)
 4. 🟠 Etapa 4 — `@media print` global + dedicado em `Agendamento/Retorno`
-5. 🟠 Etapa 5 — Acessibilidade mínima (`aria-label`, `aria-hidden`, normalizar font-size, contraste `--text-muted`)
+5. 🟡 Etapa 5 — Acessibilidade mínima (`aria-label`, `aria-hidden`, normalizar font-size, contraste `--text-muted`) — **5c (font-size ≥0.72rem) e 5d (contraste `--text-muted`) aplicadas 2026-05-27, uncommitted aguardando smoke test.** 5a+5b (ARIA) pendentes.
 6. 🟢 Etapa 6 — Re-validar PC externo na véspera 02/06
 
 Cenários de teste pendentes (não bloqueiam demo, fazer se sobrar tempo):

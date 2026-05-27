@@ -28,15 +28,15 @@
         icone = "bi-hourglass-split";
         classeTema = "tema-aguardando";
         titulo = "Pagamento em análise";
-        mensagem = "O Mercado Pago está analisando seu pagamento. Isso pode levar alguns minutos. Atualizaremos automaticamente.";
+        mensagem = "Seu pagamento está em análise. Isso pode levar alguns minutos. Atualizaremos automaticamente.";
         autoRefresh = true;
     }
-    else // PendentePagamento + status=success (webhook ainda não chegou)
+    else // PendentePagamento
     {
         icone = "bi-arrow-repeat";
         classeTema = "tema-aguardando";
         titulo = "Confirmando pagamento...";
-        mensagem = "Estamos sincronizando com o Mercado Pago. Geralmente leva poucos segundos.";
+        mensagem = "Estamos finalizando a confirmação. Geralmente leva poucos segundos.";
         autoRefresh = true;
     }
 }
@@ -175,13 +175,9 @@
 
         @if (podeTentarNovamente)
         {
-            <form action="@Url.Action("IniciarPagamento", "Agendamento")" method="post" style="display:inline">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="agendamentoId" value="@Model.AgendamentoId" />
-                <button type="submit" class="btn-acao btn-primario">
-                    <i class="bi bi-arrow-clockwise"></i> Tentar pagamento novamente
-                </button>
-            </form>
+            <a href="@Url.Action("Pagamento", "Agendamento", new { id = Model.AgendamentoId })" class="btn-acao btn-primario">
+                <i class="bi bi-arrow-clockwise"></i> Tentar pagamento novamente
+            </a>
             <div style="margin-top:12px">
                 <a href="@Url.Action("Perfil", "Cliente")" class="btn-acao btn-secundario">
                     <i class="bi bi-house"></i> Voltar ao perfil

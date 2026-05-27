@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web.Mvc;
-using SistemaWebAgendamentoFerriCT.MercadoPago;
 using SistemaWebAgendamentoFerriCT.Models;
 using SistemaWebAgendamentoFerriCT.ViewModels;
 
@@ -12,7 +10,10 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
     public class AgendamentoController : Controller
     {
         private readonly SistemaContext db = new SistemaContext();
-        private readonly IMercadoPagoService mp = new MercadoPagoService();
+
+        // Whitelist de formas de pagamento aceitas no fluxo simulado (demo sem MP)
+        private static readonly HashSet<string> FormasPagamentoAceitas =
+            new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "PIX", "Debito" };
 
         // Valores das aulas (futuramente podem vir do banco)
         private const decimal ValorExperimental = 50.00m;
@@ -322,11 +323,12 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
         }
 
         // ─── POST: Agendamento/IniciarPagamento ──────────────────────────
-        // Cria Preference no Mercado Pago e redireciona para a página hospedada do MP.
+        // Fluxo SIMULADO (demo sem MP). Confirma o agendamento direto,
+        // criando um Pagamento Aprovado com CodigoTransacao "DEMO-{Guid}".
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> IniciarPagamento(int agendamentoId)
+        public ActionResult IniciarPagamento(int agendamentoId, string formaPagamento)
         {
             if (!ClienteLogado())
                 return RedirectToAction("Login", "Cliente");
@@ -334,7 +336,6 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
             int clienteId = (int)Session["ClienteId"];
 
             var agendamento = db.Agendamentos
-                .Include("Cliente")
                 .FirstOrDefault(a => a.AgendamentoId == agendamentoId);
 
             if (agendamento == null)
@@ -343,10 +344,15 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
             if (agendamento.ClienteId != clienteId)
                 return new HttpStatusCodeResult(System.Net.HttpStatusCode.Forbidden);
 
-            // Só permite iniciar pagamento se agendamento estiver pendente
             if (agendamento.Status != "PendentePagamento")
             {
                 TempData["Erro"] = "Este agendamento não está aguardando pagamento.";
+                return RedirectToAction("Pagamento", new { id = agendamentoId });
+            }
+
+            if (string.IsNullOrWhiteSpace(formaPagamento) || !FormasPagamentoAceitas.Contains(formaPagamento))
+            {
+                TempData["Erro"] = "Forma de pagamento inválida.";
                 return RedirectToAction("Pagamento", new { id = agendamentoId });
             }
 
@@ -355,7 +361,7 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
 
             try
             {
-                // Cancela tentativas anteriores deste agendamento (cliente recriando preference)
+                // Cancela tentativas anteriores pendentes
                 var pendentesAntigos = db.Pagamentos
                     .Where(p => p.AgendamentoId == agendamentoId && p.StatusPagamento == "Pendente")
                     .ToList();
@@ -366,41 +372,29 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                     p.DataAtualizacao = DateTime.Now;
                 }
 
-                // Idempotency key novo a cada tentativa (MP cria preference distinta)
-                var idempotencyKey = Guid.NewGuid().ToString();
-
-                var preference = await mp.CriarPreferenceAsync(
-                    agendamento, agendamento.Cliente, valor, idempotencyKey);
-
-                // Cria registro de Pagamento em estado Pendente.
-                // FormaPagamento fica "Aguardando" até o webhook confirmar o método real.
                 var pagamento = new Pagamento
                 {
                     AgendamentoId = agendamento.AgendamentoId,
                     Valor = valor,
-                    FormaPagamento = "Aguardando",
-                    StatusPagamento = "Pendente",
-                    PreferenceId = preference.PreferenceId,
-                    DataCriacao = DateTime.Now
+                    FormaPagamento = formaPagamento,
+                    StatusPagamento = "Aprovado",
+                    CodigoTransacao = "DEMO-" + Guid.NewGuid().ToString("N").Substring(0, 16),
+                    DataCriacao = DateTime.Now,
+                    DataPagamento = DateTime.Now,
+                    DataAtualizacao = DateTime.Now
                 };
+
+                agendamento.Status = "Confirmado";
 
                 db.Pagamentos.Add(pagamento);
                 db.SaveChanges();
 
-                // Redireciona para a URL hospedada do Mercado Pago (init_point ou sandbox_init_point)
-                return Redirect(preference.InitPoint);
-            }
-            catch (MercadoPagoException ex)
-            {
-                System.Diagnostics.Trace.TraceError(
-                    $"IniciarPagamento MP error: status={ex.StatusCode} msg={ex.Message} body={ex.ResponseBody}");
-                TempData["Erro"] = "Não foi possível iniciar o pagamento agora. Tente novamente em instantes.";
-                return RedirectToAction("Pagamento", new { id = agendamentoId });
+                return RedirectToAction("Confirmacao", new { id = agendamentoId });
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError("IniciarPagamento erro inesperado: " + ex);
-                TempData["Erro"] = "Erro inesperado ao iniciar o pagamento.";
+                System.Diagnostics.Trace.TraceError("IniciarPagamento (demo) erro: " + ex);
+                TempData["Erro"] = "Erro ao confirmar o pagamento. Tente novamente.";
                 return RedirectToAction("Pagamento", new { id = agendamentoId });
             }
         }
