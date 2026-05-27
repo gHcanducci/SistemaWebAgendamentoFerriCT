@@ -1,16 +1,123 @@
 # Handoff — Integração Mercado Pago
 
 **Branch atual:** `feat/mercado-pago-integration`
-**Última sessão:** 2026-05-24
-**Status:** End-to-end **validado** com Saldo em conta + ngrok subdomínio fixo. Setup operacional pronto pra demo no PC do professor.
+**Última sessão:** 2026-05-27
+**Status:** Integração MP end-to-end validada. Design system Signal Yellow + P0 responsividade pushed. **Etapa 1 do plano dos requisitos do professor concluída nesta sessão** — P1 (cards mobile), P2 (@@media nas 6 views Admin restantes), Perfil mobile + botão Efetuar Pagamento, footer responsivo, F5 → Home/Index, todos commitados. Faltam etapas 2-6 do plano.
 
 ## Para retomar na próxima sessão
 
 ```powershell
 git checkout feat/mercado-pago-integration
+git pull               # sincroniza commits da sessão 2026-05-27
+git status             # deve estar limpo
 ```
 
-E diz pro Claude: "continua do HANDOFF.md".
+E diz pro Claude: **"continua do plano em `C:\Users\User\.claude\plans\d-user-downloads-requisitos-do-professor-curried-bird.md` a partir da etapa 2"** (hero da home no mobile) ou aponta a etapa que quiser priorizar.
+
+Plano completo dos 5 requisitos do professor está salvo em:
+`C:\Users\User\.claude\plans\d-user-downloads-requisitos-do-professor-curried-bird.md`
+
+---
+
+## 🎨 Sessão 2026-05-26 — Validação visual + responsividade
+
+Antes de polir interfaces, o usuário pediu validação visual do refresh Signal Yellow (commit `e6ba3c5` que estava local). O processo identificou problemas reais de responsividade no painel admin e a sessão acabou fazendo P0 inteiro + P1 inteiro.
+
+### O que foi commitado e pushed nesta sessão
+
+| Commit | Resumo |
+|---|---|
+| `751683c` | **fix: responsividade do painel admin no mobile (P0)** — padding do `.admin-content` 28px → 16px/12px nos breakpoints 768/480px; topbar com `white-space: nowrap` + `flex-shrink: 0`; textos "Novo Aluno" e "Sair" somem em <480px deixando só ícone; `.cal-day-num` 3rem → 2.2rem; `.gitignore` ganhou entradas pra ignorar `.verify-evidence/` e `package*.json` (andaime de teste com Playwright) |
+
+Antes desse commit, o `e6ba3c5` (Signal Yellow) também foi pushed — estava local desde 2026-05-25.
+
+### O que **NÃO foi commitado ainda** (P1)
+
+Duas views modificadas, validadas visualmente, esperando commit:
+
+```
+M  SistemaWebAgendamentoFerriCT/Views/Admin/Agendamentos.cshtml
+M  SistemaWebAgendamentoFerriCT/Views/Admin/Alunos.cshtml
+```
+
+**`Agendamentos.cshtml`** — CSS-only transformação de tabela em cards:
+- Adicionado `data-label="..."` em cada `<td>` (Aluno, Data, Horário, Tipo, Status, Solicitado, Ações)
+- Substituído `style="display:flex;gap:6px"` inline por classe `.row-actions`
+- Nova `@@media (max-width: 768px)`:
+  - `thead` escondido; cada `<tr>` vira card com border + padding
+  - Cada `<td>` fica `display: flex` com label à esquerda via `::before { content: attr(data-label) }` e valor à direita
+  - "Aluno" vira header do card (sem label, com border-bottom)
+  - "Ações" vira rodapé centralizado (border-top, botões 36×36)
+
+**`Alunos.cshtml`** — reuso do `#gridView` que já existia (era toggle manual desktop):
+- Botão Editar do card ganhou `<span>Editar</span>` ao lado do ícone (antes era só lápis esticado feio)
+- Removido `style="flex:1;width:auto"` inline → virou classe `.card-btn-edit` no CSS
+- Nova `@@media (max-width: 768px)`:
+  - `#tableView { display: none !important }`
+  - `#gridView  { display: block !important }`
+  - `.view-toggle { display: none }` (toggle Tabela/Cards some em mobile)
+  - `.cards-grid { grid-template-columns: 1fr }` (1 coluna)
+  - botões do `.card-actions` ganham 40×40
+  - `.toast-msg` reposicionado pra ocupar largura total
+
+### Validação visual com Playwright (Edge headless)
+
+Foi instalado `playwright-core` localmente (em `package.json`/`node_modules/`, agora ignorados) e criados scripts em `.verify-evidence/drive*.js` que:
+- Compilam o projeto via `MSBuild` da VS 2022 Community
+- Sobem IIS Express em background (porta 53302)
+- Fazem login como admin (`admin/123`) e cliente (`demo@ferrict.com.br` + CPF `529.982.247-25`)
+- Tiram screenshots em viewports 375/390/480/768/1366
+- Param o IIS Express ao fim
+
+Todo esse andaime está em `.verify-evidence/` que **está no .gitignore** — não vai pro git.
+
+### Problemas detectados que **NÃO** são regressão
+
+Durante a validação, dois "achados" ficaram registrados mas **não exigem ação**:
+
+1. **"Buraco preto" na home em screenshot fullPage** — `Views/Home/Index.cshtml:393` define `.reveal { opacity: 0 }` que vira `.visible` via IntersectionObserver no scroll. Playwright `fullPage: true` não dispara o IO, então as seções abaixo do hero ficam invisíveis no PNG. **Funciona perfeito em browser real** — é artefato de captura, não bug.
+2. **`/Agendamento/ListaEspera` e `/Agendamento/Retorno` sem `id`** → 500. Esperado — actions exigem `id`, só são atingíveis via fluxo de pagamento real.
+
+---
+
+## 📋 Backlog pendente pós-sessão
+
+Em ordem de prioridade pra demo de **03/06/2026** — etapas restantes do plano dos requisitos do professor:
+
+1. ✅ **Etapa 1 — consolidar uncommitted** (P1 + P2 + Perfil + footer + F5 fix) — concluída em 2026-05-27, 3 commits
+2. 🟠 **Etapa 2 — hero da home no mobile**: números 8+/500+/100%/4 sobre foto da academia com contraste fraco em mobile. Em `Views/Home/Index.cshtml`.
+3. 🟠 **Etapa 3 — CSS externo (escopo médio)**: extrair design system do `_Layout.cshtml` pra `Content/theme.css` + 5 views-chave (Home/Index, Cliente/Perfil, Admin/Index, Agendamento/Retorno, Agendamento/Pagamento). Atualizar `BundleConfig.cs`.
+4. 🟠 **Etapa 4 — `@media print`**: criar `Content/print.css` global (esconde nav/footer/botões) + dedicado em `Agendamento/Retorno.cshtml` (comprovante) + botão "Imprimir Comprovante".
+5. 🟠 **Etapa 5 — Acessibilidade mínima**: `aria-label` em 8 botões só-ícone, `aria-hidden="true"` em ícones decorativos, normalizar font-size mínimo 0.72rem, ajustar `--text-muted` pra contraste WCAG AA.
+6. 🟢 **Etapa 6 — Re-validar PC externo na véspera (02/06)** num PC limpo: smoke test end-to-end MP sandbox.
+
+---
+
+## 🟢 Sessão 2026-05-27 — Etapa 1 do plano + plano completo escrito
+
+### Trabalho do dia
+
+- **Cards mobile no Perfil do cliente** (`Views/Cliente/Perfil.cshtml`) — `<table class="ag-table">` vira cards em ≤768px (data destacada em amarelo no header, label↑/valor↓ no meio, ações no rodapé). Mesma estratégia CSS-only do P1 do Admin.
+- **Botão "Efetuar Pagamento"** em `Views/Cliente/Perfil.cshtml` — coluna "Ações" nova na tabela, mostra botão amarelo `btn-pagar-ag` apontando pra `/Agendamento/Pagamento/{id}` somente quando `Status == "PendentePagamento"`. Permite cliente retornar ao fluxo se sair da tela inicial.
+- **Bug encoding UTF-8** — `Perfil.cshtml` foi reescrito via `Write` (sem BOM), MVC 5 interpretou como Windows-1252 e mojibake (`HORÁRIO` → `HORÃ¡RIO`, em-dash → `ã€"`). Regravado com BOM `EF BB BF` via PowerShell. Memória salva: [[feedback-cshtml-utf8-bom]].
+- **Footer responsivo** (`Views/Shared/_Layout.cshtml`) — `.ferri-footer` virou flex container: copyright + Admin lado-a-lado em desktop com `space-between`, empilhados centralizados em ≤768px. Padding/fonte reduzidos em mobile. `.footer-admin-link` virou `inline-flex` + `white-space: nowrap`. Opacidade do Admin subiu pra 0.6 em mobile.
+- **F5 → Home/Index** (`SistemaWebAgendamentoFerriCT.csproj.user`) — `<StartAction>` mudou de `CurrentPage` (abria a view aberta no editor) pra `Project` (abre `/`). Arquivo é local, não trackeado no git.
+- **6 views Admin com `@@media`** (P2) — `CriarAluno`, `EditarAluno`, `EditarAgendamento`, `RegistrarPagamentoManual`, `ExcluirAluno`, `ExcluirAgendamento`. Padrão: `@@media (max-width: 768px)` reduz `.page-title` 2rem→1.6rem; `@@media (max-width: 480px)` empilha `.form-actions`/`.confirm-actions`/`.pgm-actions` como coluna, grids 3-colunas (`.status-options`, `.pgm-forma`) viram 1 coluna, `.info-row` quebra label↑/valor↓.
+- **Bug CSS no CriarAluno** — descobri 2 ocorrências de `media (max-width: ...)` (sem `@@` e sem `@` simples) — CSS completamente quebrado. Corrigido pra `@@media`.
+- **Plano completo escrito** — `C:\Users\User\.claude\plans\d-user-downloads-requisitos-do-professor-curried-bird.md` cobre os 5 requisitos do professor com decisões já tomadas (CSS externo escopo médio, @media print global + foco no comprovante).
+
+### Commits da sessão 2026-05-27
+
+| Commit | Resumo |
+|---|---|
+| (P1) | **fix: tabelas Admin viram cards no mobile (P1)** — `Agendamentos.cshtml` + `Alunos.cshtml` |
+| (P2) | **fix: @@media nas views Admin sem responsividade (P2)** — 6 views Admin + bug fix `media → @@media` no `CriarAluno` |
+| (perfil/footer) | **fix: Perfil mobile + botão Efetuar Pagamento + footer responsivo + F5 → Home** — `Perfil.cshtml` + `_Layout.cshtml` + `.csproj.user` (não trackeado, fica local) + atualização do `HANDOFF.md` |
+
+### Aprendizados desta sessão (memórias salvas)
+
+- [[feedback-cshtml-utf8-bom]] — `.cshtml` deste projeto exige UTF-8 com BOM ou acentos viram mojibake. `Write` padrão grava sem BOM; após reescrita, regravar com BOM via PowerShell.
+- [[feedback-pedir-aprovacao]] — não pedir aprovação repetida antes de aplicar Edits locais já alinhados.
 
 ---
 

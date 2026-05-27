@@ -510,26 +510,59 @@
         opacity: 0.45;
         text-decoration: none;
         transition: opacity 0.2s;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         gap: 4px;
+        white-space: nowrap;
     }
     .footer-admin-link:hover {
         opacity: 1;
         color: var(--accent);
     }
 
-.ferri-footer {
-            border-top: 1px solid var(--border);
-            padding: 2rem;
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-        }
+    .ferri-footer {
+        border-top: 1px solid var(--border);
+        padding: 1.75rem 2rem;
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px 24px;
+    }
 
-            .ferri-footer strong {
-                color: var(--accent);
-            }
+    .ferri-footer > span {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .ferri-footer strong {
+        color: var(--accent);
+    }
+
+    @@media (max-width: 768px) {
+        .ferri-footer {
+            flex-direction: column;
+            text-align: center;
+            padding: 1.25rem 1rem;
+            gap: 10px;
+            font-size: 0.75rem;
+            line-height: 1.5;
+        }
+        .ferri-footer > span { flex: 0 0 auto; }
+        .footer-admin-link {
+            font-size: 0.72rem;
+            opacity: 0.6;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .ferri-footer {
+            padding: 1rem 0.75rem;
+            font-size: 0.72rem;
+        }
+    }
 
         ::-webkit-scrollbar {
             width: 6px;
