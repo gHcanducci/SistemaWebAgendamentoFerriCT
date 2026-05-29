@@ -209,6 +209,39 @@
             .topbar-logout-label { display: none; }
             .topbar-logout { padding: 0 10px; gap: 0; }
         }
+
+        /* ─── PRINT (Bloco 6) ─── Painel admin imprimível (lista de alunos, agendamentos, detalhes) */
+        @@media print {
+            html, body {
+                background: #fff !important;
+                color: #000 !important;
+                font-size: 11pt;
+                overflow: visible !important;
+            }
+
+            .sidebar,
+            .admin-topbar {
+                display: none !important;
+            }
+
+            .admin-layout { display: block !important; }
+            .admin-main { margin-left: 0 !important; min-height: auto !important; }
+            .admin-content { padding: 0 !important; }
+
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                opacity: 1 !important;
+            }
+
+            a { color: #000 !important; text-decoration: none !important; }
+
+            @@page { margin: 1.5cm; }
+        }
     </style>
 </head>
 <body>

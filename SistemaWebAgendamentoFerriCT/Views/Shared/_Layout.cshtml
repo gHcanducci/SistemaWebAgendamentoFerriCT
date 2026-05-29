@@ -671,6 +671,44 @@
                 display: none;
             }
         }
+
+        /* ─── PRINT (Bloco 6) ─── Comprovante e versões imprimíveis */
+        @@media print {
+            html, body {
+                background: #fff !important;
+                color: #000 !important;
+                font-size: 12pt;
+                overflow: visible !important;
+            }
+
+            body::before { display: none !important; }
+
+            .ferri-nav,
+            #mob-menu,
+            .ferri-footer {
+                display: none !important;
+            }
+
+            .main-wrapper {
+                padding-top: 0 !important;
+                min-height: auto !important;
+            }
+
+            /* Mata animações, shadows e backdrop pra não esconder conteúdo no papel */
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                opacity: 1 !important;
+            }
+
+            a { color: #000 !important; text-decoration: none !important; }
+
+            @@page { margin: 1.5cm; }
+        }
     </style>
 </head>
 <body>
