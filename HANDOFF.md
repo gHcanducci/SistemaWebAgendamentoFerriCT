@@ -8,13 +8,14 @@ Documento de contexto operacional para Claude e para o usuário. Pensado pra **r
 
 - **Branch ativa:** `demo/sem-mp-simulado`
 - **Demo:** 03/06/2026 (PC do professor, `git clone` + F5)
-- **Sessão 2026-05-29 fechada:** 4 commits feitos hoje, todos pushed pra `origin/demo/sem-mp-simulado` (HEAD = `9593eae`). Working tree limpo. Blocos 1, 2, 3 do cronograma fechados.
+- **Sessão 2026-05-30 fechada:** Bloco 4 commitado localmente (HEAD = `8fef7a1`). Working tree limpo. Blocos 1–4 do cronograma fechados.
   - `695074f` Remove Lista de Espera + Capacidade de turma
   - `c0168c6` Limpa código morto MP + linka Pagamento Manual (Bloco 1)
   - `608b668` Ownership em Confirmacao + whitelist EditarAgendamento (Bloco 2)
   - `9593eae` Cancelamento pelo cliente (Bloco 3)
-- **Próximo passo:** Bloco 4 (Mobile — cards Alunos + hero home). Ver "Cronograma reta final" abaixo.
-- **Continuação via Claude Dispatch:** clonar/pull a branch `demo/sem-mp-simulado`. Estado pronto pra retomar do Bloco 4.
+  - `8fef7a1` Botão Detalhes nos cards Alunos + hero home mobile (Bloco 4)
+- **Documento de revisão:** `BLOCOS_REVISAO.md` na raiz — passo a passo para testar cada bloco localmente.
+- **Próximo passo:** Bloco 5 (Acessibilidade — `aria-label`, `aria-hidden`, `alt`). Ver "Cronograma reta final" abaixo.
 
 Para reabrir contexto numa nova sessão, basta dizer ao Claude: **"continua do HANDOFF.md"** ou apontar a etapa do plano.
 
@@ -154,16 +155,10 @@ Punch list dos pontos falhos identificados na branch demo. Detalhes completos em
 - Bloco 2: ownership em `Confirmacao` + whitelist no `EditarAgendamento` POST. Itens #6 e #8 fechados.
 - Bloco 3: cancelamento pelo cliente (`Agendamento/Cancelar` GET+POST + view + botão no Perfil). Item #5 fechado.
 
-### 🟠 Alto (UX quebrada / ação órfã)
-4. **Card mobile de Alunos sem botão "Ver detalhes"** — tabela tem 3 botões (Ver/Editar/Excluir), cards só têm Editar/Excluir. Mobile esconde tabela → detalhes inacessíveis no celular.
+Todos os itens críticos/altos/baixos foram resolvidos ou descartados. Auditoria encerrada.
 
-### 🟢 Baixo (cosmético)
-10. **`Alunos.cshtml:376` "Novos este mês"** compara só `.Month`, ignora ano. Janeiro/2024 conta em janeiro/2026.
-
-### Ordem sugerida pra implementação
-1. #4 (botão "Ver detalhes" no card mobile)
-
-#10 é extra se sobrar tempo.
+- ✅ #4 Botão "Ver detalhes" nos cards Alunos — fechado no Bloco 4
+- ⏭️ #10 "Novos este mês" compara só .Month — adiado (só é bug em 2027)
 
 ---
 
