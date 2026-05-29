@@ -179,6 +179,78 @@ Blocos 1–4 foram implementados em 2026-05-29 / 2026-05-30.
 
 ---
 
+## Bloco 5 — Acessibilidade (alt + ARIA)
+
+**Commit:** `6f96c28`
+
+### O que foi alterado
+
+| Arquivo | Mudança |
+|---------|---------|
+| `Views/Shared/_Layout.cshtml` | `aria-label` na `<nav>`, no link da marca, no botão mobile; `role="menu"` + `role="menuitem"` no dropdown do usuário; `aria-expanded` sincronizado via JS |
+| `Views/Shared/_LayoutAdmin.cshtml` | `aria-label` na `<nav>` lateral e nos botões da topbar; `aria-expanded` no toggle mobile via `toggleSidebar()` |
+| `Views/Home/Index.cshtml` | `aria-label` nas sections hero, diferenciais, "como funciona" e CTA; `aria-hidden` nos elementos decorativos (hero-bg, glow, watermark, pulse); `role="img"` + `aria-label` no `hero-bg` |
+| `Views/Admin/Alunos.cshtml` | `role="status"`/`role="alert"` + `aria-live` nos toasts; `aria-label` no campo de busca; `aria-pressed` nos botões de alternância de visualização; `aria-label` contextual em cada botão de ação (tabela e cards) |
+| `Views/Admin/Agendamentos.cshtml` | `aria-label` no campo de busca e na tabela; `aria-pressed` nos chips de filtro; `aria-label` contextual nos botões de ação; JS sincroniza `aria-pressed` ao clicar |
+| `Views/Cliente/Perfil.cshtml` | `role="status"` + `aria-live="polite"` no toast; `aria-label="Meus agendamentos"` na tabela; `aria-label` contextual no botão de cancelar |
+| `Views/Agendamento/Cancelar.cshtml` | `role="alertdialog"` + `aria-labelledby` no card de confirmação; `aria-hidden="true"` no ícone decorativo |
+
+### Como navegar para testar
+
+**Teste com leitor de tela (NVDA ou Narrator):**
+
+1. **Navbar pública** — Acesse `/`
+   - Ligue o Narrator (`Win + Ctrl + Enter`) ou o NVDA
+   - Navegue pelo teclado (`Tab`) na barra de navegação
+   - Verifique que o botão hambúrguer anuncia "Abrir menu de navegação"
+   - Faça login como cliente e abra o dropdown de perfil; verifique que anuncia "expandido/recolhido"
+
+2. **Hero decorativo** — Ainda em `/`
+   - Navegue pela página; o fundo do hero deve ser anunciado como imagem ("Fachada da academia Ferri CT")
+   - Elementos decorativos (glow, watermark, ponto pulsante) não devem ser lidos pelo leitor
+
+3. **Sections** — Role a página `/`
+   - Cada `<section>` tem label próprio; o leitor anuncia o título ao entrar nela
+
+4. **Painel admin — view-toggle** — Acesse `/Admin/Alunos`
+   - Foque os botões de alternância (tabela/cards)
+   - Devem anunciar "pressionado" quando ativos
+
+5. **Painel admin — filtro de agendamentos** — Acesse `/Admin/Agendamentos`
+   - Clique nos chips de filtro; o leitor deve anunciar "pressionado" no chip ativo
+
+6. **Botões de ação icon-only** — Em `/Admin/Alunos` e `/Admin/Agendamentos`
+   - Foque os ícones de lápis, olho e lixeira; o leitor deve anunciar o nome completo do aluno/agendamento
+   - Exemplo: "Ver detalhes de João Silva" em vez de apenas "link"
+
+7. **Toast de confirmação** — Cancel um agendamento em `/Cliente/Perfil`
+   - Ao cancelar, o toast de sucesso deve ser anunciado automaticamente pelo leitor sem precisar focar nele
+
+8. **Tela de cancelamento** — Acesse `/Agendamento/Cancelar/{id}`
+   - O card de confirmação é marcado como `alertdialog`; o leitor deve anunciá-lo ao entrar na página
+
+### O que verificar (sem leitor de tela — inspeção manual)
+
+Abra as DevTools → aba **Elements** e inspecione:
+
+- [ ] `<nav class="ferri-nav">` tem `aria-label="Navegação principal"`
+- [ ] `<a href="/" class="nav-brand">` tem `aria-label="Ferri CT — Página inicial"`
+- [ ] `.dot` decorativo na marca tem `aria-hidden="true"`
+- [ ] Botão hambúrguer mobile tem `aria-expanded="false"` (muda para `true` ao abrir)
+- [ ] `<div class="nav-dropdown">` tem `role="menu"` e `id="nav-user-dropdown"`
+- [ ] Cada `<a class="dropdown-item">` tem `role="menuitem"`
+- [ ] `<nav class="sidebar-nav">` tem `aria-label="Navegação do painel administrativo"`
+- [ ] `<div class="hero-bg">` tem `role="img"` e `aria-label="Fachada da academia Ferri CT"`
+- [ ] `<div class="hero-glow">`, `hero-watermark` e `.pulse` têm `aria-hidden="true"`
+- [ ] `<section id="diferenciais">` tem `aria-labelledby="section-diferenciais-title"`
+- [ ] Em Alunos, o input de busca tem `aria-label`
+- [ ] Em Alunos, os botões de toggle têm `aria-pressed` correto
+- [ ] Em Agendamentos, os chips de filtro têm `aria-pressed` correto
+- [ ] Em Perfil, a `<table class="ag-table">` tem `aria-label="Meus agendamentos"`
+- [ ] Em Cancelar, o `.cancel-card` tem `role="alertdialog"` e `aria-labelledby`
+
+---
+
 ## Verificação final rápida (smoke test geral)
 
 Execute este roteiro de ponta a ponta antes da demo:
@@ -200,4 +272,4 @@ Execute este roteiro de ponta a ponta antes da demo:
 
 ---
 
-*Documento gerado em 2026-05-30 — branch `demo/sem-mp-simulado`, HEAD `8fef7a1`*
+*Documento atualizado em 2026-05-29 — branch `demo/sem-mp-simulado`, HEAD `6f96c28`*
