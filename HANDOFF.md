@@ -8,14 +8,18 @@ Documento de contexto operacional para Claude e para o usuário. Pensado pra **r
 
 - **Branch ativa:** `demo/sem-mp-simulado`
 - **Demo:** 03/06/2026 (PC do professor, `git clone` + F5)
-- **Sessão 2026-05-30 fechada:** Bloco 4 commitado localmente (HEAD = `8fef7a1`). Working tree limpo. Blocos 1–4 do cronograma fechados.
+- **Sessão 2026-05-30 fechada:** Blocos 1–7 do cronograma fechados. HEAD = `e37cd0b`. Working tree limpo. 7 commits ainda não pushed pra `origin/demo/sem-mp-simulado` (último pushed: `8190734`).
   - `695074f` Remove Lista de Espera + Capacidade de turma
   - `c0168c6` Limpa código morto MP + linka Pagamento Manual (Bloco 1)
   - `608b668` Ownership em Confirmacao + whitelist EditarAgendamento (Bloco 2)
   - `9593eae` Cancelamento pelo cliente (Bloco 3)
   - `8fef7a1` Botão Detalhes nos cards Alunos + hero home mobile (Bloco 4)
+  - `6f96c28` Acessibilidade (Bloco 5) — alt + ARIA em todo o projeto
+  - `0b9a27c` Avatar do DetalhesAluno mobile (bug de posicionamento)
+  - `c10f4ec` @media print global + comprovante imprimível (Bloco 6)
+  - `e37cd0b` CSS externo — `Content/ferri-base.css` com tokens + reset (Bloco 7)
 - **Documento de revisão:** `BLOCOS_REVISAO.md` na raiz — passo a passo para testar cada bloco localmente.
-- **Próximo passo:** Bloco 5 (Acessibilidade — `aria-label`, `aria-hidden`, `alt`). Ver "Cronograma reta final" abaixo.
+- **Próximo passo:** Bloco 8 (Véspera 02/06 — `git clone` em diretório limpo + F5 do zero). Antes disso, push das alterações pra origin.
 
 Para reabrir contexto numa nova sessão, basta dizer ao Claude: **"continua do HANDOFF.md"** ou apontar a etapa do plano.
 
