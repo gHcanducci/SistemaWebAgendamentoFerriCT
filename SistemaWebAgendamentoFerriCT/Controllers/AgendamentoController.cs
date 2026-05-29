@@ -400,6 +400,8 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
 
             try
             {
+                int clienteId = (int)Session["ClienteId"];
+
                 var agendamento = db.Agendamentos
                     .Include("HorarioTurma")
                     .Include("HorarioTurma.Turma")
@@ -408,6 +410,9 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
 
                 if (agendamento == null)
                     return HttpNotFound();
+
+                if (agendamento.ClienteId != clienteId)
+                    return new HttpStatusCodeResult(System.Net.HttpStatusCode.Forbidden);
 
                 return View(agendamento);
             }

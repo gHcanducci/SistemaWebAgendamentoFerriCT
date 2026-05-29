@@ -310,10 +310,21 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
             }
         }
 
+        // Whitelist de status aceitos no POST de edição — protege a máquina de estados
+        // contra POST forjado que poderia setar qualquer string.
+        private static readonly HashSet<string> StatusValidos =
+            new HashSet<string>(StringComparer.Ordinal) { "PendentePagamento", "Confirmado", "Cancelado" };
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult EditarAgendamento(int agendamentoId, string status)
         {
+            if (string.IsNullOrWhiteSpace(status) || !StatusValidos.Contains(status))
+            {
+                TempData["Erro"] = "Status inválido.";
+                return RedirectToAction("EditarAgendamento", new { id = agendamentoId });
+            }
+
             try
             {
                 var agendamento = db.Agendamentos.Find(agendamentoId);

@@ -8,8 +8,8 @@ Documento de contexto operacional para Claude e para o usuário. Pensado pra **r
 
 - **Branch ativa:** `demo/sem-mp-simulado`
 - **Demo:** 03/06/2026 (PC do professor, `git clone` + F5)
-- **Último commit (2026-05-29):** `refactor: limpa codigo morto MP + linka Pagamento Manual` — Bloco 1 fechado. Working tree limpo.
-- **Próximo passo:** Bloco 2 (Segurança — ownership + whitelist). Ver "Cronograma reta final" abaixo.
+- **Último commit (2026-05-29):** Bloco 2 fechado (ownership em `Confirmacao` + whitelist em `EditarAgendamento` POST). Working tree limpo.
+- **Próximo passo:** Bloco 3 (Cancelamento pelo cliente). Ver "Cronograma reta final" abaixo.
 
 Para reabrir contexto numa nova sessão, basta dizer ao Claude: **"continua do HANDOFF.md"** ou apontar a etapa do plano.
 
@@ -145,15 +145,12 @@ Punch list dos pontos falhos identificados na branch demo. Detalhes completos em
 
 **Atualização 2026-05-29:**
 - Lista de Espera + Capacidade de turma removidas (commit `695074f`). Itens #1, #2, #7, #9, #11 obsoletos.
-- Pagamento Manual linkado em `DetalhesAgendamento`, copy "MP" trocada, pasta `MercadoPago/` + `PagamentoController` + `start-demo.ps1` + `DEMONSTRACAO-MERCADO-PAGO.md` deletados. Itens #3, #12, #13 fechados.
+- Bloco 1: Pagamento Manual linkado, copy "MP" trocada, código morto MP deletado. Itens #3, #12, #13 fechados.
+- Bloco 2: ownership em `Confirmacao` + whitelist no `EditarAgendamento` POST. Itens #6 e #8 fechados.
 
 ### 🟠 Alto (UX quebrada / ação órfã)
 4. **Card mobile de Alunos sem botão "Ver detalhes"** — tabela tem 3 botões (Ver/Editar/Excluir), cards só têm Editar/Excluir. Mobile esconde tabela → detalhes inacessíveis no celular.
 5. **Cliente não consegue cancelar agendamento** — não há `CancelarAgendamento` no `AgendamentoController` nem no `ClienteController`. Cliente fica preso até cleanup de 1h (e só pra `PendentePagamento`).
-
-### 🟡 Médio (segurança / regra de negócio)
-6. **`AgendamentoController.Confirmacao(int id)` sem ownership check** — qualquer cliente logado vê confirmação de qualquer outro. `Pagamento` e `Retorno` têm; `Confirmacao` esqueceu.
-8. **`AdminController.EditarAgendamento` POST sem whitelist de status** — `agendamento.Status = status` aceita qualquer string. POST forjado pode setar `"Lalala"` e quebrar máquina de estados.
 
 ### 🟢 Baixo (cosmético)
 10. **`Alunos.cshtml:376` "Novos este mês"** compara só `.Month`, ignora ano. Janeiro/2024 conta em janeiro/2026.
@@ -161,8 +158,6 @@ Punch list dos pontos falhos identificados na branch demo. Detalhes completos em
 ### Ordem sugerida pra implementação
 1. #5 (cancelamento pelo cliente)
 2. #4 (botão "Ver detalhes" no card mobile)
-3. #6 (ownership check em Confirmacao — 1 linha)
-4. #8 (whitelist no EditarAgendamento)
 
 #10 é extra se sobrar tempo.
 
