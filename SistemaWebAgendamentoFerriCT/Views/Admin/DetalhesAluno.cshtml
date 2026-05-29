@@ -361,13 +361,14 @@
 <div class="detail-grid">
 
     <!-- Perfil -->
+    @{
+        var initials = string.Join("", (Model.Nome ?? "?").Split(' ')
+            .Take(2).Select(w => w.Length > 0 ? w[0].ToString().ToUpper() : ""));
+    }
     <div class="profile-card">
-        <div class="profile-cover"></div>
-        @{
-            var initials = string.Join("", (Model.Nome ?? "?").Split(' ')
-                .Take(2).Select(w => w.Length > 0 ? w[0].ToString().ToUpper() : ""));
-        }
-        <div class="profile-avatar">@initials</div>
+        <div class="profile-cover">
+            <div class="profile-avatar">@initials</div>
+        </div>
         <div class="profile-body">
             <div class="profile-name">@Model.Nome</div>
             <div class="profile-since">
