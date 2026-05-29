@@ -8,8 +8,13 @@ Documento de contexto operacional para Claude e para o usuário. Pensado pra **r
 
 - **Branch ativa:** `demo/sem-mp-simulado`
 - **Demo:** 03/06/2026 (PC do professor, `git clone` + F5)
-- **Último commit (2026-05-29):** Bloco 3 fechado (cancelamento pelo cliente — actions GET+POST, view de confirmação, botão no Perfil). Working tree limpo.
+- **Sessão 2026-05-29 fechada:** 4 commits feitos hoje, todos pushed pra `origin/demo/sem-mp-simulado` (HEAD = `9593eae`). Working tree limpo. Blocos 1, 2, 3 do cronograma fechados.
+  - `695074f` Remove Lista de Espera + Capacidade de turma
+  - `c0168c6` Limpa código morto MP + linka Pagamento Manual (Bloco 1)
+  - `608b668` Ownership em Confirmacao + whitelist EditarAgendamento (Bloco 2)
+  - `9593eae` Cancelamento pelo cliente (Bloco 3)
 - **Próximo passo:** Bloco 4 (Mobile — cards Alunos + hero home). Ver "Cronograma reta final" abaixo.
+- **Continuação via Claude Dispatch:** clonar/pull a branch `demo/sem-mp-simulado`. Estado pronto pra retomar do Bloco 4.
 
 Para reabrir contexto numa nova sessão, basta dizer ao Claude: **"continua do HANDOFF.md"** ou apontar a etapa do plano.
 
