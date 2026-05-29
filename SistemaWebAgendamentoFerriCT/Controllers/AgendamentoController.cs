@@ -422,6 +422,88 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
             }
         }
 
+        // ─── GET: Agendamento/Cancelar ───────────────────────────────────
+        // Tela de confirmação antes de cancelar. Cliente só pode cancelar
+        // agendamentos próprios em status PendentePagamento (alinhado com
+        // "sem reembolso após pagamento aprovado" do CLAUDE.md).
+
+        public ActionResult Cancelar(int id)
+        {
+            if (!ClienteLogado())
+                return RedirectToAction("Login", "Cliente");
+
+            int clienteId = (int)Session["ClienteId"];
+
+            var agendamento = db.Agendamentos
+                .Include("HorarioTurma")
+                .Include("HorarioTurma.Turma")
+                .FirstOrDefault(a => a.AgendamentoId == id);
+
+            if (agendamento == null)
+                return HttpNotFound();
+
+            if (agendamento.ClienteId != clienteId)
+                return new HttpStatusCodeResult(System.Net.HttpStatusCode.Forbidden);
+
+            if (agendamento.Status != "PendentePagamento")
+            {
+                TempData["Erro"] = "Só é possível cancelar agendamentos que ainda não foram pagos.";
+                return RedirectToAction("Perfil", "Cliente");
+            }
+
+            return View(agendamento);
+        }
+
+        // ─── POST: Agendamento/Cancelar ──────────────────────────────────
+
+        [HttpPost, ActionName("Cancelar")]
+        [ValidateAntiForgeryToken]
+        public ActionResult CancelarConfirmado(int id)
+        {
+            if (!ClienteLogado())
+                return RedirectToAction("Login", "Cliente");
+
+            int clienteId = (int)Session["ClienteId"];
+
+            var agendamento = db.Agendamentos.Find(id);
+            if (agendamento == null)
+                return HttpNotFound();
+
+            if (agendamento.ClienteId != clienteId)
+                return new HttpStatusCodeResult(System.Net.HttpStatusCode.Forbidden);
+
+            if (agendamento.Status != "PendentePagamento")
+            {
+                TempData["Erro"] = "Só é possível cancelar agendamentos que ainda não foram pagos.";
+                return RedirectToAction("Perfil", "Cliente");
+            }
+
+            try
+            {
+                // Cancela tentativas de pagamento ainda pendentes
+                var pendentes = db.Pagamentos
+                    .Where(p => p.AgendamentoId == id && p.StatusPagamento == "Pendente")
+                    .ToList();
+
+                foreach (var p in pendentes)
+                {
+                    p.StatusPagamento = "Cancelado";
+                    p.DataAtualizacao = DateTime.Now;
+                }
+
+                agendamento.Status = "Cancelado";
+                db.SaveChanges();
+
+                TempData["Sucesso"] = "Agendamento cancelado.";
+                return RedirectToAction("Perfil", "Cliente");
+            }
+            catch (Exception)
+            {
+                TempData["Erro"] = "Erro ao cancelar o agendamento. Tente novamente.";
+                return RedirectToAction("Perfil", "Cliente");
+            }
+        }
+
         // ─── Dispose ────────────────────────────────────────────────────
 
         protected override void Dispose(bool disposing)

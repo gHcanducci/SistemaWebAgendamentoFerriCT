@@ -277,6 +277,34 @@
             box-shadow: 0 4px 14px var(--accent-glow);
         }
 
+    /* Wrapper que junta o botão de pagar com o botão de cancelar */
+    .acoes-ag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-cancelar-ag {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        background: rgba(224,80,80,0.08);
+        border: 1px solid rgba(224,80,80,0.2);
+        color: var(--danger);
+        border-radius: var(--radius-sm);
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: all 0.2s;
+        flex-shrink: 0;
+    }
+
+        .btn-cancelar-ag:hover {
+            background: rgba(224,80,80,0.18);
+            color: var(--danger);
+        }
+
     .acao-vazia {
         color: var(--text-secondary);
         font-size: 0.8rem;
@@ -460,11 +488,21 @@
                     display: none;
                 }
 
-            .ag-table tbody td[data-label="Ações"] .btn-pagar-ag {
+            .ag-table tbody td[data-label="Ações"] .acoes-ag {
                 width: 100%;
+            }
+
+            .ag-table tbody td[data-label="Ações"] .btn-pagar-ag {
+                flex: 1;
                 justify-content: center;
                 padding: 10px;
                 font-size: 0.82rem;
+            }
+
+            .ag-table tbody td[data-label="Ações"] .btn-cancelar-ag {
+                width: 38px;
+                height: 38px;
+                font-size: 1rem;
             }
 
             .ag-table tbody td[data-label="Ações"] .acao-vazia {
@@ -602,9 +640,14 @@
                                         <td data-label="Ações">
                                             @if (ag.Status == "PendentePagamento")
                                             {
-                                                <a href="@Url.Action("Pagamento", "Agendamento", new { id = ag.AgendamentoId })" class="btn-pagar-ag">
-                                                    <i class="bi bi-credit-card-fill"></i> Efetuar Pagamento
-                                                </a>
+                                                <div class="acoes-ag">
+                                                    <a href="@Url.Action("Pagamento", "Agendamento", new { id = ag.AgendamentoId })" class="btn-pagar-ag">
+                                                        <i class="bi bi-credit-card-fill"></i> Efetuar Pagamento
+                                                    </a>
+                                                    <a href="@Url.Action("Cancelar", "Agendamento", new { id = ag.AgendamentoId })" class="btn-cancelar-ag" title="Cancelar agendamento">
+                                                        <i class="bi bi-x-lg"></i>
+                                                    </a>
+                                                </div>
                                             }
                                             else
                                             {

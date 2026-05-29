@@ -238,9 +238,9 @@
     <Content Include="Views\Cliente\Perfil.cshtml" />
     <Content Include="Views\Cliente\Editar.cshtml" />
     <Content Include="Views\Cliente\Excluir.cshtml" />
+    <Content Include="Views\Agendamento\Cancelar.cshtml" />
     <Content Include="Views\Agendamento\Confirmacao.cshtml" />
     <Content Include="Views\Agendamento\Pagamento.cshtml" />
-    <Content Include="Views\Agendamento\ListaEspera.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

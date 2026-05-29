@@ -8,8 +8,8 @@ Documento de contexto operacional para Claude e para o usuário. Pensado pra **r
 
 - **Branch ativa:** `demo/sem-mp-simulado`
 - **Demo:** 03/06/2026 (PC do professor, `git clone` + F5)
-- **Último commit (2026-05-29):** Bloco 2 fechado (ownership em `Confirmacao` + whitelist em `EditarAgendamento` POST). Working tree limpo.
-- **Próximo passo:** Bloco 3 (Cancelamento pelo cliente). Ver "Cronograma reta final" abaixo.
+- **Último commit (2026-05-29):** Bloco 3 fechado (cancelamento pelo cliente — actions GET+POST, view de confirmação, botão no Perfil). Working tree limpo.
+- **Próximo passo:** Bloco 4 (Mobile — cards Alunos + hero home). Ver "Cronograma reta final" abaixo.
 
 Para reabrir contexto numa nova sessão, basta dizer ao Claude: **"continua do HANDOFF.md"** ou apontar a etapa do plano.
 
@@ -147,17 +147,16 @@ Punch list dos pontos falhos identificados na branch demo. Detalhes completos em
 - Lista de Espera + Capacidade de turma removidas (commit `695074f`). Itens #1, #2, #7, #9, #11 obsoletos.
 - Bloco 1: Pagamento Manual linkado, copy "MP" trocada, código morto MP deletado. Itens #3, #12, #13 fechados.
 - Bloco 2: ownership em `Confirmacao` + whitelist no `EditarAgendamento` POST. Itens #6 e #8 fechados.
+- Bloco 3: cancelamento pelo cliente (`Agendamento/Cancelar` GET+POST + view + botão no Perfil). Item #5 fechado.
 
 ### 🟠 Alto (UX quebrada / ação órfã)
 4. **Card mobile de Alunos sem botão "Ver detalhes"** — tabela tem 3 botões (Ver/Editar/Excluir), cards só têm Editar/Excluir. Mobile esconde tabela → detalhes inacessíveis no celular.
-5. **Cliente não consegue cancelar agendamento** — não há `CancelarAgendamento` no `AgendamentoController` nem no `ClienteController`. Cliente fica preso até cleanup de 1h (e só pra `PendentePagamento`).
 
 ### 🟢 Baixo (cosmético)
 10. **`Alunos.cshtml:376` "Novos este mês"** compara só `.Month`, ignora ano. Janeiro/2024 conta em janeiro/2026.
 
 ### Ordem sugerida pra implementação
-1. #5 (cancelamento pelo cliente)
-2. #4 (botão "Ver detalhes" no card mobile)
+1. #4 (botão "Ver detalhes" no card mobile)
 
 #10 é extra se sobrar tempo.
 
