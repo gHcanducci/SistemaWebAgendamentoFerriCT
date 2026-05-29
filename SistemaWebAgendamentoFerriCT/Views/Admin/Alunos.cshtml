@@ -196,6 +196,17 @@
         font-size: 0.85rem;
     }
 
+    .action-btn-view {
+        background: rgba(110,176,255,0.1);
+        color: #6eb0ff;
+        border: 1px solid rgba(110,176,255,0.2);
+    }
+
+        .action-btn-view:hover {
+            background: rgba(110,176,255,0.2);
+            color: #6eb0ff;
+        }
+
     .action-btn-edit {
         background: rgba(255,204,0,0.1);
         color: var(--accent);
@@ -314,7 +325,7 @@
         color: #ff8a8a;
     }
 
-    .card-actions .card-btn-edit {
+    .card-actions .card-btn-view {
         flex: 1;
         gap: 6px;
         font-size: 0.78rem;
@@ -330,8 +341,9 @@
         .view-toggle  { display: none; }
         .cards-grid   { grid-template-columns: 1fr; padding: 0; gap: 12px; }
         .aluno-card   { padding: 16px; }
-        .card-actions .action-btn-del { width: 40px; height: 40px; }
-        .card-actions .card-btn-edit  { height: 40px; }
+        .card-actions .action-btn-del  { width: 40px; height: 40px; }
+        .card-actions .action-btn-edit { width: 40px; height: 40px; }
+        .card-actions .card-btn-view   { height: 40px; }
         .toast-msg    { top: 70px; right: 10px; left: 10px; }
     }
 </style>
@@ -485,9 +497,13 @@
                     <div class="card-info"><i class="bi bi-telephone"></i> @item.Telefone</div>
                     <div class="card-info"><i class="bi bi-calendar3"></i> @item.DataCadastro.ToString("dd/MM/yyyy")</div>
                     <div class="card-actions">
+                        <a href="@Url.Action("DetalhesAluno", "Admin", new { id = item.ClienteId })"
+                           class="action-btn action-btn-view card-btn-view" title="Ver detalhes">
+                            <i class="bi bi-eye-fill"></i><span>Detalhes</span>
+                        </a>
                         <a href="@Url.Action("EditarAluno", "Admin", new { id = item.ClienteId })"
-                           class="action-btn action-btn-edit card-btn-edit" title="Editar">
-                            <i class="bi bi-pencil-fill"></i><span>Editar</span>
+                           class="action-btn action-btn-edit" title="Editar">
+                            <i class="bi bi-pencil-fill"></i>
                         </a>
                         <a href="@Url.Action("ExcluirAluno", "Admin", new { id = item.ClienteId })"
                            class="action-btn action-btn-del" title="Excluir">
