@@ -318,11 +318,6 @@
         background: rgba(224,80,80,0.12);
     }
 
-    .badge-espera {
-        color: #f59e0b;
-        background: rgba(245,158,11,0.12);
-    }
-
     /* Turma pill */
     .turma-pill {
         display: inline-block;
@@ -575,12 +570,10 @@
                                     string sc;
                                     if (ag.Status == "Confirmado") { sc = "badge-confirmado"; }
                                     else if (ag.Status == "Cancelado") { sc = "badge-cancelado"; }
-                                    else if (ag.ListaEspera) { sc = "badge-espera"; }
                                     else { sc = "badge-pendente"; }
 
                                     string statusLabel;
-                                    if (ag.ListaEspera && ag.Status != "Confirmado" && ag.Status != "Cancelado") { statusLabel = "Lista de Espera"; }
-                                    else if (ag.Status == "PendentePagamento") { statusLabel = "Pend. Pagamento"; }
+                                    if (ag.Status == "PendentePagamento") { statusLabel = "Pend. Pagamento"; }
                                     else { statusLabel = ag.Status; }
 
                                     string horario = ag.HorarioTurma != null

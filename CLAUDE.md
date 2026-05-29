@@ -47,7 +47,7 @@ Sem o `@@`, o Razor tenta interpretar como código C# e o CSS é silenciosamente
 - Academia **fechada aos domingos** e em feriados (fixos + móveis via algoritmo de Páscoa).
 - Cliente só pode ter 1 agendamento ativo por (data, horário).
 - Aula **Experimental** é exclusiva para clientes sem agendamento prévio (`ClienteJaAgendou`).
-- Capacidade da turma é checada antes de confirmar. Excedente → `ListaEspera = true`.
+- Turmas não têm capacidade máxima — não há lista de espera (decisão de 2026-05-29 nesta branch demo).
 
 ### Pagamento (integração Mercado Pago em andamento)
 
@@ -57,7 +57,6 @@ Ver `memory/payment-rules.md` (memória pessoal de Claude) ou o resumo abaixo:
 - Métodos: **PIX + Débito apenas** (sem crédito, sem boleto)
 - Timeout de pendente: **1h** → cancela e libera vaga
 - Sem reembolso após pagamento aprovado
-- Lista de espera não gera pagamento (admin promove)
 - Pagamento manual pelo admin permitido (CodigoTransacao = "MANUAL-{Guid}")
 - Máximo 1 agendamento `PendentePagamento` por cliente
 
@@ -65,7 +64,6 @@ Ver `memory/payment-rules.md` (memória pessoal de Claude) ou o resumo abaixo:
 
 `PendentePagamento` → `EmAnalise` → `Confirmado` / `Cancelado`
 `PendentePagamento` → `Confirmado` (PIX direto)
-`AguardandoVaga` → `PendentePagamento` (admin promove)
 
 ## Segurança
 

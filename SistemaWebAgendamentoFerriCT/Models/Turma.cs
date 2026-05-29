@@ -13,9 +13,6 @@ namespace SistemaWebAgendamentoFerriCT.Models
         [StringLength(100)]
         public string NomeTurma { get; set; }
 
-        [Required]
-        public int CapacidadeMaxima { get; set; }
-
         [ForeignKey("Professor")]
         public int ProfessorId { get; set; }
         public virtual Professor Professor { get; set; }

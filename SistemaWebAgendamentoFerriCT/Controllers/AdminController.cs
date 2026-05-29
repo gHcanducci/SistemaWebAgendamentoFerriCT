@@ -80,9 +80,6 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 ViewBag.TotalTurmas = db.Turmas.Count();
                 ViewBag.ConfirmadosHoje = db.Agendamentos.Count(a => a.DataAula == DateTime.Today && a.Status == "Confirmado");
 
-                // Notificações de lista de espera
-                ViewBag.ListaEspera = db.Agendamentos.Count(a => a.ListaEspera && a.Status == "PendentePagamento");
-
                 return View();
             }
             catch (Exception)
@@ -397,7 +394,7 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 if (agendamento == null) return HttpNotFound();
 
                 // Só faz sentido para agendamentos aguardando pagamento
-                if (agendamento.Status != "PendentePagamento" && agendamento.Status != "AguardandoVaga")
+                if (agendamento.Status != "PendentePagamento")
                 {
                     TempData["Erro"] = $"Não é possível registrar pagamento manual para agendamento no status '{agendamento.Status}'.";
                     return RedirectToAction("DetalhesAgendamento", new { id });
@@ -429,7 +426,7 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 var agendamento = db.Agendamentos.Find(agendamentoId);
                 if (agendamento == null) return HttpNotFound();
 
-                if (agendamento.Status != "PendentePagamento" && agendamento.Status != "AguardandoVaga")
+                if (agendamento.Status != "PendentePagamento")
                 {
                     TempData["Erro"] = $"Agendamento não está aguardando pagamento (status atual: {agendamento.Status}).";
                     return RedirectToAction("DetalhesAgendamento", new { id = agendamentoId });
@@ -479,28 +476,6 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 System.Diagnostics.Trace.TraceError("Erro ao registrar pagamento manual: " + ex);
                 TempData["Erro"] = "Erro ao registrar pagamento manual.";
                 return RedirectToAction("RegistrarPagamentoManual", new { id = agendamentoId });
-            }
-        }
-
-        // ─── Notificações de Lista de Espera ─────────────────────────────
-
-        public ActionResult ListaEspera()
-        {
-            try
-            {
-                var espera = db.Agendamentos
-                    .Include("Cliente")
-                    .Include("HorarioTurma")
-                    .Where(a => a.ListaEspera && a.Status == "PendentePagamento")
-                    .OrderBy(a => a.DataSolicitacao)
-                    .ToList();
-
-                return View(espera);
-            }
-            catch (Exception)
-            {
-                ViewBag.Erro = "Erro ao carregar lista de espera.";
-                return View(new List<Agendamento>());
             }
         }
 

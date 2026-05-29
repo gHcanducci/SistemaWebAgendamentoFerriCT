@@ -94,24 +94,6 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 .ToList();
         }
 
-        // Verifica se a turma tem vagas disponíveis na data
-        private bool TurmaTemVaga(int horarioTurmaId, DateTime data)
-        {
-            var horario = db.HorariosTurma
-                .Include("Turma")
-                .FirstOrDefault(h => h.HorarioTurmaId == horarioTurmaId);
-
-            if (horario == null) return false;
-
-            int agendadosConfirmados = db.Agendamentos.Count(a =>
-                a.HorarioTurmaId == horarioTurmaId &&
-                a.DataAula == data &&
-                a.Status != "Cancelado" &&
-                !a.ListaEspera);
-
-            return agendadosConfirmados < horario.Turma.CapacidadeMaxima;
-        }
-
         // Verifica se o cliente já fez algum agendamento (para controle de aula experimental)
         private bool ClienteJaAgendou(int clienteId)
         {
@@ -232,12 +214,6 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 if (!ModelState.IsValid)
                     return View(vm);
 
-                // ── Verificar capacidade da turma
-                bool temVaga = TurmaTemVaga(vm.HorarioTurmaId, vm.DataAula);
-
-                // ── Definir valor conforme tipo de aula
-                decimal valor = vm.TipoAula == "Experimental" ? ValorExperimental : ValorMatricula;
-
                 // ── Criar o agendamento
                 var agendamento = new Agendamento
                 {
@@ -246,26 +222,11 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                     TipoAula = vm.TipoAula,
                     HorarioTurmaId = vm.HorarioTurmaId,
                     DataSolicitacao = DateTime.Now,
-                    ListaEspera = !temVaga,
                     Status = "PendentePagamento"
                 };
 
                 db.Agendamentos.Add(agendamento);
                 db.SaveChanges();
-
-                // ── Se turma lotada: avisa cliente e notifica admin
-                if (!temVaga)
-                {
-                    // Registra notificação para o admin ver no painel
-                    TempData["NotificacaoAdmin"] = $"Lista de espera: cliente {Session["ClienteNome"]} tentou agendar para {vm.DataAula:dd/MM/yyyy} — turma lotada.";
-                    TempData["ListaEspera"] = true;
-
-                    // Lista de espera não gera pagamento (admin promove quando vaga abre)
-                    agendamento.Status = "AguardandoVaga";
-                    db.SaveChanges();
-
-                    return RedirectToAction("ListaEspera", new { id = agendamento.AgendamentoId });
-                }
 
                 // ── Redireciona para tela de pagamento (sem valor na URL — server recalcula)
                 return RedirectToAction("Pagamento", new { id = agendamento.AgendamentoId });
@@ -443,31 +404,6 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                     .Include("HorarioTurma")
                     .Include("HorarioTurma.Turma")
                     .Include("Pagamentos")
-                    .FirstOrDefault(a => a.AgendamentoId == id);
-
-                if (agendamento == null)
-                    return HttpNotFound();
-
-                return View(agendamento);
-            }
-            catch (Exception)
-            {
-                return RedirectToAction("Create");
-            }
-        }
-
-        // ─── GET: Agendamento/ListaEspera ────────────────────────────────
-
-        public ActionResult ListaEspera(int id)
-        {
-            if (!ClienteLogado())
-                return RedirectToAction("Login", "Cliente");
-
-            try
-            {
-                var agendamento = db.Agendamentos
-                    .Include("HorarioTurma")
-                    .Include("HorarioTurma.Turma")
                     .FirstOrDefault(a => a.AgendamentoId == id);
 
                 if (agendamento == null)

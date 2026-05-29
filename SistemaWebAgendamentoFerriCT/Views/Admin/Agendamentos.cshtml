@@ -197,11 +197,6 @@
         background: rgba(224,80,80,0.12);
     }
 
-    .badge-espera {
-        color: #f59e0b;
-        background: rgba(245,158,11,0.12);
-    }
-
     .action-btn {
         width: 30px;
         height: 30px;
@@ -349,7 +344,6 @@
     <button class="filter-chip" data-filter="Confirmado">Confirmados</button>
     <button class="filter-chip" data-filter="PendentePagamento">Pendentes</button>
     <button class="filter-chip" data-filter="Cancelado">Cancelados</button>
-    <button class="filter-chip" data-filter="espera">Lista de Espera</button>
 </div>
 
 <!-- Table -->
@@ -397,11 +391,6 @@
                             statusClass = "badge-cancelado";
                             statusLabel = "Cancelado";
                         }
-                        else if (item.ListaEspera)
-                        {
-                            statusClass = "badge-espera";
-                            statusLabel = "Lista de Espera";
-                        }
                         else
                         {
                             statusClass = "badge-pendente";
@@ -414,9 +403,7 @@
 
                         string turma = item.HorarioTurma?.Turma?.NomeTurma ?? "";
 
-                        string filtroEspera = item.ListaEspera ? "espera" : item.Status;
-
-                        <tr data-status="@filtroEspera" data-aluno="@(item.Cliente != null ? item.Cliente.Nome.ToLower() : "")">
+                        <tr data-status="@item.Status" data-aluno="@(item.Cliente != null ? item.Cliente.Nome.ToLower() : "")">
                             <td data-label="Aluno">
                                 <div class="aluno-cell">
                                     <div class="aluno-avatar">@initials</div>

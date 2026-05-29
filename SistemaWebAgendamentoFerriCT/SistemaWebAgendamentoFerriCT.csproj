@@ -135,6 +135,10 @@
     <Compile Include="MercadoPago\PaymentInfo.cs" />
     <Compile Include="MercadoPago\PreferenceCreatedResult.cs" />
     <Compile Include="MercadoPago\WebhookSignatureValidator.cs" />
+    <Compile Include="Migrations\202605291003511_RemoveListaEsperaECapacidade.cs" />
+    <Compile Include="Migrations\202605291003511_RemoveListaEsperaECapacidade.Designer.cs">
+      <DependentUpon>202605291003511_RemoveListaEsperaECapacidade.cs</DependentUpon>
+    </Compile>
     <Compile Include="Tasks\AgendamentoCleanupJob.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -288,6 +292,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202605172019119_AddMercadoPagoFields.resx">
       <DependentUpon>202605172019119_AddMercadoPagoFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605291003511_RemoveListaEsperaECapacidade.resx">
+      <DependentUpon>202605291003511_RemoveListaEsperaECapacidade.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -52,10 +52,10 @@
 
             // ─── 2. Turmas ────────────────────────────────────────────────
             context.Turmas.AddOrUpdate(t => t.NomeTurma,
-                new Models.Turma { NomeTurma = "Boxe Misto",    CapacidadeMaxima = 20, ProfessorId = profBoxe.ProfessorId },
-                new Models.Turma { NomeTurma = "Boxe Feminino", CapacidadeMaxima = 20, ProfessorId = profBoxe.ProfessorId },
-                new Models.Turma { NomeTurma = "Boxe KIDS",     CapacidadeMaxima = 15, ProfessorId = profBoxe.ProfessorId },
-                new Models.Turma { NomeTurma = "Funcional",     CapacidadeMaxima = 15, ProfessorId = profFuncional.ProfessorId }
+                new Models.Turma { NomeTurma = "Boxe Misto",    ProfessorId = profBoxe.ProfessorId },
+                new Models.Turma { NomeTurma = "Boxe Feminino", ProfessorId = profBoxe.ProfessorId },
+                new Models.Turma { NomeTurma = "Boxe KIDS",     ProfessorId = profBoxe.ProfessorId },
+                new Models.Turma { NomeTurma = "Funcional",     ProfessorId = profFuncional.ProfessorId }
             );
             context.SaveChanges();
 

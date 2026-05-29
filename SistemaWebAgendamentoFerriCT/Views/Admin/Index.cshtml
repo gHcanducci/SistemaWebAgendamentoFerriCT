@@ -1,7 +1,6 @@
 ﻿@{
     ViewBag.Title = "Painel Admin";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-    int listaEspera = ViewBag.ListaEspera ?? 0;
 }
 
 <style>
@@ -38,70 +37,10 @@
             color: var(--accent);
         }
 
-    /* Notificação lista de espera */
-    .notif-espera {
-        background: rgba(245,158,11,0.08);
-        border: 1px solid rgba(245,158,11,0.3);
-        border-radius: var(--radius-md);
-        padding: 14px 20px;
-        margin-bottom: 24px;
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        animation: fadeUp 0.4s ease forwards;
-    }
-
-    .notif-espera-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: var(--radius-sm);
-        background: rgba(245,158,11,0.15);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #f59e0b;
-        font-size: 1.1rem;
-        flex-shrink: 0;
-    }
-
-    .notif-espera-text {
-        flex: 1;
-    }
-
-    .notif-espera-title {
-        font-weight: 700;
-        font-size: 0.9rem;
-        color: #f59e0b;
-        margin-bottom: 2px;
-    }
-
-    .notif-espera-desc {
-        font-size: 0.8rem;
-        color: var(--text-secondary);
-    }
-
-    .notif-espera-btn {
-        background: rgba(245,158,11,0.15);
-        border: 1px solid rgba(245,158,11,0.3);
-        color: #f59e0b;
-        border-radius: var(--radius-sm);
-        padding: 8px 16px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        text-decoration: none;
-        white-space: nowrap;
-        transition: all 0.2s;
-    }
-
-        .notif-espera-btn:hover {
-            background: rgba(245,158,11,0.25);
-            color: #f59e0b;
-        }
-
     /* Stat Cards */
     .stat-cards {
         display: grid;
-        grid-template-columns: repeat(4,1fr);
+        grid-template-columns: repeat(3,1fr);
         gap: 16px;
         margin-bottom: 24px;
     }
@@ -248,8 +187,9 @@
     /* Bottom Grid */
     .bottom-grid {
         display: grid;
-        grid-template-columns: 1fr 300px;
+        grid-template-columns: 1fr;
         gap: 20px;
+        max-width: 480px;
     }
 
     .panel {
@@ -289,65 +229,6 @@
         .panel-action:hover {
             text-decoration: underline;
         }
-
-    /* Lista de espera painel */
-    .espera-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 14px 20px;
-        border-bottom: 1px solid var(--border);
-        transition: background 0.2s;
-    }
-
-        .espera-item:last-child {
-            border: none;
-        }
-
-        .espera-item:hover {
-            background: rgba(255,255,255,0.02);
-        }
-
-    .espera-avatar {
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        background: rgba(245,158,11,0.12);
-        border: 1px solid rgba(245,158,11,0.25);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.72rem;
-        font-weight: 700;
-        color: #f59e0b;
-        flex-shrink: 0;
-    }
-
-    .espera-info {
-        flex: 1;
-    }
-
-    .espera-name {
-        font-size: 0.85rem;
-        font-weight: 600;
-    }
-
-    .espera-detail {
-        font-size: 0.72rem;
-        color: var(--text-secondary);
-        margin-top: 2px;
-    }
-
-    .espera-badge {
-        font-size: 0.72rem;
-        font-weight: 600;
-        background: rgba(245,158,11,0.12);
-        border: 1px solid rgba(245,158,11,0.2);
-        color: #f59e0b;
-        border-radius: 999px;
-        padding: 3px 8px;
-        white-space: nowrap;
-    }
 
     /* Mini calendar */
     .cal-header {
@@ -436,10 +317,8 @@
     @@media (max-width: 768px) {
         .stat-cards     { grid-template-columns: repeat(2, 1fr); }
         .quick-actions  { grid-template-columns: 1fr; }
-        .bottom-grid    { grid-template-columns: 1fr; }
+        .bottom-grid    { max-width: none; }
         .greeting-title { font-size: 1.8rem; }
-        .notif-espera   { flex-wrap: wrap; }
-        .notif-espera-btn { width: 100%; text-align: center; justify-content: center; margin-top: 8px; }
     }
 
     @@media (max-width: 480px) {
@@ -460,27 +339,6 @@
     </div>
     <div class="greeting-title">BOM DIA, <span>ADMIN</span></div>
 </div>
-
-<!-- Notificação Lista de Espera -->
-@if (listaEspera > 0)
-{
-    <div class="notif-espera">
-        <div class="notif-espera-icon">
-            <i class="bi bi-hourglass-split"></i>
-        </div>
-        <div class="notif-espera-text">
-            <div class="notif-espera-title">
-                @listaEspera aluno(s) na lista de espera
-            </div>
-            <div class="notif-espera-desc">
-                Há alunos aguardando vaga em turmas lotadas. Verifique e entre em contato.
-            </div>
-        </div>
-        <a href="/Admin/ListaEspera" class="notif-espera-btn">
-            <i class="bi bi-arrow-right me-1"></i> Ver lista
-        </a>
-    </div>
-}
 
 <!-- Stat Cards -->
 <div class="stat-cards">
@@ -506,14 +364,6 @@
         </div>
         <div class="stat-value">@(ViewBag.PendentePagamento ?? 0)</div>
         <div class="stat-label">Pend. Pagamento</div>
-    </div>
-
-    <div class="stat-card delay-4" style="--card-color:#f59e0b;--icon-bg:rgba(245,158,11,0.12)">
-        <div class="stat-card-top">
-            <div class="stat-icon" style="color:#f59e0b"><i class="bi bi-hourglass-split"></i></div>
-        </div>
-        <div class="stat-value">@listaEspera</div>
-        <div class="stat-label">Lista de Espera</div>
     </div>
 </div>
 
@@ -549,53 +399,6 @@
 
 <!-- Bottom Grid -->
 <div class="bottom-grid">
-
-    <!-- Painel de Lista de Espera -->
-    <div class="panel">
-        <div class="panel-header">
-            <div class="panel-title">
-                <i class="bi bi-hourglass-split"></i> Lista de Espera
-                @if (listaEspera > 0)
-                {
-                    <span style="background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);color:#f59e0b;border-radius:999px;padding:2px 10px;font-size:0.72rem;font-weight:700">
-                        @listaEspera
-                    </span>
-                }
-            </div>
-            <a href="/Admin/ListaEspera" class="panel-action">Ver todos →</a>
-        </div>
-
-        @{
-            var listaEsperaAgendamentos = ViewBag.ListaEsperaAgendamentos as IEnumerable<SistemaWebAgendamentoFerriCT.Models.Agendamento>;
-        }
-
-        @if (listaEsperaAgendamentos != null && listaEsperaAgendamentos.Any())
-        {
-            foreach (var ag in listaEsperaAgendamentos.Take(5))
-            {
-                var ini = string.Join("", (ag.Cliente?.Nome ?? "?").Split(' ')
-                    .Take(2).Select(w => w.Length > 0 ? w[0].ToString().ToUpper() : ""));
-                <div class="espera-item">
-                    <div class="espera-avatar">@ini</div>
-                    <div class="espera-info">
-                        <div class="espera-name">@ag.Cliente?.Nome</div>
-                        <div class="espera-detail">
-                            @ag.DataAula.ToString("dd/MM/yyyy") ·
-                            @(ag.HorarioTurma != null ? ag.HorarioTurma.HoraInicio.ToString(@"hh\:mm") : "—")
-                        </div>
-                    </div>
-                    <span class="espera-badge">Aguardando</span>
-                </div>
-            }
-        }
-        else
-        {
-            <div class="empty-notif">
-                <i class="bi bi-check-circle"></i>
-                Nenhum aluno em lista de espera.
-            </div>
-        }
-    </div>
 
     <!-- Mini Calendar -->
     <div class="panel">

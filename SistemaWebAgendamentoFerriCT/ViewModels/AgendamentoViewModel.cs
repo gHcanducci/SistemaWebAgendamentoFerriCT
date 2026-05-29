@@ -25,8 +25,6 @@ namespace SistemaWebAgendamentoFerriCT.ViewModels
         public int HorarioTurmaId { get; set; }
 
         // Informações exibidas na view (não enviadas pelo form)
-        public bool TurmaLotada { get; set; }
-        public bool AceitaListaEspera { get; set; }
         public string HorarioFormatado { get; set; }
         public decimal ValorAula { get; set; }
     }

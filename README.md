@@ -141,7 +141,7 @@ SistemaWebAgendamentoFerriCT/
 - Academia **fechada aos domingos** e em feriados (fixos + móveis via algoritmo de Páscoa).
 - Cliente só pode ter 1 agendamento ativo por (data, horário).
 - Aula **Experimental** é exclusiva para clientes sem agendamento prévio.
-- Capacidade da turma é checada antes de confirmar. Excedente vai pra `ListaEspera`.
+- Turmas não têm capacidade máxima — não há lista de espera.
 
 ### Pagamento
 
@@ -149,7 +149,6 @@ SistemaWebAgendamentoFerriCT/
 - Métodos: **PIX + Débito apenas** (crédito, prepago, cripto e boleto bloqueados via `excluded_payment_types`)
 - Timeout de pendente: **1h** → cancela automaticamente e libera vaga
 - Sem reembolso após pagamento aprovado
-- Lista de espera não gera pagamento (admin promove)
 - Pagamento manual pelo admin permitido (`CodigoTransacao = "MANUAL-{Guid}"`)
 - Máximo 1 agendamento `PendentePagamento` por cliente
 
@@ -160,8 +159,6 @@ PendentePagamento ─┬─► EmAnalise ─┬─► Confirmado
                    │              └─► Cancelado (MP rejeitou)
                    ├─► Confirmado (PIX aprovou direto)
                    └─► Cancelado (timeout 1h)
-
-AguardandoVaga ─► PendentePagamento (admin promove)
 ```
 
 ---

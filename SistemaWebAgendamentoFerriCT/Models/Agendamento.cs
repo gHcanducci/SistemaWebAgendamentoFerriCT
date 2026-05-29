@@ -1,7 +1,4 @@
-﻿// ─────────────────────────────────────────────────────────────────
-// Agendamento.cs — com DataAnnotations e campo ListaEspera
-// ─────────────────────────────────────────────────────────────────
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -24,9 +21,6 @@ namespace SistemaWebAgendamentoFerriCT.Models
 
         [Required]
         public string Status { get; set; }
-
-        // Indica se o cliente entrou em lista de espera por turma lotada
-        public bool ListaEspera { get; set; } = false;
 
         public DateTime DataSolicitacao { get; set; } = DateTime.Now;
 
