@@ -351,14 +351,14 @@
 @* Toast de feedback *@
 @if (TempData["Sucesso"] != null)
 {
-    <div class="toast-msg toast-sucesso">
-        <i class="bi bi-check-circle-fill"></i> @TempData["Sucesso"]
+    <div class="toast-msg toast-sucesso" role="status" aria-live="polite">
+        <i class="bi bi-check-circle-fill" aria-hidden="true"></i> @TempData["Sucesso"]
     </div>
 }
 @if (TempData["Erro"] != null)
 {
-    <div class="toast-msg toast-erro">
-        <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Erro"]
+    <div class="toast-msg toast-erro" role="alert" aria-live="assertive">
+        <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i> @TempData["Erro"]
     </div>
 }
 
@@ -396,11 +396,12 @@
 <div class="toolbar">
     <div class="toolbar-search">
         <i class="bi bi-search"></i>
-        <input type="text" class="form-control" id="searchInput" placeholder="Buscar por nome, e-mail ou telefone...">
+        <input type="text" class="form-control" id="searchInput" placeholder="Buscar por nome, e-mail ou telefone..."
+               aria-label="Buscar alunos por nome, e-mail ou telefone">
     </div>
     <div class="view-toggle">
-        <button class="view-btn active" id="viewTable" title="Tabela"><i class="bi bi-list-ul"></i></button>
-        <button class="view-btn" id="viewGrid" title="Cards"><i class="bi bi-grid-3x3-gap-fill"></i></button>
+        <button class="view-btn active" id="viewTable" title="Tabela" aria-label="Visualizar em tabela" aria-pressed="true"><i class="bi bi-list-ul" aria-hidden="true"></i></button>
+        <button class="view-btn" id="viewGrid" title="Cards" aria-label="Visualizar em cards" aria-pressed="false"><i class="bi bi-grid-3x3-gap-fill" aria-hidden="true"></i></button>
     </div>
 </div>
 
@@ -415,7 +416,7 @@
     @if (Model != null && Model.Any())
     {
         <div class="table-scroll">
-            <table class="ferri-table">
+            <table class="ferri-table" aria-label="Lista de alunos cadastrados">
                 <thead>
                     <tr>
                         <th>Aluno</th>
@@ -451,16 +452,19 @@
                                 <div style="display:flex;gap:6px">
                                     @* EXIBIR — link para ExibirAluno com o ID *@
                                     <a href="@Url.Action("DetalhesAluno", "Admin", new { id = item.ClienteId })"
-                                       class="action-btn action-btn-view" title="Ver detalhes">
-                                        <i class="bi bi-eye-fill"></i>
+                                       class="action-btn action-btn-view" title="Ver detalhes"
+                                       aria-label="Ver detalhes de @item.Nome">
+                                        <i class="bi bi-eye-fill" aria-hidden="true"></i>
                                     </a>
                                     <a href="@Url.Action("EditarAluno", "Admin", new { id = item.ClienteId })"
-                                       class="action-btn action-btn-edit" title="Editar aluno">
-                                        <i class="bi bi-pencil-fill"></i>
+                                       class="action-btn action-btn-edit" title="Editar aluno"
+                                       aria-label="Editar @item.Nome">
+                                        <i class="bi bi-pencil-fill" aria-hidden="true"></i>
                                     </a>
                                     <a href="@Url.Action("ExcluirAluno", "Admin", new { id = item.ClienteId })"
-                                       class="action-btn action-btn-del" title="Excluir aluno">
-                                        <i class="bi bi-trash-fill"></i>
+                                       class="action-btn action-btn-del" title="Excluir aluno"
+                                       aria-label="Excluir @item.Nome">
+                                        <i class="bi bi-trash-fill" aria-hidden="true"></i>
                                     </a>
                                 </div>
                             </td>
@@ -498,16 +502,19 @@
                     <div class="card-info"><i class="bi bi-calendar3"></i> @item.DataCadastro.ToString("dd/MM/yyyy")</div>
                     <div class="card-actions">
                         <a href="@Url.Action("DetalhesAluno", "Admin", new { id = item.ClienteId })"
-                           class="action-btn action-btn-view card-btn-view" title="Ver detalhes">
-                            <i class="bi bi-eye-fill"></i><span>Detalhes</span>
+                           class="action-btn action-btn-view card-btn-view" title="Ver detalhes"
+                           aria-label="Ver detalhes de @item.Nome">
+                            <i class="bi bi-eye-fill" aria-hidden="true"></i><span>Detalhes</span>
                         </a>
                         <a href="@Url.Action("EditarAluno", "Admin", new { id = item.ClienteId })"
-                           class="action-btn action-btn-edit" title="Editar">
-                            <i class="bi bi-pencil-fill"></i>
+                           class="action-btn action-btn-edit" title="Editar"
+                           aria-label="Editar @item.Nome">
+                            <i class="bi bi-pencil-fill" aria-hidden="true"></i>
                         </a>
                         <a href="@Url.Action("ExcluirAluno", "Admin", new { id = item.ClienteId })"
-                           class="action-btn action-btn-del" title="Excluir">
-                            <i class="bi bi-trash-fill"></i>
+                           class="action-btn action-btn-del" title="Excluir"
+                           aria-label="Excluir @item.Nome">
+                            <i class="bi bi-trash-fill" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
@@ -527,10 +534,12 @@
         btnTable.addEventListener('click', () => {
             tableView.style.display = ''; gridView.style.display = 'none';
             btnTable.classList.add('active'); btnGrid.classList.remove('active');
+            btnTable.setAttribute('aria-pressed', 'true'); btnGrid.setAttribute('aria-pressed', 'false');
         });
         btnGrid.addEventListener('click', () => {
             tableView.style.display = 'none'; gridView.style.display = '';
             btnGrid.classList.add('active'); btnTable.classList.remove('active');
+            btnGrid.setAttribute('aria-pressed', 'true'); btnTable.setAttribute('aria-pressed', 'false');
         });
     }
 

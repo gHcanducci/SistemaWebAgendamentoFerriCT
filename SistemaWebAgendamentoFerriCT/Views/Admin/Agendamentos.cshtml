@@ -338,12 +338,13 @@
 <div class="filter-bar">
     <div class="filter-search">
         <i class="bi bi-search"></i>
-        <input type="text" class="form-control" id="searchInput" placeholder="Buscar por aluno...">
+        <input type="text" class="form-control" id="searchInput" placeholder="Buscar por aluno..."
+               aria-label="Buscar agendamentos por nome do aluno">
     </div>
-    <button class="filter-chip active" data-filter="todos">Todos</button>
-    <button class="filter-chip" data-filter="Confirmado">Confirmados</button>
-    <button class="filter-chip" data-filter="PendentePagamento">Pendentes</button>
-    <button class="filter-chip" data-filter="Cancelado">Cancelados</button>
+    <button class="filter-chip active" data-filter="todos" aria-pressed="true">Todos</button>
+    <button class="filter-chip" data-filter="Confirmado" aria-pressed="false">Confirmados</button>
+    <button class="filter-chip" data-filter="PendentePagamento" aria-pressed="false">Pendentes</button>
+    <button class="filter-chip" data-filter="Cancelado" aria-pressed="false">Cancelados</button>
 </div>
 
 <!-- Table -->
@@ -360,7 +361,7 @@
     <div class="table-scroll">
         @if (Model != null && Model.Any())
         {
-            <table class="ferri-table" id="mainTable">
+            <table class="ferri-table" id="mainTable" aria-label="Lista de agendamentos">
                 <thead>
                     <tr>
                         <th>Aluno</th>
@@ -434,16 +435,19 @@
                             <td data-label="Ações">
                                 <div class="row-actions">
                                     <a href="@Url.Action("DetalhesAgendamento","Admin", new { id = item.AgendamentoId })"
-                                       class="action-btn action-btn-view" title="Ver detalhes">
-                                        <i class="bi bi-eye-fill"></i>
+                                       class="action-btn action-btn-view" title="Ver detalhes"
+                                       aria-label="Ver detalhes do agendamento de @(item.Cliente != null ? item.Cliente.Nome : "")">
+                                        <i class="bi bi-eye-fill" aria-hidden="true"></i>
                                     </a>
                                     <a href="@Url.Action("EditarAgendamento","Admin", new { id = item.AgendamentoId })"
-                                       class="action-btn action-btn-edit" title="Editar status">
-                                        <i class="bi bi-pencil-fill"></i>
+                                       class="action-btn action-btn-edit" title="Editar status"
+                                       aria-label="Editar status do agendamento de @(item.Cliente != null ? item.Cliente.Nome : "")">
+                                        <i class="bi bi-pencil-fill" aria-hidden="true"></i>
                                     </a>
                                     <a href="@Url.Action("ExcluirAgendamento","Admin", new { id = item.AgendamentoId })"
-                                       class="action-btn action-btn-del" title="Excluir">
-                                        <i class="bi bi-trash-fill"></i>
+                                       class="action-btn action-btn-del" title="Excluir"
+                                       aria-label="Excluir agendamento de @(item.Cliente != null ? item.Cliente.Nome : "")">
+                                        <i class="bi bi-trash-fill" aria-hidden="true"></i>
                                     </a>
                                 </div>
                             </td>
@@ -475,8 +479,9 @@
 
     chips.forEach(chip => {
         chip.addEventListener('click', () => {
-            chips.forEach(c => c.classList.remove('active'));
+            chips.forEach(c => { c.classList.remove('active'); c.setAttribute('aria-pressed', 'false'); });
             chip.classList.add('active');
+            chip.setAttribute('aria-pressed', 'true');
             const f = chip.dataset.filter;
             rows.forEach(r => {
                 r.style.display = (f === 'todos' || r.dataset.status === f) ? '' : 'none';

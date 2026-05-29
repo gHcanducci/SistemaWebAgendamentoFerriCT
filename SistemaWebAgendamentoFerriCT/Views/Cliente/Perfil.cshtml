@@ -513,8 +513,8 @@
 
 @if (TempData["Sucesso"] != null)
 {
-    <div class="toast-msg toast-sucesso">
-        <i class="bi bi-check-circle-fill"></i> @TempData["Sucesso"]
+    <div class="toast-msg toast-sucesso" role="status" aria-live="polite">
+        <i class="bi bi-check-circle-fill" aria-hidden="true"></i> @TempData["Sucesso"]
     </div>
 }
 
@@ -592,7 +592,7 @@
                 <div style="padding:0">
                     @if (Model.Agendamentos != null && Model.Agendamentos.Any())
                     {
-                        <table class="ag-table">
+                        <table class="ag-table" aria-label="Meus agendamentos">
                             <thead>
                                 <tr>
                                     <th>Data</th>
@@ -644,8 +644,9 @@
                                                     <a href="@Url.Action("Pagamento", "Agendamento", new { id = ag.AgendamentoId })" class="btn-pagar-ag">
                                                         <i class="bi bi-credit-card-fill"></i> Efetuar Pagamento
                                                     </a>
-                                                    <a href="@Url.Action("Cancelar", "Agendamento", new { id = ag.AgendamentoId })" class="btn-cancelar-ag" title="Cancelar agendamento">
-                                                        <i class="bi bi-x-lg"></i>
+                                                    <a href="@Url.Action("Cancelar", "Agendamento", new { id = ag.AgendamentoId })" class="btn-cancelar-ag" title="Cancelar agendamento"
+                                                       aria-label="Cancelar agendamento de @ag.DataAula.ToString("dd/MM/yyyy")">
+                                                        <i class="bi bi-x-lg" aria-hidden="true"></i>
                                                     </a>
                                                 </div>
                                             }
