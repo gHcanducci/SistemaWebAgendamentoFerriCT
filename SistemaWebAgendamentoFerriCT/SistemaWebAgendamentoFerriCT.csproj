@@ -126,15 +126,7 @@
     <Compile Include="Controllers\AgendamentoController.cs" />
     <Compile Include="Controllers\ClienteController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\PagamentoController.cs" />
     <Compile Include="Filtros\FiltroAcesso.cs" />
-    <Compile Include="MercadoPago\IMercadoPagoService.cs" />
-    <Compile Include="MercadoPago\MercadoPagoException.cs" />
-    <Compile Include="MercadoPago\MercadoPagoService.cs" />
-    <Compile Include="MercadoPago\MercadoPagoSettings.cs" />
-    <Compile Include="MercadoPago\PaymentInfo.cs" />
-    <Compile Include="MercadoPago\PreferenceCreatedResult.cs" />
-    <Compile Include="MercadoPago\WebhookSignatureValidator.cs" />
     <Compile Include="Migrations\202605291003511_RemoveListaEsperaECapacidade.cs" />
     <Compile Include="Migrations\202605291003511_RemoveListaEsperaECapacidade.Designer.cs">
       <DependentUpon>202605291003511_RemoveListaEsperaECapacidade.cs</DependentUpon>

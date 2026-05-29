@@ -202,6 +202,19 @@
             transition: all 0.2s;
         }
 
+    .btn-pay-manual {
+        background: var(--accent);
+        border: 1px solid var(--accent);
+        color: var(--bg-deep);
+        font-weight: 700;
+    }
+
+        .btn-pay-manual:hover {
+            background: var(--accent-hover);
+            color: var(--bg-deep);
+            box-shadow: 0 4px 14px var(--accent-glow);
+        }
+
     .btn-edit-ag {
         background: var(--accent-dim);
         border: 1px solid rgba(255,204,0,0.3);
@@ -337,6 +350,12 @@
         </div>
 
         <div class="action-row">
+            @if (Model.Status == "PendentePagamento")
+            {
+                <a href="@Url.Action("RegistrarPagamentoManual","Admin", new { id=Model.AgendamentoId })" class="btn-pay-manual">
+                    <i class="bi bi-cash-coin"></i> Registrar Pagamento Manual
+                </a>
+            }
             <a href="@Url.Action("EditarAgendamento","Admin", new { id=Model.AgendamentoId })" class="btn-edit-ag">
                 <i class="bi bi-pencil-fill"></i> Editar Status
             </a>

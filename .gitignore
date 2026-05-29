@@ -364,7 +364,6 @@ FodyWeavers.xsd
 
 # Secrets locais — NUNCA versionar
 **/Web.secrets.config
-!**/Web.secrets.config.example
 **/contas teste MP.txt
 
 # Claude Code — estado local, não versionar

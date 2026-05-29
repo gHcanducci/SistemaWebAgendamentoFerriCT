@@ -16,12 +16,9 @@
         protected override void Seed(SistemaWebAgendamentoFerriCT.Models.SistemaContext context)
         {
             // ─── 0. Clientes de demo (login = Email + CPF) ────────────────
-            // CPFs válidos pelo algoritmo módulo 11 (necessário porque vão
-            // pro Mercado Pago como `identification.number` do payer) e
-            // armazenados FORMATADOS (com pontos e traço) — assim como a
-            // máscara JS do formulário de cadastro/login salva no banco.
-            // O MercadoPagoService.SomenteDigitos() remove a pontuação
-            // antes de mandar pro MP.
+            // CPFs válidos pelo algoritmo módulo 11 e armazenados FORMATADOS
+            // (com pontos e traço) — mesma forma que a máscara JS do formulário
+            // de cadastro/login salva no banco.
             context.Clientes.AddOrUpdate(c => c.Email,
                 new Models.Cliente
                 {
