@@ -186,6 +186,20 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                     var aluno = db.Clientes.Find(cliente.ClienteId);
                     if (aluno == null) return HttpNotFound();
 
+                    // Impede colisão de CPF/e-mail com OUTRO aluno (a edição não pode
+                    // duplicar dados já usados por um cliente diferente).
+                    if (db.Clientes.Any(c => c.CPF == cliente.CPF && c.ClienteId != cliente.ClienteId))
+                    {
+                        ModelState.AddModelError("CPF", "CPF já cadastrado para outro aluno.");
+                        return View(cliente);
+                    }
+
+                    if (db.Clientes.Any(c => c.Email == cliente.Email && c.ClienteId != cliente.ClienteId))
+                    {
+                        ModelState.AddModelError("Email", "E-mail já cadastrado para outro aluno.");
+                        return View(cliente);
+                    }
+
                     aluno.Nome = cliente.Nome;
                     aluno.Email = cliente.Email;
                     aluno.Telefone = cliente.Telefone;
