@@ -8,7 +8,10 @@ Documento de contexto operacional para Claude e para o usuário. Pensado pra **r
 
 - **Branch ativa:** `demo/sem-mp-simulado`
 - **Demo:** 03/06/2026 (PC do professor, `git clone` + F5)
-- **Sessão 2026-05-30 fechada:** Blocos 1–7 do cronograma fechados. HEAD = `e37cd0b`. Working tree limpo. 7 commits ainda não pushed pra `origin/demo/sem-mp-simulado` (último pushed: `8190734`).
+- **Sessão 2026-05-31 fechada:** análise de "defesa da banca" (o que o professor pode questionar) + 1 correção. HEAD = `80b6fbb`. Working tree limpo. **Vários commits locais não pushed** pra `origin/demo/sem-mp-simulado` — conferir com `git log origin/demo/sem-mp-simulado..HEAD` antes de pushar.
+  - `80b6fbb` fix: valida CPF/email duplicado + máscara CPF/telefone no `EditarAluno` (admin) — fechou o item #8 da análise.
+  - Análise completa dos pontos atacáveis na defesa salva em `memory/defesa-banca-pontos-fracos.md` (só nesta máquina). Itens pendentes priorizados lá; #8 já resolvido.
+- **Sessão 2026-05-30 fechada:** Blocos 1–7 do cronograma fechados. HEAD era `e37cd0b`. (commits já no histórico)
   - `695074f` Remove Lista de Espera + Capacidade de turma
   - `c0168c6` Limpa código morto MP + linka Pagamento Manual (Bloco 1)
   - `608b668` Ownership em Confirmacao + whitelist EditarAgendamento (Bloco 2)
