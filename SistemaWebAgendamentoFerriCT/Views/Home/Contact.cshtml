@@ -160,16 +160,16 @@
                 <div class="contact-form-sub">Preencha o formulário e entraremos em contato em breve.</div>
 
                 <div class="field-block">
-                    <label class="form-label">Seu Nome</label>
-                    <input type="text" class="form-control" placeholder="Nome completo">
+                    <label class="form-label" for="ct-nome">Seu Nome</label>
+                    <input id="ct-nome" type="text" class="form-control" placeholder="Nome completo">
                 </div>
                 <div class="field-block">
-                    <label class="form-label">E-mail</label>
-                    <input type="email" class="form-control" placeholder="seu@email.com">
+                    <label class="form-label" for="ct-email">E-mail</label>
+                    <input id="ct-email" type="email" class="form-control" placeholder="seu@email.com">
                 </div>
                 <div class="field-block">
-                    <label class="form-label">Assunto</label>
-                    <select class="form-select">
+                    <label class="form-label" for="ct-assunto">Assunto</label>
+                    <select id="ct-assunto" class="form-select">
                         <option value="">Selecione o assunto</option>
                         <option>Dúvidas sobre a aula experimental</option>
                         <option>Informações sobre mensalidades</option>
@@ -178,8 +178,8 @@
                     </select>
                 </div>
                 <div class="field-block">
-                    <label class="form-label">Mensagem</label>
-                    <textarea class="form-control" rows="4" placeholder="Escreva sua mensagem..." style="resize:vertical"></textarea>
+                    <label class="form-label" for="ct-mensagem">Mensagem</label>
+                    <textarea id="ct-mensagem" class="form-control" rows="4" placeholder="Escreva sua mensagem..." style="resize:vertical"></textarea>
                 </div>
 
                 <button type="button" class="btn-send">
@@ -203,14 +203,33 @@
     }, { threshold: 0.1 });
     reveals.forEach(r => obs.observe(r));
 
-    // Send button feedback
-    document.querySelector('.btn-send')?.addEventListener('click', function() {
-        this.innerHTML = '<i class="bi bi-check-lg"></i> Mensagem enviada!';
-        this.style.background = 'var(--success)';
-        this.style.color = '#fff';
+    // Monta um mailto: pre-preenchido e abre o cliente de e-mail do usuario
+    const DESTINO = 'canducciboxing@gmail.com';
+    document.querySelector('.btn-send')?.addEventListener('click', function () {
+        const nome = document.getElementById('ct-nome').value.trim();
+        const email = document.getElementById('ct-email').value.trim();
+        const assunto = document.getElementById('ct-assunto').value.trim();
+        const mensagem = document.getElementById('ct-mensagem').value.trim();
+
+        if (!nome || !mensagem) {
+            alert('Por favor, preencha pelo menos o seu nome e a mensagem.');
+            return;
+        }
+
+        const subject = assunto || 'Contato pelo site';
+        const body =
+            'Nome: ' + nome + '\n' +
+            'E-mail: ' + email + '\n\n' +
+            mensagem;
+
+        const href = 'mailto:' + DESTINO +
+            '?subject=' + encodeURIComponent(subject) +
+            '&body=' + encodeURIComponent(body);
+
+        // feedback honesto: o e-mail esta sendo aberto, nao "enviado"
+        this.innerHTML = '<i class="bi bi-envelope-fill"></i> Abrindo seu e-mail...';
+        window.location.href = href;
         setTimeout(() => {
             this.innerHTML = '<i class="bi bi-send-fill"></i> Enviar Mensagem';
-            this.style.background = '';
-            this.style.color = '';
         }, 3000);
     });</script>
