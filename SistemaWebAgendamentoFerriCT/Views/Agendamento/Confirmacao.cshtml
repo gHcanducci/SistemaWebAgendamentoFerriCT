@@ -147,7 +147,7 @@
     }
 
         .btn-primary-confirm:hover {
-            background: #f5d465;
+            background: var(--accent-hover);
             color: var(--bg-deep);
             transform: translateY(-2px);
             box-shadow: 0 8px 24px var(--accent-glow);
@@ -210,12 +210,93 @@
             transform: scale(1);
         }
     }
+
+    /* Header do comprovante — só aparece quando imprime */
+    .print-only { display: none; }
+
+    /* ─── PRINT (Bloco 6) ─── Esta tela vira comprovante na impressão */
+    @@media print {
+        .confirm-wrapper {
+            padding: 0 !important;
+            min-height: auto !important;
+            display: block !important;
+        }
+
+        .confirm-card {
+            background: #fff !important;
+            border: 2px solid #000 !important;
+            border-radius: 0 !important;
+            max-width: 100% !important;
+            padding: 24px !important;
+            page-break-inside: avoid;
+        }
+
+            .confirm-card::before { display: none !important; }
+
+        .print-only {
+            display: block !important;
+            text-align: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #000;
+        }
+
+        .print-only-brand {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 22pt;
+            letter-spacing: 4px;
+            color: #000;
+            margin-bottom: 4px;
+        }
+
+        .print-only-label {
+            font-size: 10pt;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #555;
+        }
+
+        .check-circle,
+        .confirm-actions,
+        .info-note {
+            display: none !important;
+        }
+
+        .confirm-title { font-size: 18pt !important; color: #000 !important; }
+            .confirm-title span { color: #000 !important; }
+
+        .confirm-desc { color: #333 !important; font-size: 10pt; }
+
+        .badge-confirmado {
+            background: #fff !important;
+            border: 1px solid #000 !important;
+            color: #000 !important;
+        }
+
+        .resumo-box {
+            background: #fff !important;
+            border: 1px solid #000 !important;
+        }
+
+        .resumo-row {
+            border-bottom: 1px solid #ccc !important;
+        }
+
+            .resumo-row i,
+            .resumo-label,
+            .resumo-val { color: #000 !important; }
+    }
 </style>
 
 <div class="confirm-wrapper">
     <div class="confirm-card">
 
-        <div class="check-circle">
+        <div class="print-only" aria-hidden="true">
+            <div class="print-only-brand">FERRI CT</div>
+            <div class="print-only-label">Comprovante de Agendamento</div>
+        </div>
+
+        <div class="check-circle" aria-hidden="true">
             <i class="bi bi-check-lg"></i>
         </div>
 
@@ -273,13 +354,16 @@
 
         <div class="confirm-actions">
             <a href="/Cliente/Perfil" class="btn-primary-confirm">
-                <i class="bi bi-person-fill"></i> Ver Meu Perfil
+                <i class="bi bi-person-fill" aria-hidden="true"></i> Ver Meu Perfil
             </a>
+            <button type="button" class="btn-secondary-confirm" onclick="window.print()">
+                <i class="bi bi-printer-fill" aria-hidden="true"></i> Imprimir Comprovante
+            </button>
             <a href="/Agendamento/Create" class="btn-secondary-confirm">
-                <i class="bi bi-calendar-plus"></i> Fazer Outro Agendamento
+                <i class="bi bi-calendar-plus" aria-hidden="true"></i> Fazer Outro Agendamento
             </a>
             <a href="/" class="btn-secondary-confirm">
-                <i class="bi bi-house-fill"></i> Voltar ao Início
+                <i class="bi bi-house-fill" aria-hidden="true"></i> Voltar ao Início
             </a>
         </div>
 

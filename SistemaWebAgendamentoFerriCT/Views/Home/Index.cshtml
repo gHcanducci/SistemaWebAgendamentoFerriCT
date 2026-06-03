@@ -49,7 +49,7 @@
         bottom: 0;
         width: 600px;
         height: 600px;
-        background: radial-gradient(circle, rgba(232,197,71,0.12) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(255,204,0,0.12) 0%, transparent 70%);
         z-index: 3;
         pointer-events: none;
     }
@@ -62,7 +62,7 @@
         font-family: 'Bebas Neue', sans-serif;
         font-size: clamp(160px, 22vw, 320px);
         line-height: 1;
-        color: rgba(232,197,71,0.06);
+        color: rgba(255,204,0,0.06);
         letter-spacing: -8px;
         user-select: none;
         pointer-events: none;
@@ -81,8 +81,8 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: rgba(232,197,71,0.12);
-        border: 1px solid rgba(232,197,71,0.35);
+        background: rgba(255,204,0,0.12);
+        border: 1px solid rgba(255,204,0,0.35);
         border-radius: 999px;
         padding: 6px 18px;
         font-size: 0.72rem;
@@ -156,10 +156,10 @@
     }
 
         .btn-hero-primary:hover {
-            background: #f5d465;
+            background: var(--accent-hover);
             color: #080809;
             transform: translateY(-3px);
-            box-shadow: 0 14px 36px rgba(232,197,71,0.4);
+            box-shadow: 0 14px 36px rgba(255,204,0,0.4);
         }
 
     .btn-hero-secondary {
@@ -181,7 +181,7 @@
         .btn-hero-secondary:hover {
             border-color: var(--accent);
             color: var(--accent);
-            background: rgba(232,197,71,0.08);
+            background: rgba(255,204,0,0.08);
         }
 
     /* Stats na base do hero */
@@ -211,7 +211,7 @@
         font-size: 3.2rem;
         color: var(--accent);
         line-height: 1;
-        text-shadow: 0 0 30px rgba(232,197,71,0.3);
+        text-shadow: 0 0 30px rgba(255,204,0,0.3);
     }
 
     .stat-lbl {
@@ -232,7 +232,7 @@
         z-index: 5;
         background: rgba(8,8,9,0.7);
         backdrop-filter: blur(20px);
-        border-top: 1px solid rgba(232,197,71,0.12);
+        border-top: 1px solid rgba(255,204,0,0.12);
         padding: 12px 60px;
         display: flex;
         align-items: center;
@@ -299,7 +299,7 @@
         }
 
         .feature-card:hover {
-            border-color: rgba(232,197,71,0.25);
+            border-color: rgba(255,204,0,0.25);
             transform: translateY(-6px);
             box-shadow: 0 20px 60px rgba(0,0,0,0.4);
         }
@@ -318,7 +318,7 @@
         justify-content: center;
         font-size: 1.5rem;
         margin-bottom: 20px;
-        border: 1px solid rgba(232,197,71,0.2);
+        border: 1px solid rgba(255,204,0,0.2);
     }
 
     .feature-title {
@@ -337,7 +337,7 @@
     .step-number {
         font-family: 'Bebas Neue', sans-serif;
         font-size: 4rem;
-        -webkit-text-stroke: 1px rgba(232,197,71,0.3);
+        -webkit-text-stroke: 1px rgba(255,204,0,0.3);
         color: transparent;
         line-height: 1;
         margin-bottom: 14px;
@@ -357,8 +357,8 @@
 
     /* ─── CTA ─── */
     .cta-section {
-        background: linear-gradient(135deg, rgba(232,197,71,0.1), rgba(232,197,71,0.03));
-        border: 1px solid rgba(232,197,71,0.2);
+        background: linear-gradient(135deg, rgba(255,204,0,0.1), rgba(255,204,0,0.03));
+        border: 1px solid rgba(255,204,0,0.2);
         border-radius: var(--radius-lg);
         padding: 80px 60px;
         text-align: center;
@@ -371,7 +371,7 @@
             position: absolute;
             font-family: 'Bebas Neue', sans-serif;
             font-size: 300px;
-            color: rgba(232,197,71,0.03);
+            color: rgba(255,204,0,0.03);
             right: -40px;
             bottom: -60px;
             line-height: 1;
@@ -403,7 +403,7 @@
 
     @@keyframes pulse-dot {
         0%, 100% {
-            box-shadow: 0 0 0 0 rgba(232,197,71,0.4);
+            box-shadow: 0 0 0 0 rgba(255,204,0,0.4);
         }
 
         50% {
@@ -467,20 +467,42 @@
     }
 
     @@media (max-width: 768px) {
+        .hero-content {
+            padding: 80px 0 56px;
+        }
+
+        /* Overlay mais forte no mobile (hero fica mais alto) */
+        .hero-bg::after {
+            background: linear-gradient(to top, rgba(8,8,9,1) 0%, rgba(8,8,9,0.85) 35%, rgba(8,8,9,0.5) 60%, transparent 100%);
+        }
+
+        /* Stats: grade 2×2 em vez de coluna única */
         .hero-stats {
-            flex-direction: column;
-            gap: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            flex-direction: unset;
         }
 
-        .hero-stat {
-            border-right: none;
+        .hero-stat,
+        .hero-stat:first-child,
+        .hero-stat:last-child {
+            flex: none;
+            padding: 14px 16px;
+            border-right: 1px solid rgba(255,255,255,0.08);
             border-bottom: 1px solid rgba(255,255,255,0.08);
-            padding: 0 0 20px;
         }
 
-            .hero-stat:last-child {
-                border-bottom: none;
-            }
+        /* Remove borda direita das células pares (coluna da direita) */
+        .hero-stat:nth-child(2n),
+        .hero-stat:last-child {
+            border-right: none;
+        }
+
+        /* Remove borda inferior das duas últimas células */
+        .hero-stat:nth-last-child(-n+2) {
+            border-bottom: none;
+        }
 
         .hero-bottom-bar {
             padding: 12px 20px;
@@ -490,22 +512,54 @@
             padding: 48px 24px;
         }
     }
+
+    @@media (max-width: 480px) {
+        .hero-content {
+            padding: 60px 0 40px;
+        }
+
+        .hero-desc {
+            font-size: 0.9rem;
+            margin-bottom: 32px;
+        }
+
+        .hero-actions {
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        .btn-hero-primary,
+        .btn-hero-secondary {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .stat-num {
+            font-size: 2.4rem;
+        }
+
+        .hero-bottom-bar {
+            gap: 8px;
+            justify-content: center;
+        }
+    }
 </style>
 
 <!-- ═══════════════════════════════════════
      HERO — FOTO DE FUNDO FULL SCREEN
 ═══════════════════════════════════════ -->
-<section class="hero-full">
-    <div class="hero-bg"></div>
-    <div class="hero-glow"></div>
-    <div class="hero-watermark">CT</div>
+<section class="hero-full" aria-label="Apresentação — Ferri CT Academia de Boxe">
+    <div class="hero-bg" role="img" aria-label="Fachada da academia Ferri CT"></div>
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-watermark" aria-hidden="true">CT</div>
 
     <div class="hero-content container">
         <div class="row">
             <div class="col-lg-8 col-xl-7">
 
                 <div class="hero-badge fade-up">
-                    <span class="pulse"></span>
+                    <span class="pulse" aria-hidden="true"></span>
                     Escola de Boxe — Presidente Prudente
                 </div>
 
@@ -575,11 +629,11 @@
 </section>
 
 <!-- ═══════════════ FEATURES ═══════════════ -->
-<section class="container py-5 mt-4 reveal" id="diferenciais">
+<section class="container py-5 mt-4 reveal" id="diferenciais" aria-labelledby="section-diferenciais-title">
     <div class="row mb-5">
         <div class="col-lg-6">
             <div class="section-label">Por que o Ferri CT?</div>
-            <h2 class="section-title">DIFERENCIAIS QUE<br>FAZEM A DIFERENÇA</h2>
+            <h2 class="section-title" id="section-diferenciais-title">DIFERENCIAIS QUE<br>FAZEM A DIFERENÇA</h2>
         </div>
         <div class="col-lg-6 d-flex align-items-end">
             <p style="color:var(--text-secondary);line-height:1.7">
@@ -599,7 +653,7 @@
 </section>
 
 <!-- ═══════════════ COMO FUNCIONA ═══════════════ -->
-<section class="container py-5 reveal">
+<section class="container py-5 reveal" aria-label="Como funciona o agendamento">
     <div class="text-center mb-5">
         <div class="section-label">Simples assim</div>
         <h2 class="section-title">COMO FUNCIONA</h2>
@@ -613,7 +667,7 @@
 </section>
 
 <!-- ═══════════════ CTA ═══════════════ -->
-<section class="container pb-5 reveal">
+<section class="container pb-5 reveal" aria-label="Agende sua primeira aula grátis">
     <div class="cta-section">
         <div class="section-label">Dê o primeiro passo</div>
         <h2 class="cta-title">PRONTO PARA<br><span class="gold">COMEÇAR?</span></h2>

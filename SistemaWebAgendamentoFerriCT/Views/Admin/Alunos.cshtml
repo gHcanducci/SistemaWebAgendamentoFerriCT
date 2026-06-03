@@ -18,7 +18,7 @@
     }
 
     .page-eyebrow {
-        font-size: 0.7rem;
+        font-size: 0.72rem;
         text-transform: uppercase;
         letter-spacing: 2px;
         color: var(--accent);
@@ -63,7 +63,7 @@
     }
 
     .mini-stat-label {
-        font-size: 0.7rem;
+        font-size: 0.72rem;
         color: var(--text-secondary);
         text-transform: uppercase;
         letter-spacing: 1px;
@@ -121,7 +121,7 @@
 
         .view-btn.active {
             background: var(--accent-dim);
-            border-color: rgba(232,197,71,0.3);
+            border-color: rgba(255,204,0,0.3);
             color: var(--accent);
         }
 
@@ -160,7 +160,7 @@
         height: 34px;
         border-radius: 50%;
         background: var(--accent-dim);
-        border: 1px solid rgba(232,197,71,0.2);
+        border: 1px solid rgba(255,204,0,0.2);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -196,14 +196,25 @@
         font-size: 0.85rem;
     }
 
+    .action-btn-view {
+        background: rgba(110,176,255,0.1);
+        color: #6eb0ff;
+        border: 1px solid rgba(110,176,255,0.2);
+    }
+
+        .action-btn-view:hover {
+            background: rgba(110,176,255,0.2);
+            color: #6eb0ff;
+        }
+
     .action-btn-edit {
-        background: rgba(232,197,71,0.1);
+        background: rgba(255,204,0,0.1);
         color: var(--accent);
-        border: 1px solid rgba(232,197,71,0.25);
+        border: 1px solid rgba(255,204,0,0.25);
     }
 
         .action-btn-edit:hover {
-            background: rgba(232,197,71,0.2);
+            background: rgba(255,204,0,0.2);
             color: var(--accent);
         }
 
@@ -234,7 +245,7 @@
     }
 
         .aluno-card:hover {
-            border-color: rgba(232,197,71,0.2);
+            border-color: rgba(255,204,0,0.2);
             transform: translateY(-4px);
             box-shadow: 0 12px 30px rgba(0,0,0,0.3);
         }
@@ -244,7 +255,7 @@
         height: 52px;
         border-radius: 50%;
         background: var(--accent-dim);
-        border: 2px solid rgba(232,197,71,0.25);
+        border: 2px solid rgba(255,204,0,0.25);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -313,19 +324,41 @@
         border: 1px solid rgba(224,80,80,0.35);
         color: #ff8a8a;
     }
+
+    .card-actions .card-btn-view {
+        flex: 1;
+        gap: 6px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        height: 36px;
+        width: auto;
+    }
+
+    /* ─── MOBILE: força grid de cards, esconde a tabela ─── */
+    @@media (max-width: 768px) {
+        #tableView    { display: none !important; }
+        #gridView     { display: block !important; }
+        .view-toggle  { display: none; }
+        .cards-grid   { grid-template-columns: 1fr; padding: 0; gap: 12px; }
+        .aluno-card   { padding: 16px; }
+        .card-actions .action-btn-del  { width: 40px; height: 40px; }
+        .card-actions .action-btn-edit { width: 40px; height: 40px; }
+        .card-actions .card-btn-view   { height: 40px; }
+        .toast-msg    { top: 70px; right: 10px; left: 10px; }
+    }
 </style>
 
 @* Toast de feedback *@
 @if (TempData["Sucesso"] != null)
 {
-    <div class="toast-msg toast-sucesso">
-        <i class="bi bi-check-circle-fill"></i> @TempData["Sucesso"]
+    <div class="toast-msg toast-sucesso" role="status" aria-live="polite">
+        <i class="bi bi-check-circle-fill" aria-hidden="true"></i> @TempData["Sucesso"]
     </div>
 }
 @if (TempData["Erro"] != null)
 {
-    <div class="toast-msg toast-erro">
-        <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Erro"]
+    <div class="toast-msg toast-erro" role="alert" aria-live="assertive">
+        <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i> @TempData["Erro"]
     </div>
 }
 
@@ -363,11 +396,12 @@
 <div class="toolbar">
     <div class="toolbar-search">
         <i class="bi bi-search"></i>
-        <input type="text" class="form-control" id="searchInput" placeholder="Buscar por nome, e-mail ou telefone...">
+        <input type="text" class="form-control" id="searchInput" placeholder="Buscar por nome, e-mail ou telefone..."
+               aria-label="Buscar alunos por nome, e-mail ou telefone">
     </div>
     <div class="view-toggle">
-        <button class="view-btn active" id="viewTable" title="Tabela"><i class="bi bi-list-ul"></i></button>
-        <button class="view-btn" id="viewGrid" title="Cards"><i class="bi bi-grid-3x3-gap-fill"></i></button>
+        <button class="view-btn active" id="viewTable" title="Tabela" aria-label="Visualizar em tabela" aria-pressed="true"><i class="bi bi-list-ul" aria-hidden="true"></i></button>
+        <button class="view-btn" id="viewGrid" title="Cards" aria-label="Visualizar em cards" aria-pressed="false"><i class="bi bi-grid-3x3-gap-fill" aria-hidden="true"></i></button>
     </div>
 </div>
 
@@ -382,7 +416,7 @@
     @if (Model != null && Model.Any())
     {
         <div class="table-scroll">
-            <table class="ferri-table">
+            <table class="ferri-table" aria-label="Lista de alunos cadastrados">
                 <thead>
                     <tr>
                         <th>Aluno</th>
@@ -418,16 +452,19 @@
                                 <div style="display:flex;gap:6px">
                                     @* EXIBIR — link para ExibirAluno com o ID *@
                                     <a href="@Url.Action("DetalhesAluno", "Admin", new { id = item.ClienteId })"
-                                       class="action-btn action-btn-view" title="Ver detalhes">
-                                        <i class="bi bi-eye-fill"></i>
+                                       class="action-btn action-btn-view" title="Ver detalhes"
+                                       aria-label="Ver detalhes de @item.Nome">
+                                        <i class="bi bi-eye-fill" aria-hidden="true"></i>
                                     </a>
                                     <a href="@Url.Action("EditarAluno", "Admin", new { id = item.ClienteId })"
-                                       class="action-btn action-btn-edit" title="Editar aluno">
-                                        <i class="bi bi-pencil-fill"></i>
+                                       class="action-btn action-btn-edit" title="Editar aluno"
+                                       aria-label="Editar @item.Nome">
+                                        <i class="bi bi-pencil-fill" aria-hidden="true"></i>
                                     </a>
                                     <a href="@Url.Action("ExcluirAluno", "Admin", new { id = item.ClienteId })"
-                                       class="action-btn action-btn-del" title="Excluir aluno">
-                                        <i class="bi bi-trash-fill"></i>
+                                       class="action-btn action-btn-del" title="Excluir aluno"
+                                       aria-label="Excluir @item.Nome">
+                                        <i class="bi bi-trash-fill" aria-hidden="true"></i>
                                     </a>
                                 </div>
                             </td>
@@ -464,13 +501,20 @@
                     <div class="card-info"><i class="bi bi-telephone"></i> @item.Telefone</div>
                     <div class="card-info"><i class="bi bi-calendar3"></i> @item.DataCadastro.ToString("dd/MM/yyyy")</div>
                     <div class="card-actions">
+                        <a href="@Url.Action("DetalhesAluno", "Admin", new { id = item.ClienteId })"
+                           class="action-btn action-btn-view card-btn-view" title="Ver detalhes"
+                           aria-label="Ver detalhes de @item.Nome">
+                            <i class="bi bi-eye-fill" aria-hidden="true"></i><span>Detalhes</span>
+                        </a>
                         <a href="@Url.Action("EditarAluno", "Admin", new { id = item.ClienteId })"
-                           class="action-btn action-btn-edit" style="flex:1;width:auto" title="Editar">
-                            <i class="bi bi-pencil-fill"></i>
+                           class="action-btn action-btn-edit" title="Editar"
+                           aria-label="Editar @item.Nome">
+                            <i class="bi bi-pencil-fill" aria-hidden="true"></i>
                         </a>
                         <a href="@Url.Action("ExcluirAluno", "Admin", new { id = item.ClienteId })"
-                           class="action-btn action-btn-del" title="Excluir">
-                            <i class="bi bi-trash-fill"></i>
+                           class="action-btn action-btn-del" title="Excluir"
+                           aria-label="Excluir @item.Nome">
+                            <i class="bi bi-trash-fill" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
@@ -490,10 +534,12 @@
         btnTable.addEventListener('click', () => {
             tableView.style.display = ''; gridView.style.display = 'none';
             btnTable.classList.add('active'); btnGrid.classList.remove('active');
+            btnTable.setAttribute('aria-pressed', 'true'); btnGrid.setAttribute('aria-pressed', 'false');
         });
         btnGrid.addEventListener('click', () => {
             tableView.style.display = 'none'; gridView.style.display = '';
             btnGrid.classList.add('active'); btnTable.classList.remove('active');
+            btnGrid.setAttribute('aria-pressed', 'true'); btnTable.setAttribute('aria-pressed', 'false');
         });
     }
 

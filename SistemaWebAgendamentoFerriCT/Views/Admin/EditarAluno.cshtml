@@ -18,7 +18,7 @@
     }
 
     .page-eyebrow {
-        font-size: 0.7rem;
+        font-size: 0.72rem;
         text-transform: uppercase;
         letter-spacing: 2px;
         color: var(--accent);
@@ -54,7 +54,7 @@
         width: 36px;
         height: 36px;
         background: var(--accent-dim);
-        border: 1px solid rgba(232,197,71,0.2);
+        border: 1px solid rgba(255,204,0,0.2);
         border-radius: var(--radius-sm);
         display: flex;
         align-items: center;
@@ -117,7 +117,7 @@
     }
 
         .btn-save:hover {
-            background: #f5d465;
+            background: var(--accent-hover);
             transform: translateY(-2px);
             box-shadow: 0 8px 24px var(--accent-glow);
         }
@@ -142,6 +142,21 @@
             color: var(--text-primary);
             border-color: rgba(255,255,255,0.15);
         }
+
+    @@media (max-width: 768px) {
+        .page-title { font-size: 1.6rem; }
+        .form-card-body { padding: 22px 18px; }
+    }
+
+    @@media (max-width: 480px) {
+        .page-header { margin-bottom: 18px; }
+        .page-title { font-size: 1.4rem; }
+        .form-card-header { padding: 14px 16px; }
+        .form-card-body { padding: 18px 14px; }
+        .form-actions { flex-direction: column-reverse; gap: 8px; }
+        .form-actions .btn-save,
+        .form-actions .btn-cancel { width: 100%; justify-content: center; padding: 12px; }
+    }
 </style>
 
 <div class="page-header">
@@ -180,7 +195,7 @@
                 <label class="form-label">CPF</label>
                 <div class="input-with-icon">
                     <i class="bi bi-person-vcard fi"></i>
-                    @Html.TextBoxFor(m => m.CPF, new { @class = "form-control", placeholder = "000.000.000-00", maxlength = "14" })
+                    @Html.TextBoxFor(m => m.CPF, new { @class = "form-control", placeholder = "000.000.000-00", maxlength = "14", id = "cpfField" })
                 </div>
                 @Html.ValidationMessageFor(m => m.CPF, "", new { @class = "text-danger", style = "font-size:0.75rem" })
             </div>
@@ -189,7 +204,7 @@
                 <label class="form-label">Telefone</label>
                 <div class="input-with-icon">
                     <i class="bi bi-telephone fi"></i>
-                    @Html.TextBoxFor(m => m.Telefone, new { @class = "form-control", placeholder = "(00) 00000-0000" })
+                    @Html.TextBoxFor(m => m.Telefone, new { @class = "form-control", placeholder = "(00) 00000-0000", maxlength = "15", id = "telField" })
                 </div>
                 @Html.ValidationMessageFor(m => m.Telefone, "", new { @class = "text-danger", style = "font-size:0.75rem" })
             </div>
@@ -210,3 +225,28 @@
         }
     </div>
 </div>
+
+<script>
+    // Máscara de CPF — força no máximo 11 dígitos no formato 000.000.000-00
+    const cpf = document.getElementById('cpfField');
+    if (cpf) {
+        cpf.addEventListener('input', function () {
+            let v = this.value.replace(/\D/g, '').substring(0, 11);
+            if (v.length > 9) v = v.replace(/^(\d{3})(\d{3})(\d{3})(\d{0,2})/, '$1.$2.$3-$4');
+            else if (v.length > 6) v = v.replace(/^(\d{3})(\d{3})(\d{0,3})/, '$1.$2.$3');
+            else if (v.length > 3) v = v.replace(/^(\d{3})(\d{0,3})/, '$1.$2');
+            this.value = v;
+        });
+    }
+
+    // Máscara de telefone — (00) 00000-0000
+    const tel = document.getElementById('telField');
+    if (tel) {
+        tel.addEventListener('input', function () {
+            let v = this.value.replace(/\D/g, '').substring(0, 11);
+            if (v.length > 6) v = v.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+            else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+            this.value = v;
+        });
+    }
+</script>

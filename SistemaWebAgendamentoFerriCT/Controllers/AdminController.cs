@@ -80,9 +80,6 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 ViewBag.TotalTurmas = db.Turmas.Count();
                 ViewBag.ConfirmadosHoje = db.Agendamentos.Count(a => a.DataAula == DateTime.Today && a.Status == "Confirmado");
 
-                // Notificações de lista de espera
-                ViewBag.ListaEspera = db.Agendamentos.Count(a => a.ListaEspera && a.Status == "PendentePagamento");
-
                 return View();
             }
             catch (Exception)
@@ -188,6 +185,20 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 {
                     var aluno = db.Clientes.Find(cliente.ClienteId);
                     if (aluno == null) return HttpNotFound();
+
+                    // Impede colisão de CPF/e-mail com OUTRO aluno (a edição não pode
+                    // duplicar dados já usados por um cliente diferente).
+                    if (db.Clientes.Any(c => c.CPF == cliente.CPF && c.ClienteId != cliente.ClienteId))
+                    {
+                        ModelState.AddModelError("CPF", "CPF já cadastrado para outro aluno.");
+                        return View(cliente);
+                    }
+
+                    if (db.Clientes.Any(c => c.Email == cliente.Email && c.ClienteId != cliente.ClienteId))
+                    {
+                        ModelState.AddModelError("Email", "E-mail já cadastrado para outro aluno.");
+                        return View(cliente);
+                    }
 
                     aluno.Nome = cliente.Nome;
                     aluno.Email = cliente.Email;
@@ -313,10 +324,21 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
             }
         }
 
+        // Whitelist de status aceitos no POST de edição — protege a máquina de estados
+        // contra POST forjado que poderia setar qualquer string.
+        private static readonly HashSet<string> StatusValidos =
+            new HashSet<string>(StringComparer.Ordinal) { "PendentePagamento", "Confirmado", "Cancelado" };
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult EditarAgendamento(int agendamentoId, string status)
         {
+            if (string.IsNullOrWhiteSpace(status) || !StatusValidos.Contains(status))
+            {
+                TempData["Erro"] = "Status inválido.";
+                return RedirectToAction("EditarAgendamento", new { id = agendamentoId });
+            }
+
             try
             {
                 var agendamento = db.Agendamentos.Find(agendamentoId);
@@ -377,25 +399,108 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
             }
         }
 
-        // ─── Notificações de Lista de Espera ─────────────────────────────
+        // ─── Pagamento manual (balcão) ───────────────────────────────────
+        // Permite ao admin registrar pagamento feito fora do MP (dinheiro, PIX direto).
+        // CodigoTransacao = "MANUAL-{Guid}" para distinguir de pagamentos do MP.
 
-        public ActionResult ListaEspera()
+        private const decimal ValorExperimental = 50.00m;
+        private const decimal ValorMatricula = 50.00m;
+
+        public ActionResult RegistrarPagamentoManual(int id)
         {
             try
             {
-                var espera = db.Agendamentos
+                var agendamento = db.Agendamentos
                     .Include("Cliente")
                     .Include("HorarioTurma")
-                    .Where(a => a.ListaEspera && a.Status == "PendentePagamento")
-                    .OrderBy(a => a.DataSolicitacao)
-                    .ToList();
+                    .Include("HorarioTurma.Turma")
+                    .FirstOrDefault(a => a.AgendamentoId == id);
 
-                return View(espera);
+                if (agendamento == null) return HttpNotFound();
+
+                // Só faz sentido para agendamentos aguardando pagamento
+                if (agendamento.Status != "PendentePagamento")
+                {
+                    TempData["Erro"] = $"Não é possível registrar pagamento manual para agendamento no status '{agendamento.Status}'.";
+                    return RedirectToAction("DetalhesAgendamento", new { id });
+                }
+
+                return View(agendamento);
             }
             catch (Exception)
             {
-                ViewBag.Erro = "Erro ao carregar lista de espera.";
-                return View(new List<Agendamento>());
+                TempData["Erro"] = "Erro ao carregar agendamento.";
+                return RedirectToAction("Agendamentos");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult RegistrarPagamentoManual(int agendamentoId, string formaPagamento)
+        {
+            // Whitelist explícita das formas aceitas no balcão
+            var formasValidas = new[] { "Dinheiro", "Pix", "Debito" };
+            if (string.IsNullOrEmpty(formaPagamento) || !formasValidas.Contains(formaPagamento))
+            {
+                TempData["Erro"] = "Forma de pagamento inválida.";
+                return RedirectToAction("RegistrarPagamentoManual", new { id = agendamentoId });
+            }
+
+            try
+            {
+                var agendamento = db.Agendamentos.Find(agendamentoId);
+                if (agendamento == null) return HttpNotFound();
+
+                if (agendamento.Status != "PendentePagamento")
+                {
+                    TempData["Erro"] = $"Agendamento não está aguardando pagamento (status atual: {agendamento.Status}).";
+                    return RedirectToAction("DetalhesAgendamento", new { id = agendamentoId });
+                }
+
+                // Cancela tentativas pendentes (cliente que tinha iniciado fluxo MP)
+                var pendentesAntigos = db.Pagamentos
+                    .Where(p => p.AgendamentoId == agendamentoId && p.StatusPagamento == "Pendente")
+                    .ToList();
+
+                foreach (var p in pendentesAntigos)
+                {
+                    p.StatusPagamento = "Cancelado";
+                    p.DataAtualizacao = DateTime.Now;
+                }
+
+                // Valor recalculado server-side — admin NÃO informa valor
+                decimal valor = agendamento.TipoAula == "Experimental" ? ValorExperimental : ValorMatricula;
+
+                var adminNome = (Session["AdminNome"] as string) ?? "Administrador";
+
+                var pagamento = new Pagamento
+                {
+                    AgendamentoId = agendamentoId,
+                    Valor = valor,
+                    FormaPagamento = formaPagamento,
+                    StatusPagamento = "Aprovado",
+                    DataPagamento = DateTime.Now,
+                    DataCriacao = DateTime.Now,
+                    DataAtualizacao = DateTime.Now,
+                    CodigoTransacao = "MANUAL-" + Guid.NewGuid().ToString("N").Substring(0, 16).ToUpperInvariant()
+                };
+
+                db.Pagamentos.Add(pagamento);
+                agendamento.Status = "Confirmado";
+
+                db.SaveChanges();
+
+                System.Diagnostics.Trace.TraceInformation(
+                    $"Pagamento manual registrado: Agendamento={agendamentoId} Forma={formaPagamento} Admin={adminNome} Codigo={pagamento.CodigoTransacao}");
+
+                TempData["Sucesso"] = "Pagamento manual registrado e agendamento confirmado.";
+                return RedirectToAction("DetalhesAgendamento", new { id = agendamentoId });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("Erro ao registrar pagamento manual: " + ex);
+                TempData["Erro"] = "Erro ao registrar pagamento manual.";
+                return RedirectToAction("RegistrarPagamentoManual", new { id = agendamentoId });
             }
         }
 

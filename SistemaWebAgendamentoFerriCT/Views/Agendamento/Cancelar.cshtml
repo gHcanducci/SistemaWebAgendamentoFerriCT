@@ -1,0 +1,195 @@
+﻿@model SistemaWebAgendamentoFerriCT.Models.Agendamento
+
+@{
+    ViewBag.Title = "Cancelar Agendamento";
+    string horario = Model.HorarioTurma != null
+        ? Model.HorarioTurma.HoraInicio.ToString(@"hh\:mm") + " - " + Model.HorarioTurma.HoraFim.ToString(@"hh\:mm")
+        : "—";
+    string turma = Model.HorarioTurma?.Turma?.NomeTurma ?? "";
+}
+
+<style>
+    .cancel-wrapper {
+        min-height: calc(100vh - 64px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 16px;
+    }
+
+    .cancel-card {
+        width: 100%;
+        max-width: 520px;
+        background: var(--bg-card);
+        border: 1px solid rgba(224,80,80,0.25);
+        border-radius: var(--radius-lg);
+        padding: 40px;
+        text-align: center;
+        position: relative;
+        animation: fadeUp 0.5s ease forwards;
+    }
+
+        .cancel-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 40px;
+            right: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--danger), transparent);
+            border-radius: 999px;
+        }
+
+    .cancel-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+        background: rgba(224,80,80,0.12);
+        border: 2px solid rgba(224,80,80,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--danger);
+        font-size: 1.8rem;
+    }
+
+    .cancel-title {
+        font-family: 'Bebas Neue',sans-serif;
+        font-size: 1.8rem;
+        letter-spacing: 1px;
+        line-height: 1;
+        margin-bottom: 8px;
+    }
+
+    .cancel-desc {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-bottom: 24px;
+    }
+
+    .ag-summary {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 14px 18px;
+        text-align: left;
+        margin-bottom: 24px;
+    }
+
+    .ag-summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 0;
+        font-size: 0.875rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+        .ag-summary-row:last-child {
+            border: none;
+        }
+
+        .ag-summary-row span:first-child {
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .ag-summary-row span:last-child {
+            font-weight: 600;
+        }
+
+    .cancel-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-confirm-cancel,
+    .btn-keep {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 0.875rem;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s;
+    }
+
+    .btn-confirm-cancel {
+        background: var(--danger);
+        color: #fff;
+    }
+
+        .btn-confirm-cancel:hover {
+            background: #c44545;
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(224,80,80,0.3);
+        }
+
+    .btn-keep {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-secondary);
+    }
+
+        .btn-keep:hover {
+            color: var(--text-primary);
+            border-color: rgba(255,255,255,0.15);
+        }
+
+    @@media (max-width: 480px) {
+        .cancel-card { padding: 28px 22px; }
+        .cancel-actions { flex-direction: column-reverse; }
+    }
+</style>
+
+<div class="cancel-wrapper">
+    <div class="cancel-card" role="alertdialog" aria-modal="false" aria-labelledby="cancel-title-heading">
+        <div class="cancel-icon" aria-hidden="true"><i class="bi bi-exclamation-triangle-fill"></i></div>
+        <div class="cancel-title" id="cancel-title-heading">Cancelar agendamento?</div>
+        <div class="cancel-desc">
+            Essa ação não pode ser desfeita. Você precisará agendar novamente se mudar de ideia.
+        </div>
+
+        <div class="ag-summary">
+            <div class="ag-summary-row">
+                <span>Tipo</span><span>@Model.TipoAula</span>
+            </div>
+            <div class="ag-summary-row">
+                <span>Data</span><span>@Model.DataAula.ToString("dd/MM/yyyy")</span>
+            </div>
+            <div class="ag-summary-row">
+                <span>Horário</span><span>@horario</span>
+            </div>
+            @if (!string.IsNullOrEmpty(turma))
+            {
+                <div class="ag-summary-row">
+                    <span>Turma</span><span>@turma</span>
+                </div>
+            }
+        </div>
+
+        @using (Html.BeginForm("Cancelar", "Agendamento", new { id = Model.AgendamentoId }, FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <div class="cancel-actions">
+                <a href="@Url.Action("Perfil", "Cliente")" class="btn-keep">
+                    <i class="bi bi-arrow-left"></i> Manter agendamento
+                </a>
+                <button type="submit" class="btn-confirm-cancel">
+                    <i class="bi bi-trash-fill"></i> Cancelar
+                </button>
+            </div>
+        }
+    </div>
+</div>

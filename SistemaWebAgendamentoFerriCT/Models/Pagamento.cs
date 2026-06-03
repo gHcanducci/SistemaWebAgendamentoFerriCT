@@ -1,7 +1,4 @@
-﻿// ─────────────────────────────────────────────────────────────────
-// Pagamento.cs — com DataAnnotations e FormaPagamento enum-like
-// ─────────────────────────────────────────────────────────────────
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -24,14 +21,28 @@ namespace SistemaWebAgendamentoFerriCT.Models
 
         [Required(ErrorMessage = "Selecione a forma de pagamento.")]
         [Display(Name = "Forma de Pagamento")]
-        public string FormaPagamento { get; set; } // "Pix" ou "Cartao"
+        public string FormaPagamento { get; set; } // "Pix" ou "Debito"
 
         [Required]
         [Display(Name = "Status")]
-        public string StatusPagamento { get; set; } // Aprovado, Pendente, Recusado
+        public string StatusPagamento { get; set; } // Pendente, EmAnalise, Aprovado, Recusado, Cancelado, Estornado
 
-        // Código de transação retornado pelo gateway (futuro Mercado Pago)
+        // ─── Mercado Pago ───────────────────────────────────────────────
+
+        [StringLength(100)]
+        public string PreferenceId { get; set; }
+
+        [StringLength(100)]
         public string CodigoTransacao { get; set; }
+
+        [StringLength(100)]
+        public string WebhookEventoId { get; set; }
+
+        public DateTime DataCriacao { get; set; } = DateTime.Now;
+
+        public DateTime? DataAtualizacao { get; set; }
+
+        // ─── Relacionamento ─────────────────────────────────────────────
 
         [ForeignKey("Agendamento")]
         public int AgendamentoId { get; set; }

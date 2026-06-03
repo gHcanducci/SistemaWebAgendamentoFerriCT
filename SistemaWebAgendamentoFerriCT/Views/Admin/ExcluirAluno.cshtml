@@ -18,7 +18,7 @@
     }
 
     .page-eyebrow {
-        font-size: 0.7rem;
+        font-size: 0.72rem;
         text-transform: uppercase;
         letter-spacing: 2px;
         color: var(--danger);
@@ -169,6 +169,24 @@
             color: var(--text-primary);
             border-color: rgba(255,255,255,0.15);
         }
+
+    @@media (max-width: 768px) {
+        .page-title { font-size: 1.6rem; }
+        .confirm-body { padding: 22px 18px; }
+    }
+
+    @@media (max-width: 480px) {
+        .page-header { margin-bottom: 18px; }
+        .page-title { font-size: 1.4rem; }
+        .confirm-header { padding: 14px 16px; }
+        .confirm-body { padding: 18px 14px; }
+        .aluno-info { padding: 12px; }
+        .info-row { flex-wrap: wrap; gap: 4px; padding: 6px 0; font-size: 0.82rem; }
+        .info-label { min-width: 0; flex: 0 0 100%; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .confirm-actions { flex-direction: column-reverse; gap: 8px; }
+        .confirm-actions .btn-delete,
+        .confirm-actions .btn-cancel { width: 100%; justify-content: center; padding: 12px; }
+    }
 </style>
 
 <div class="page-header">

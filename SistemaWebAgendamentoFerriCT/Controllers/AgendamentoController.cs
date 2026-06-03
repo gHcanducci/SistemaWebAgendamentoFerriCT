@@ -11,23 +11,56 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
     {
         private readonly SistemaContext db = new SistemaContext();
 
+        // Whitelist de formas de pagamento aceitas no fluxo simulado (demo sem MP)
+        private static readonly HashSet<string> FormasPagamentoAceitas =
+            new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "PIX", "Debito" };
+
         // Valores das aulas (futuramente podem vir do banco)
         private const decimal ValorExperimental = 50.00m;
-        private const decimal ValorMatricula = 120.00m;
+        private const decimal ValorMatricula    = 50.00m;
 
-        // Feriados nacionais fixos (formato MM-dd)
-        // FUTURO: mover para tabela no banco para facilitar manutenção
-        private readonly HashSet<string> FeriadosNacionais = new HashSet<string>
+        // Feriados fixos: nacionais + municipais de Presidente Prudente (formato MM-dd)
+        private readonly HashSet<string> FeriadosFixos = new HashSet<string>
         {
             "01-01", // Ano Novo
+            "01-28", // Aniversário de Presidente Prudente
             "04-21", // Tiradentes
             "05-01", // Dia do Trabalho
+            "06-13", // Santo Antônio (padroeiro municipal)
             "09-07", // Independência
-            "10-12", // Nossa Senhora
+            "10-12", // Nossa Senhora Aparecida
             "11-02", // Finados
             "11-15", // Proclamação da República
             "12-25"  // Natal
         };
+
+        // Calcula a data da Páscoa (algoritmo Meeus/Jones/Butcher)
+        private static DateTime CalcularPascoa(int ano)
+        {
+            int a = ano % 19, b = ano / 100, c = ano % 100;
+            int d = b / 4,    e = b % 4,    f = (b + 8) / 25;
+            int g = (b - f + 1) / 3;
+            int h = (19 * a + b - d - g + 15) % 30;
+            int i = c / 4,   k = c % 4;
+            int l = (32 + 2 * e + 2 * i - h - k) % 7;
+            int m = (a + 11 * h + 22 * l) / 451;
+            int mes = (h + l - 7 * m + 114) / 31;
+            int dia = ((h + l - 7 * m + 114) % 31) + 1;
+            return new DateTime(ano, mes, dia);
+        }
+
+        // Feriados móveis calculados dinamicamente por ano
+        private static HashSet<DateTime> FeriadosMoveis(int ano)
+        {
+            var pascoa = CalcularPascoa(ano);
+            return new HashSet<DateTime>
+            {
+                pascoa.AddDays(-48), // Carnaval — Segunda-feira
+                pascoa.AddDays(-47), // Carnaval — Terça-feira
+                pascoa.AddDays(-2),  // Sexta-feira Santa
+                pascoa.AddDays(60),  // Corpus Christi
+            };
+        }
 
         // ─── Auxiliares ─────────────────────────────────────────────────
 
@@ -38,7 +71,8 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
 
         private bool EFeriado(DateTime data)
         {
-            return FeriadosNacionais.Contains(data.ToString("MM-dd"));
+            if (FeriadosFixos.Contains(data.ToString("MM-dd"))) return true;
+            return FeriadosMoveis(data.Year).Contains(data.Date);
         }
 
         private bool EDomingo(DateTime data)
@@ -58,24 +92,6 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                     HorarioFormatado = $"{h.HoraInicio:hh\\:mm} - {h.HoraFim:hh\\:mm} ({h.Turma.NomeTurma})"
                 })
                 .ToList();
-        }
-
-        // Verifica se a turma tem vagas disponíveis na data
-        private bool TurmaTemVaga(int horarioTurmaId, DateTime data)
-        {
-            var horario = db.HorariosTurma
-                .Include("Turma")
-                .FirstOrDefault(h => h.HorarioTurmaId == horarioTurmaId);
-
-            if (horario == null) return false;
-
-            int agendadosConfirmados = db.Agendamentos.Count(a =>
-                a.HorarioTurmaId == horarioTurmaId &&
-                a.DataAula == data &&
-                a.Status != "Cancelado" &&
-                !a.ListaEspera);
-
-            return agendadosConfirmados < horario.Turma.CapacidadeMaxima;
         }
 
         // Verifica se o cliente já fez algum agendamento (para controle de aula experimental)
@@ -104,7 +120,7 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
 
                 // Feriado — academia fechada
                 if (EFeriado(dataSelecionada))
-                    return Json(new { fechado = true, motivo = "Não há turmas em feriados nacionais." }, JsonRequestBehavior.AllowGet);
+                    return Json(new { fechado = true, motivo = "Não há turmas em feriados." }, JsonRequestBehavior.AllowGet);
 
                 var horarios = CarregarHorariosPorDia(dataSelecionada);
 
@@ -171,11 +187,19 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
 
                 // ── Validação: feriado sem turmas
                 if (EFeriado(vm.DataAula))
-                    ModelState.AddModelError("DataAula", "Não há turmas em feriados nacionais.");
+                    ModelState.AddModelError("DataAula", "Não há turmas em feriados.");
 
                 // ── Validação: aula experimental só para quem nunca agendou
                 if (vm.TipoAula == "Experimental" && jaAgendou)
                     ModelState.AddModelError("TipoAula", "A aula experimental é exclusiva para novos alunos que ainda não realizaram nenhum agendamento.");
+
+                // ── Validação: cliente só pode ter 1 agendamento aguardando pagamento ao mesmo tempo
+                bool temPendente = db.Agendamentos.Any(a =>
+                    a.ClienteId == clienteId &&
+                    (a.Status == "PendentePagamento" || a.Status == "EmAnalise"));
+
+                if (temPendente)
+                    ModelState.AddModelError("", "Você possui um agendamento aguardando pagamento. Finalize-o ou aguarde o vencimento (1h) antes de criar outro.");
 
                 // ── Validação: cliente já tem agendamento neste horário e data
                 bool clienteJaTem = db.Agendamentos.Any(a =>
@@ -190,12 +214,6 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 if (!ModelState.IsValid)
                     return View(vm);
 
-                // ── Verificar capacidade da turma
-                bool temVaga = TurmaTemVaga(vm.HorarioTurmaId, vm.DataAula);
-
-                // ── Definir valor conforme tipo de aula
-                decimal valor = vm.TipoAula == "Experimental" ? ValorExperimental : ValorMatricula;
-
                 // ── Criar o agendamento
                 var agendamento = new Agendamento
                 {
@@ -204,27 +222,14 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                     TipoAula = vm.TipoAula,
                     HorarioTurmaId = vm.HorarioTurmaId,
                     DataSolicitacao = DateTime.Now,
-                    ListaEspera = !temVaga,
                     Status = "PendentePagamento"
                 };
 
                 db.Agendamentos.Add(agendamento);
                 db.SaveChanges();
 
-                // ── Se turma lotada: avisa cliente e notifica admin
-                if (!temVaga)
-                {
-                    // Registra notificação para o admin ver no painel
-                    TempData["NotificacaoAdmin"] = $"Lista de espera: cliente {Session["ClienteNome"]} tentou agendar para {vm.DataAula:dd/MM/yyyy} — turma lotada.";
-                    TempData["ListaEspera"] = true;
-
-                    // Redireciona para confirmação informando lista de espera
-                    return RedirectToAction("ListaEspera", new { id = agendamento.AgendamentoId });
-                }
-
-                // ── Redireciona para pagamento
-                TempData["ValorAula"] = valor;
-                return RedirectToAction("Pagamento", new { id = agendamento.AgendamentoId, valor });
+                // ── Redireciona para tela de pagamento (sem valor na URL — server recalcula)
+                return RedirectToAction("Pagamento", new { id = agendamento.AgendamentoId });
             }
             catch (Exception)
             {
@@ -234,14 +239,18 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
         }
 
         // ─── GET: Agendamento/Pagamento ──────────────────────────────────
+        // Tela de resumo + botão "Pagar com Mercado Pago".
+        // Valor não vem da URL: é recalculado server-side a partir do TipoAula.
 
-        public ActionResult Pagamento(int id, decimal valor)
+        public ActionResult Pagamento(int id)
         {
             if (!ClienteLogado())
                 return RedirectToAction("Login", "Cliente");
 
             try
             {
+                int clienteId = (int)Session["ClienteId"];
+
                 var agendamento = db.Agendamentos
                     .Include("HorarioTurma")
                     .Include("HorarioTurma.Turma")
@@ -249,6 +258,12 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
 
                 if (agendamento == null)
                     return HttpNotFound();
+
+                // Não permite cliente acessar pagamento de outro cliente
+                if (agendamento.ClienteId != clienteId)
+                    return new HttpStatusCodeResult(System.Net.HttpStatusCode.Forbidden);
+
+                decimal valor = agendamento.TipoAula == "Experimental" ? ValorExperimental : ValorMatricula;
 
                 var vm = new PagamentoViewModel
                 {
@@ -268,82 +283,112 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
             }
         }
 
-        // ─── POST: Agendamento/ProcessarPagamento ────────────────────────
-        
+        // ─── POST: Agendamento/IniciarPagamento ──────────────────────────
+        // Fluxo SIMULADO (demo sem MP). Confirma o agendamento direto,
+        // criando um Pagamento Aprovado com CodigoTransacao "DEMO-{Guid}".
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult ProcessarPagamento(PagamentoViewModel vm)
+        public ActionResult IniciarPagamento(int agendamentoId, string formaPagamento)
         {
             if (!ClienteLogado())
                 return RedirectToAction("Login", "Cliente");
 
+            int clienteId = (int)Session["ClienteId"];
+
+            var agendamento = db.Agendamentos
+                .FirstOrDefault(a => a.AgendamentoId == agendamentoId);
+
+            if (agendamento == null)
+                return HttpNotFound();
+
+            if (agendamento.ClienteId != clienteId)
+                return new HttpStatusCodeResult(System.Net.HttpStatusCode.Forbidden);
+
+            if (agendamento.Status != "PendentePagamento")
+            {
+                TempData["Erro"] = "Este agendamento não está aguardando pagamento.";
+                return RedirectToAction("Pagamento", new { id = agendamentoId });
+            }
+
+            if (string.IsNullOrWhiteSpace(formaPagamento) || !FormasPagamentoAceitas.Contains(formaPagamento))
+            {
+                TempData["Erro"] = "Forma de pagamento inválida.";
+                return RedirectToAction("Pagamento", new { id = agendamentoId });
+            }
+
+            // Valor sempre recalculado server-side
+            decimal valor = agendamento.TipoAula == "Experimental" ? ValorExperimental : ValorMatricula;
+
             try
             {
-                // Remove validação do Valor — será buscado do banco
-                ModelState.Remove("Valor");
+                // Cancela tentativas anteriores pendentes
+                var pendentesAntigos = db.Pagamentos
+                    .Where(p => p.AgendamentoId == agendamentoId && p.StatusPagamento == "Pendente")
+                    .ToList();
 
-                if (!ModelState.IsValid)
-                    return View("Pagamento", vm);
-
-                var agendamento = db.Agendamentos.Find(vm.AgendamentoId);
-                if (agendamento == null)
-                    return HttpNotFound();
-
-                // Busca o valor correto pelo tipo de aula — evita problema de conversão decimal
-                decimal valor = agendamento.TipoAula == "Experimental" ? 50.00m : 120.00m;
-
-                // ── SIMULAÇÃO DE PAGAMENTO ───────────────────────────────
-                // TODO: Substituir por integração real com Mercado Pago
-                // Endpoint: POST https://api.mercadopago.com/v1/payments
-                // Documentação: https://www.mercadopago.com.br/developers
-                // Requer: Access Token (produção) no Web.config como AppSetting
-                // Formas suportadas: "Pix" (payment_method_id: "pix")
-                //                    "Cartao" (payment_method_id: cartão de crédito)
-
-
-                bool pagamentoAprovado = SimularPagamento(vm.FormaPagamento, valor);
+                foreach (var p in pendentesAntigos)
+                {
+                    p.StatusPagamento = "Cancelado";
+                    p.DataAtualizacao = DateTime.Now;
+                }
 
                 var pagamento = new Pagamento
                 {
-                    AgendamentoId = vm.AgendamentoId,
+                    AgendamentoId = agendamento.AgendamentoId,
                     Valor = valor,
-                    FormaPagamento = vm.FormaPagamento,
+                    FormaPagamento = formaPagamento,
+                    StatusPagamento = "Aprovado",
+                    CodigoTransacao = "DEMO-" + Guid.NewGuid().ToString("N").Substring(0, 16),
+                    DataCriacao = DateTime.Now,
                     DataPagamento = DateTime.Now,
-                    StatusPagamento = pagamentoAprovado ? "Aprovado" : "Recusado",
-                    CodigoTransacao = Guid.NewGuid().ToString("N").Substring(0, 12).ToUpper()
+                    DataAtualizacao = DateTime.Now
                 };
 
+                agendamento.Status = "Confirmado";
+
                 db.Pagamentos.Add(pagamento);
+                db.SaveChanges();
 
-                if (pagamentoAprovado)
-                {
-                    agendamento.Status = "Confirmado";
-                    db.SaveChanges();
-
-                    TempData["Sucesso"] = "Pagamento aprovado!";
-                    return RedirectToAction("Confirmacao", new { id = vm.AgendamentoId });
-                }
-                else
-                {
-                    db.SaveChanges();
-                    TempData["Erro"] = "Pagamento recusado. Tente novamente.";
-                    return RedirectToAction("Pagamento", new { id = vm.AgendamentoId, valor });
-                }
+                return RedirectToAction("Confirmacao", new { id = agendamentoId });
             }
             catch (Exception ex)
             {
-                TempData["Erro"] = "Erro: " + ex.Message;
-                return RedirectToAction("Pagamento", new { id = vm.AgendamentoId, valor = vm.Valor });
+                System.Diagnostics.Trace.TraceError("IniciarPagamento (demo) erro: " + ex);
+                TempData["Erro"] = "Erro ao confirmar o pagamento. Tente novamente.";
+                return RedirectToAction("Pagamento", new { id = agendamentoId });
             }
         }
 
-        // ─── Simulação de pagamento (remover quando integrar Mercado Pago) ─
+        // ─── GET: Agendamento/Retorno ────────────────────────────────────
+        // Página visual após o cliente sair do Mercado Pago. A verdade do
+        // pagamento vem do webhook; aqui só mostramos o estado atual do agendamento.
+        // Não confiamos no parâmetro 'status' da URL para confirmar pagamento.
 
-        private bool SimularPagamento(string formaPagamento, decimal valor)
+        public ActionResult Retorno(int id, string status)
         {
-            // Simulação: Pix sempre aprovado, Cartão aprovado 90% das vezes
-            if (formaPagamento == "Pix") return true;
-            return new Random().Next(1, 11) > 1; // 90% aprovação
+            if (!ClienteLogado())
+                return RedirectToAction("Login", "Cliente");
+
+            int clienteId = (int)Session["ClienteId"];
+
+            var agendamento = db.Agendamentos
+                .Include("HorarioTurma")
+                .Include("HorarioTurma.Turma")
+                .FirstOrDefault(a => a.AgendamentoId == id);
+
+            if (agendamento == null)
+                return HttpNotFound();
+
+            if (agendamento.ClienteId != clienteId)
+                return new HttpStatusCodeResult(System.Net.HttpStatusCode.Forbidden);
+
+            // Se já confirmado, manda direto pra tela final
+            if (agendamento.Status == "Confirmado")
+                return RedirectToAction("Confirmacao", new { id });
+
+            ViewBag.StatusMP = status;
+            return View(agendamento);
         }
 
         // ─── GET: Agendamento/Confirmacao ────────────────────────────────
@@ -355,6 +400,8 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
 
             try
             {
+                int clienteId = (int)Session["ClienteId"];
+
                 var agendamento = db.Agendamentos
                     .Include("HorarioTurma")
                     .Include("HorarioTurma.Turma")
@@ -364,6 +411,9 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 if (agendamento == null)
                     return HttpNotFound();
 
+                if (agendamento.ClienteId != clienteId)
+                    return new HttpStatusCodeResult(System.Net.HttpStatusCode.Forbidden);
+
                 return View(agendamento);
             }
             catch (Exception)
@@ -372,28 +422,85 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
             }
         }
 
-        // ─── GET: Agendamento/ListaEspera ────────────────────────────────
+        // ─── GET: Agendamento/Cancelar ───────────────────────────────────
+        // Tela de confirmação antes de cancelar. Cliente só pode cancelar
+        // agendamentos próprios em status PendentePagamento (alinhado com
+        // "sem reembolso após pagamento aprovado" do CLAUDE.md).
 
-        public ActionResult ListaEspera(int id)
+        public ActionResult Cancelar(int id)
         {
             if (!ClienteLogado())
                 return RedirectToAction("Login", "Cliente");
 
+            int clienteId = (int)Session["ClienteId"];
+
+            var agendamento = db.Agendamentos
+                .Include("HorarioTurma")
+                .Include("HorarioTurma.Turma")
+                .FirstOrDefault(a => a.AgendamentoId == id);
+
+            if (agendamento == null)
+                return HttpNotFound();
+
+            if (agendamento.ClienteId != clienteId)
+                return new HttpStatusCodeResult(System.Net.HttpStatusCode.Forbidden);
+
+            if (agendamento.Status != "PendentePagamento")
+            {
+                TempData["Erro"] = "Só é possível cancelar agendamentos que ainda não foram pagos.";
+                return RedirectToAction("Perfil", "Cliente");
+            }
+
+            return View(agendamento);
+        }
+
+        // ─── POST: Agendamento/Cancelar ──────────────────────────────────
+
+        [HttpPost, ActionName("Cancelar")]
+        [ValidateAntiForgeryToken]
+        public ActionResult CancelarConfirmado(int id)
+        {
+            if (!ClienteLogado())
+                return RedirectToAction("Login", "Cliente");
+
+            int clienteId = (int)Session["ClienteId"];
+
+            var agendamento = db.Agendamentos.Find(id);
+            if (agendamento == null)
+                return HttpNotFound();
+
+            if (agendamento.ClienteId != clienteId)
+                return new HttpStatusCodeResult(System.Net.HttpStatusCode.Forbidden);
+
+            if (agendamento.Status != "PendentePagamento")
+            {
+                TempData["Erro"] = "Só é possível cancelar agendamentos que ainda não foram pagos.";
+                return RedirectToAction("Perfil", "Cliente");
+            }
+
             try
             {
-                var agendamento = db.Agendamentos
-                    .Include("HorarioTurma")
-                    .Include("HorarioTurma.Turma")
-                    .FirstOrDefault(a => a.AgendamentoId == id);
+                // Cancela tentativas de pagamento ainda pendentes
+                var pendentes = db.Pagamentos
+                    .Where(p => p.AgendamentoId == id && p.StatusPagamento == "Pendente")
+                    .ToList();
 
-                if (agendamento == null)
-                    return HttpNotFound();
+                foreach (var p in pendentes)
+                {
+                    p.StatusPagamento = "Cancelado";
+                    p.DataAtualizacao = DateTime.Now;
+                }
 
-                return View(agendamento);
+                agendamento.Status = "Cancelado";
+                db.SaveChanges();
+
+                TempData["Sucesso"] = "Agendamento cancelado.";
+                return RedirectToAction("Perfil", "Cliente");
             }
             catch (Exception)
             {
-                return RedirectToAction("Create");
+                TempData["Erro"] = "Erro ao cancelar o agendamento. Tente novamente.";
+                return RedirectToAction("Perfil", "Cliente");
             }
         }
 

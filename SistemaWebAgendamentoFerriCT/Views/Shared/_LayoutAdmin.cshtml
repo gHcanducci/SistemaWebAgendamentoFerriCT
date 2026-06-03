@@ -8,28 +8,18 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="/Content/ferri-base.css" rel="stylesheet">
 
     <style>
+        /* Tokens específicos do painel admin — sobrescrevem ferri-base.css */
         :root {
-            --bg-deep:    #07070A;
-            --bg-surface: #0F0F14;
-            --bg-card:    #15151C;
-            --bg-sidebar: #0A0A0F;
-            --border:     rgba(255,255,255,0.07);
-            --accent:     #E8C547;
-            --accent-dim: rgba(232,197,71,0.12);
-            --accent-glow:rgba(232,197,71,0.3);
-            --text-primary:   #F0EFE8;
-            --text-secondary: #6A6A75;
-            --danger:  #E05050;
-            --success: #4CAF82;
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 20px;
-            --sidebar-w: 240px;
+            --bg-sidebar:  #0A0A0F;
+            --accent-glow: rgba(255,204,0,0.3);
+            --radius-md:   12px;
+            --radius-lg:   20px;
+            --sidebar-w:   240px;
         }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html, body {
             background: var(--bg-deep);
             color: var(--text-primary);
@@ -52,23 +42,23 @@
         }
         .sidebar-logo { padding: 28px 24px 24px; border-bottom: 1px solid var(--border); }
         .logo-mark { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 3px; color: var(--accent); display: block; line-height: 1; }
-        .logo-badge { display: inline-block; background: var(--accent-dim); border: 1px solid rgba(232,197,71,0.25); color: var(--accent); font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; padding: 2px 8px; border-radius: 999px; margin-top: 6px; }
+        .logo-badge { display: inline-block; background: var(--accent-dim); border: 1px solid rgba(255,204,0,0.25); color: var(--accent); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; padding: 2px 8px; border-radius: 999px; margin-top: 6px; }
         .sidebar-nav { flex: 1; padding: 20px 12px; overflow-y: auto; }
-        .nav-section-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-secondary); padding: 0 12px 8px; margin-top: 16px; }
+        .nav-section-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-secondary); padding: 0 12px 8px; margin-top: 16px; }
         .nav-section-label:first-child { margin-top: 0; }
         .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: var(--radius-sm); text-decoration: none; color: var(--text-secondary); font-size: 0.875rem; font-weight: 500; transition: all 0.2s; margin-bottom: 2px; }
         .nav-item i { font-size: 1.05rem; width: 20px; text-align: center; }
         .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
-        .nav-item.active { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(232,197,71,0.15); }
+        .nav-item.active { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(255,204,0,0.15); }
         .nav-item.active i { color: var(--accent); }
-        .nav-badge { margin-left: auto; background: var(--accent); color: var(--bg-deep); font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; }
+        .nav-badge { margin-left: auto; background: var(--accent); color: var(--bg-deep); font-size: 0.72rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; }
 
         /* ─── SIDEBAR FOOTER ─── */
         .sidebar-footer { padding: 16px 12px; border-top: 1px solid var(--border); }
         .sidebar-user { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: var(--radius-sm); }
-        .user-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-dim); border: 1px solid rgba(232,197,71,0.3); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: var(--accent); }
+        .user-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-dim); border: 1px solid rgba(255,204,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: var(--accent); }
         .user-info .user-name { font-weight: 600; font-size: 0.825rem; color: var(--text-primary); }
-        .user-info .user-role { font-size: 0.7rem; color: var(--text-secondary); }
+        .user-info .user-role { font-size: 0.72rem; color: var(--text-secondary); }
 
         /* ─── BOTÃO LOGOUT ADMIN ─── */
         .btn-logout-admin {
@@ -99,16 +89,16 @@
         /* ─── MAIN ─── */
         .admin-main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
         .admin-topbar { height: 60px; background: rgba(7,7,10,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 28px; gap: 16px; position: sticky; top: 0; z-index: 50; }
-        .topbar-title { font-weight: 700; font-size: 0.95rem; }
+        .topbar-title { font-weight: 700; font-size: 0.95rem; white-space: nowrap; }
         .topbar-sep { color: var(--text-secondary); }
-        .topbar-page { color: var(--text-secondary); font-size: 0.875rem; }
-        .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-        .topbar-btn { width: 36px; height: 36px; border-radius: var(--radius-sm); background: rgba(255,255,255,0.04); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; text-decoration: none; font-size: 1rem; }
+        .topbar-page { color: var(--text-secondary); font-size: 0.875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+        .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+        .topbar-btn { width: 36px; height: 36px; border-radius: var(--radius-sm); background: rgba(255,255,255,0.04); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; text-decoration: none; font-size: 1rem; flex-shrink: 0; }
         .topbar-btn:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.15); }
         .notif-dot { position: relative; }
         .notif-dot::after { content: ''; position: absolute; top: 4px; right: 4px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
-        .topbar-cta { background: var(--accent); color: var(--bg-deep) !important; border: none !important; font-weight: 700; font-size: 0.78rem; padding: 0 14px; width: auto; letter-spacing: 0.3px; }
-        .topbar-cta:hover { background: #f5d465 !important; color: var(--bg-deep) !important; }
+        .topbar-cta { background: var(--accent); color: var(--bg-deep) !important; border: none !important; font-weight: 700; font-size: 0.78rem; padding: 0 14px; width: auto; letter-spacing: 0.3px; white-space: nowrap; }
+        .topbar-cta:hover { background: var(--accent-hover) !important; color: var(--bg-deep) !important; }
 
         /* ─── TOPBAR LOGOUT ─── */
         .topbar-logout {
@@ -118,7 +108,7 @@
             border: 1px solid rgba(224,80,80,0.2);
             color: #ff8a8a; text-decoration: none;
             font-size: 0.78rem; font-weight: 600;
-            transition: all 0.2s;
+            transition: all 0.2s; white-space: nowrap; flex-shrink: 0;
         }
         .topbar-logout:hover { background: rgba(224,80,80,0.16); color: #ff8a8a; }
 
@@ -128,8 +118,8 @@
         .glass { background: rgba(21,21,28,0.8); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: var(--radius-lg); }
         .glass-sm { background: rgba(21,21,28,0.6); backdrop-filter: blur(8px); border: 1px solid var(--border); border-radius: var(--radius-md); }
         .btn-gold { background: var(--accent); color: var(--bg-deep); border: none; border-radius: var(--radius-sm); padding: 9px 20px; font-weight: 700; font-size: 0.85rem; transition: all 0.25s; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
-        .btn-gold:hover { background: #f5d465; color: var(--bg-deep); transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
-        .btn-outline-gold { background: transparent; color: var(--accent); border: 1px solid rgba(232,197,71,0.4); border-radius: var(--radius-sm); padding: 9px 20px; font-weight: 600; font-size: 0.85rem; transition: all 0.25s; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-gold:hover { background: var(--accent-hover); color: var(--bg-deep); transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
+        .btn-outline-gold { background: transparent; color: var(--accent); border: 1px solid rgba(255,204,0,0.4); border-radius: var(--radius-sm); padding: 9px 20px; font-weight: 600; font-size: 0.85rem; transition: all 0.25s; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
         .btn-outline-gold:hover { background: var(--accent-dim); color: var(--accent); }
         .btn-danger-soft { background: rgba(224,80,80,0.1); color: #ff8a8a; border: 1px solid rgba(224,80,80,0.25); border-radius: var(--radius-sm); padding: 9px 20px; font-weight: 600; font-size: 0.85rem; transition: all 0.25s; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
         .btn-danger-soft:hover { background: rgba(224,80,80,0.2); color: #ff8a8a; }
@@ -144,15 +134,15 @@
         .badge-pendente    { color: var(--accent);  background: var(--accent-dim); }
         .badge-cancelado   { color: var(--danger);  background: rgba(224,80,80,0.12); }
         .ferri-table { width: 100%; border-collapse: separate; border-spacing: 0 4px; }
-        .ferri-table thead th { color: var(--text-secondary); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.5px; padding: 8px 14px; font-weight: 700; border: none; }
+        .ferri-table thead th { color: var(--text-secondary); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; padding: 8px 14px; font-weight: 700; border: none; }
         .ferri-table tbody tr { background: var(--bg-card); transition: all 0.2s; }
-        .ferri-table tbody tr:hover { background: rgba(232,197,71,0.05); }
+        .ferri-table tbody tr:hover { background: rgba(255,204,0,0.05); }
         .ferri-table tbody td { padding: 13px 14px; border: none; vertical-align: middle; }
         .ferri-table tbody td:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
         .ferri-table tbody td:last-child  { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
 
-        keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
-        keyframes pulse-dot { 0%, 100% { box-shadow: 0 0 0 0 rgba(76,175,130,0.4); } 50% { box-shadow: 0 0 0 6px transparent; } }
+        @@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        @@keyframes pulse-dot { 0%, 100% { box-shadow: 0 0 0 0 rgba(76,175,130,0.4); } 50% { box-shadow: 0 0 0 6px transparent; } }
         .fade-up { animation: fadeUp 0.5s ease forwards; }
         .delay-1 { animation-delay: 0.05s; opacity: 0; }
         .delay-2 { animation-delay: 0.1s;  opacity: 0; }
@@ -170,6 +160,55 @@
             .sidebar.open { transform: translateX(0); }
             .admin-main { margin-left: 0; }
         }
+
+        @@media (max-width: 768px) {
+            .admin-content { padding: 16px; }
+            .admin-topbar  { padding: 0 14px; gap: 10px; }
+            .topbar-cta i  { margin-right: 2px; }
+            .topbar-page   { display: none; }
+            .topbar-sep    { display: none; }
+        }
+
+        @@media (max-width: 480px) {
+            .admin-content { padding: 12px; }
+            .topbar-cta    { padding: 0 10px; font-size: 0.72rem; }
+            .topbar-cta-label  { display: none; }
+            .topbar-logout-label { display: none; }
+            .topbar-logout { padding: 0 10px; gap: 0; }
+        }
+
+        /* ─── PRINT (Bloco 6) ─── Painel admin imprimível (lista de alunos, agendamentos, detalhes) */
+        @@media print {
+            html, body {
+                background: #fff !important;
+                color: #000 !important;
+                font-size: 11pt;
+                overflow: visible !important;
+            }
+
+            .sidebar,
+            .admin-topbar {
+                display: none !important;
+            }
+
+            .admin-layout { display: block !important; }
+            .admin-main { margin-left: 0 !important; min-height: auto !important; }
+            .admin-content { padding: 0 !important; }
+
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                opacity: 1 !important;
+            }
+
+            a { color: #000 !important; text-decoration: none !important; }
+
+            @@page { margin: 1.5cm; }
+        }
     </style>
 </head>
 <body>
@@ -182,7 +221,7 @@
                 <span class="logo-badge">Admin Panel</span>
             </div>
 
-            <nav class="sidebar-nav">
+            <nav class="sidebar-nav" aria-label="Navegação do painel administrativo">
                 <div class="nav-section-label">Principal</div>
                 <a href="/Admin/Index" class="nav-item @(ViewBag.ActivePage == "dashboard" ? "active" : "")">
                     <i class="bi bi-grid-1x2-fill"></i> Dashboard
@@ -227,23 +266,25 @@
         <!-- ─── MAIN ─── -->
         <div class="admin-main">
             <header class="admin-topbar">
-                <button class="topbar-btn d-md-none" onclick="document.getElementById('sidebar').classList.toggle('open')">
-                    <i class="bi bi-list"></i>
+                <button class="topbar-btn d-md-none"
+                        aria-label="Abrir menu lateral" aria-controls="sidebar" aria-expanded="false"
+                        onclick="toggleSidebar(this)">
+                    <i class="bi bi-list" aria-hidden="true"></i>
                 </button>
                 <span class="topbar-title">Ferri CT</span>
                 <span class="topbar-sep">/</span>
                 <span class="topbar-page">@ViewBag.Title</span>
 
                 <div class="topbar-right">
-                    <a href="/Admin/Agendamentos" class="topbar-btn notif-dot" title="Notificações">
-                        <i class="bi bi-bell"></i>
+                    <a href="/Admin/Agendamentos" class="topbar-btn notif-dot" title="Notificações" aria-label="Notificações">
+                        <i class="bi bi-bell" aria-hidden="true"></i>
                     </a>
-                    <a href="/Admin/CriarAluno" class="topbar-btn topbar-cta">
-                        <i class="bi bi-plus-lg"></i> Novo Aluno
+                    <a href="/Admin/CriarAluno" class="topbar-btn topbar-cta" title="Novo Aluno" aria-label="Novo Aluno">
+                        <i class="bi bi-plus-lg" aria-hidden="true"></i><span class="topbar-cta-label"> Novo Aluno</span>
                     </a>
-                    
-                    <a href="@Url.Action("Logout", "Admin")" class="topbar-logout" title="Sair">
-                        <i class="bi bi-box-arrow-right"></i> Sair
+
+                    <a href="@Url.Action("Logout", "Admin")" class="topbar-logout" title="Sair" aria-label="Sair do painel">
+                        <i class="bi bi-box-arrow-right" aria-hidden="true"></i><span class="topbar-logout-label"> Sair</span>
                     </a>
                 </div>
             </header>
@@ -255,5 +296,12 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleSidebar(btn) {
+            const sidebar = document.getElementById('sidebar');
+            const isOpen = sidebar.classList.toggle('open');
+            btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        }
+    </script>
 </body>
 </html>

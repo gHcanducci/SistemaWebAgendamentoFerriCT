@@ -18,7 +18,7 @@
     }
 
     .page-eyebrow {
-        font-size: 0.7rem;
+        font-size: 0.72rem;
         text-transform: uppercase;
         letter-spacing: 2px;
         color: var(--accent);
@@ -55,7 +55,7 @@
 
     .profile-cover {
         height: 72px;
-        background: linear-gradient(135deg, rgba(232,197,71,0.12), rgba(232,197,71,0.02));
+        background: linear-gradient(135deg, rgba(255,204,0,0.12), rgba(255,204,0,0.02));
         border-bottom: 1px solid var(--border);
         position: relative;
     }
@@ -127,7 +127,7 @@
     }
 
     .pf-label {
-        font-size: 0.65rem;
+        font-size: 0.72rem;
         text-transform: uppercase;
         letter-spacing: 1px;
         color: var(--text-secondary);
@@ -164,12 +164,12 @@
 
     .btn-edit-p {
         background: var(--accent-dim);
-        border: 1px solid rgba(232,197,71,0.3);
+        border: 1px solid rgba(255,204,0,0.3);
         color: var(--accent);
     }
 
         .btn-edit-p:hover {
-            background: rgba(232,197,71,0.2);
+            background: rgba(255,204,0,0.2);
             color: var(--accent);
         }
 
@@ -236,7 +236,7 @@
     }
 
     .stat-box-label {
-        font-size: 0.65rem;
+        font-size: 0.72rem;
         text-transform: uppercase;
         letter-spacing: 1px;
         color: var(--text-secondary);
@@ -264,7 +264,7 @@
         text-align: center;
         min-width: 44px;
         background: var(--accent-dim);
-        border: 1px solid rgba(232,197,71,0.2);
+        border: 1px solid rgba(255,204,0,0.2);
         border-radius: var(--radius-sm);
         padding: 6px;
     }
@@ -277,7 +277,7 @@
         }
 
         .ag-date .month {
-            font-size: 0.58rem;
+            font-size: 0.72rem;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--text-secondary);
@@ -307,7 +307,7 @@
         gap: 5px;
         padding: 3px 10px;
         border-radius: 999px;
-        font-size: 0.7rem;
+        font-size: 0.72rem;
         font-weight: 600;
         white-space: nowrap;
     }
@@ -361,13 +361,14 @@
 <div class="detail-grid">
 
     <!-- Perfil -->
+    @{
+        var initials = string.Join("", (Model.Nome ?? "?").Split(' ')
+            .Take(2).Select(w => w.Length > 0 ? w[0].ToString().ToUpper() : ""));
+    }
     <div class="profile-card">
-        <div class="profile-cover"></div>
-        @{
-            var initials = string.Join("", (Model.Nome ?? "?").Split(' ')
-                .Take(2).Select(w => w.Length > 0 ? w[0].ToString().ToUpper() : ""));
-        }
-        <div class="profile-avatar">@initials</div>
+        <div class="profile-cover">
+            <div class="profile-avatar">@initials</div>
+        </div>
         <div class="profile-body">
             <div class="profile-name">@Model.Nome</div>
             <div class="profile-since">
@@ -445,7 +446,7 @@
                                 @(ag.HorarioTurma != null ? ag.HorarioTurma.HoraInicio.ToString(@"hh\:mm") + " - " + ag.HorarioTurma.HoraFim.ToString(@"hh\:mm") : "—")
                                 @if (ag.HorarioTurma?.Turma != null)
                                 {
-                                    <span style="background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:999px;padding:1px 7px;font-size:0.65rem;margin-left:4px">
+                                    <span style="background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:999px;padding:1px 7px;font-size:0.72rem;margin-left:4px">
                                         @ag.HorarioTurma.Turma.NomeTurma
                                     </span>
                                 }

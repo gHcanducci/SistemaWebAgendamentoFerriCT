@@ -18,7 +18,7 @@
     }
 
     .page-eyebrow {
-        font-size: 0.7rem;
+        font-size: 0.72rem;
         text-transform: uppercase;
         letter-spacing: 2px;
         color: var(--accent);
@@ -66,7 +66,7 @@
         width: 34px;
         height: 34px;
         background: var(--accent-dim);
-        border: 1px solid rgba(232,197,71,0.2);
+        border: 1px solid rgba(255,204,0,0.2);
         border-radius: var(--radius-sm);
         display: flex;
         align-items: center;
@@ -109,7 +109,7 @@
     }
 
     .dr-label {
-        font-size: 0.65rem;
+        font-size: 0.72rem;
         text-transform: uppercase;
         letter-spacing: 1px;
         color: var(--text-secondary);
@@ -202,14 +202,27 @@
             transition: all 0.2s;
         }
 
+    .btn-pay-manual {
+        background: var(--accent);
+        border: 1px solid var(--accent);
+        color: var(--bg-deep);
+        font-weight: 700;
+    }
+
+        .btn-pay-manual:hover {
+            background: var(--accent-hover);
+            color: var(--bg-deep);
+            box-shadow: 0 4px 14px var(--accent-glow);
+        }
+
     .btn-edit-ag {
         background: var(--accent-dim);
-        border: 1px solid rgba(232,197,71,0.3);
+        border: 1px solid rgba(255,204,0,0.3);
         color: var(--accent);
     }
 
         .btn-edit-ag:hover {
-            background: rgba(232,197,71,0.2);
+            background: rgba(255,204,0,0.2);
             color: var(--accent);
         }
 
@@ -237,7 +250,7 @@
         height: 44px;
         border-radius: 50%;
         background: var(--accent-dim);
-        border: 2px solid rgba(232,197,71,0.2);
+        border: 2px solid rgba(255,204,0,0.2);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -337,6 +350,12 @@
         </div>
 
         <div class="action-row">
+            @if (Model.Status == "PendentePagamento")
+            {
+                <a href="@Url.Action("RegistrarPagamentoManual","Admin", new { id=Model.AgendamentoId })" class="btn-pay-manual">
+                    <i class="bi bi-cash-coin"></i> Registrar Pagamento Manual
+                </a>
+            }
             <a href="@Url.Action("EditarAgendamento","Admin", new { id=Model.AgendamentoId })" class="btn-edit-ag">
                 <i class="bi bi-pencil-fill"></i> Editar Status
             </a>
