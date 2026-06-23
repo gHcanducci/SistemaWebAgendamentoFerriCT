@@ -168,6 +168,18 @@ Add-Migration NomeMigration  # cria nova migration
 
 ---
 
+## Screenshots
+
+| Home | Agendamento |
+|------|-------------|
+| ![Home](SistemaWebAgendamentoFerriCT/screenshots/home.png) | ![Agendamento](SistemaWebAgendamentoFerriCT/screenshots/agendamento.png) |
+
+| Confirmação | Painel Admin |
+|-------------|-------------|
+| ![Confirmação](SistemaWebAgendamentoFerriCT/screenshots/confirmacao.png) | ![Admin](SistemaWebAgendamentoFerriCT/screenshots/admin-agendamentos.png) |
+
+---
+
 ## Licença
 
 Projeto acadêmico — sem licença pública definida.
