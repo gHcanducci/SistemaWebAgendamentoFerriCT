@@ -330,6 +330,24 @@
   </Target>
   <Import Project="..\packages\EntityFramework.6.5.1\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.targets')" />
   <Import Project="..\packages\LigerShark.WebOptimizer.Core.3.0.477\build\LigerShark.WebOptimizer.Core.targets" Condition="Exists('..\packages\LigerShark.WebOptimizer.Core.3.0.477\build\LigerShark.WebOptimizer.Core.targets')" />
+  <!--
+    Fallback do Roslyn para o 1º build após git clone.
+    O VS avalia este .csproj ANTES do NuGet restaurar packages\, então o Import do
+    Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props (topo do arquivo) é pulado
+    e bin\roslyn\csc.exe não é copiado → erro em runtime na primeira execução.
+    Este target só roda nesse cenário e copia o Roslyn já com o restore concluído.
+    Ao atualizar o pacote DotNetCompilerPlatform, ajuste a versão abaixo.
+  -->
+  <Target Name="CopiarRoslynFallback" AfterTargets="CopyFilesToOutputDirectory" Condition="'$(RoslynToolPath)' == ''">
+    <ItemGroup>
+      <_RoslynFallback Include="$(MSBuildProjectDirectory)\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\tools\RoslynLatest\*" />
+    </ItemGroup>
+    <Error Condition="'@(_RoslynFallback)' == ''" Text="Roslyn não encontrado em packages\. Rode 'Restaurar Pacotes NuGet' e compile de novo." />
+    <Copy SourceFiles="@(_RoslynFallback)" DestinationFolder="$(MSBuildProjectDirectory)\bin\roslyn" SkipUnchangedFiles="true" />
+    <ItemGroup>
+      <FileWrites Include="$(MSBuildProjectDirectory)\bin\roslyn\*" />
+    </ItemGroup>
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

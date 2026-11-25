@@ -161,6 +161,7 @@ Add-Migration NomeMigration  # cria uma nova migration
 | Sintoma | Causa provável | Solução |
 |---|---|---|
 | Erro de build "metadata file not found" | Pacotes NuGet não restaurados | Restore manual: **Tools → NuGet Package Manager → Restore** |
+| `Não foi possível localizar uma parte do caminho '...\bin\roslyn\csc.exe'` na 1ª execução após o clone | O VS avalia o `.csproj` antes de restaurar `packages\`, então o Roslyn não era copiado para `bin\roslyn` | Já corrigido pelo target `CopiarRoslynFallback` no `.csproj`. Se ainda aparecer: **Build → Rebuild Solution** |
 | "Cannot open database" | LocalDB não instalado | Reinstalar SQL Server LocalDB pelo Visual Studio Installer |
 | `AutomaticMigrationsDisabledException` | Modelo EF divergente do snapshot | Rodar `Add-Migration NomeDescritivo` no Package Manager Console e pressionar F5 |
 | Caracteres acentuados aparecem como `Ã¡` | Arquivo `.cshtml` salvo sem BOM UTF-8 | Reabrir no VS e salvar como "UTF-8 with BOM" |
