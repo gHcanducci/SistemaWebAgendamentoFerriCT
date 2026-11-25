@@ -410,7 +410,7 @@
                                  @type = "date",
                                  @class = "form-control",
                                  id = "DataAula",
-                                 min = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")
+                                 min = Relogio.Agora.AddDays(1).ToString("yyyy-MM-dd")
                              })
                     @Html.ValidationMessageFor(m => m.DataAula, "", new { @class = "text-danger", style = "font-size:0.8rem" })
                 </div>

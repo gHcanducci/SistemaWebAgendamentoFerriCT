@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using SistemaWebAgendamentoFerriCT.Helpers;
 using SistemaWebAgendamentoFerriCT.Models;
 
 namespace SistemaWebAgendamentoFerriCT.Tasks
@@ -55,7 +56,7 @@ namespace SistemaWebAgendamentoFerriCT.Tasks
 
         private static void Executar()
         {
-            var limite = DateTime.Now - TempoMaximoPendente;
+            var limite = Relogio.Agora - TempoMaximoPendente;
 
             using (var db = new SistemaContext())
             {
@@ -78,7 +79,7 @@ namespace SistemaWebAgendamentoFerriCT.Tasks
                     foreach (var p in pagamentos)
                     {
                         p.StatusPagamento = "Cancelado";
-                        p.DataAtualizacao = DateTime.Now;
+                        p.DataAtualizacao = Relogio.Agora;
                     }
                 }
 

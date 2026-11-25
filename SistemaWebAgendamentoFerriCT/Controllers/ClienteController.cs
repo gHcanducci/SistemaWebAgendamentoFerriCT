@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Mvc;
+using SistemaWebAgendamentoFerriCT.Helpers;
 using SistemaWebAgendamentoFerriCT.Models;
 using SistemaWebAgendamentoFerriCT.ViewModels;
 
@@ -98,7 +99,7 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                         return View(cliente);
                     }
 
-                    cliente.DataCadastro = DateTime.Now;
+                    cliente.DataCadastro = Relogio.Agora;
                     db.Clientes.Add(cliente);
                     db.SaveChanges();
 

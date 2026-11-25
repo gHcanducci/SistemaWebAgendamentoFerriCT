@@ -374,3 +374,7 @@ FodyWeavers.xsd
 package.json
 package-lock.json
 node_modules/
+
+# Deploy MonsterASP: senhas e saida do publish (nunca commitar)
+deploy/segredos.local.psd1
+deploy/_publish/

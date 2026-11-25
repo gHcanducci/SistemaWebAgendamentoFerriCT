@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using SistemaWebAgendamentoFerriCT.Helpers;
 using SistemaWebAgendamentoFerriCT.Models;
 using SistemaWebAgendamentoFerriCT.ViewModels;
 
@@ -152,7 +153,7 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
 
                 return View(new AgendamentoViewModel
                 {
-                    DataAula = DateTime.Today.AddDays(1)
+                    DataAula = Relogio.Hoje.AddDays(1)
                 });
             }
             catch (Exception)
@@ -178,7 +179,7 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 ViewBag.JaAgendou = jaAgendou;
 
                 // ── Validação: data não pode ser passada
-                if (vm.DataAula < DateTime.Today)
+                if (vm.DataAula < Relogio.Hoje)
                     ModelState.AddModelError("DataAula", "Não é possível agendar para datas passadas.");
 
                 // ── Validação: domingo sem turmas
@@ -221,7 +222,7 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                     DataAula = vm.DataAula,
                     TipoAula = vm.TipoAula,
                     HorarioTurmaId = vm.HorarioTurmaId,
-                    DataSolicitacao = DateTime.Now,
+                    DataSolicitacao = Relogio.Agora,
                     Status = "PendentePagamento"
                 };
 
@@ -330,7 +331,7 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 foreach (var p in pendentesAntigos)
                 {
                     p.StatusPagamento = "Cancelado";
-                    p.DataAtualizacao = DateTime.Now;
+                    p.DataAtualizacao = Relogio.Agora;
                 }
 
                 var pagamento = new Pagamento
@@ -340,9 +341,9 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                     FormaPagamento = formaPagamento,
                     StatusPagamento = "Aprovado",
                     CodigoTransacao = "DEMO-" + Guid.NewGuid().ToString("N").Substring(0, 16),
-                    DataCriacao = DateTime.Now,
-                    DataPagamento = DateTime.Now,
-                    DataAtualizacao = DateTime.Now
+                    DataCriacao = Relogio.Agora,
+                    DataPagamento = Relogio.Agora,
+                    DataAtualizacao = Relogio.Agora
                 };
 
                 agendamento.Status = "Confirmado";
@@ -488,7 +489,7 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 foreach (var p in pendentes)
                 {
                     p.StatusPagamento = "Cancelado";
-                    p.DataAtualizacao = DateTime.Now;
+                    p.DataAtualizacao = Relogio.Agora;
                 }
 
                 agendamento.Status = "Cancelado";

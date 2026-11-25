@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using SistemaWebAgendamentoFerriCT.Helpers;
 
 namespace SistemaWebAgendamentoFerriCT.Models
 {
@@ -38,7 +39,7 @@ namespace SistemaWebAgendamentoFerriCT.Models
         [StringLength(100)]
         public string WebhookEventoId { get; set; }
 
-        public DateTime DataCriacao { get; set; } = DateTime.Now;
+        public DateTime DataCriacao { get; set; } = Relogio.Agora;
 
         public DateTime? DataAtualizacao { get; set; }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using SistemaWebAgendamentoFerriCT.Helpers;
 
 namespace SistemaWebAgendamentoFerriCT.Models
 {
@@ -22,7 +23,7 @@ namespace SistemaWebAgendamentoFerriCT.Models
         [Required]
         public string Status { get; set; }
 
-        public DateTime DataSolicitacao { get; set; } = DateTime.Now;
+        public DateTime DataSolicitacao { get; set; } = Relogio.Agora;
 
         [ForeignKey("Cliente")]
         public int ClienteId { get; set; }

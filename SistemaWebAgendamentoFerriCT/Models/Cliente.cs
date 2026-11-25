@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using SistemaWebAgendamentoFerriCT.Helpers;
 
 namespace SistemaWebAgendamentoFerriCT.Models
 {
@@ -33,7 +34,7 @@ namespace SistemaWebAgendamentoFerriCT.Models
         [Display(Name = "E-mail")]
         public string Email { get; set; }
 
-        public DateTime DataCadastro { get; set; } = DateTime.Now;
+        public DateTime DataCadastro { get; set; } = Relogio.Agora;
 
         public virtual ICollection<Agendamento> Agendamentos { get; set; }
     }

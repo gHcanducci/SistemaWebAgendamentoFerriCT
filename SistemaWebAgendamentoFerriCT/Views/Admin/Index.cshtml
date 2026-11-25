@@ -335,7 +335,7 @@
 <div class="dashboard-greeting">
     <div class="greeting-sub">
         <span class="live-dot"></span>
-        Sistema operacional · @DateTime.Now.ToString("dddd, dd 'de' MMMM", new System.Globalization.CultureInfo("pt-BR"))
+        Sistema operacional · @Relogio.Agora.ToString("dddd, dd 'de' MMMM", new System.Globalization.CultureInfo("pt-BR"))
     </div>
     <div class="greeting-title">BOM DIA, <span>ADMIN</span></div>
 </div>
@@ -407,10 +407,10 @@
         </div>
         <div class="cal-content">
             <div class="cal-today">
-                <div class="cal-day-num">@DateTime.Now.Day</div>
-                <div class="cal-day-name">@DateTime.Now.ToString("dddd", new System.Globalization.CultureInfo("pt-BR"))</div>
+                <div class="cal-day-num">@Relogio.Agora.Day</div>
+                <div class="cal-day-name">@Relogio.Agora.ToString("dddd", new System.Globalization.CultureInfo("pt-BR"))</div>
                 <div style="font-size:0.72rem;color:var(--text-secondary);margin-top:4px">
-                    @DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("pt-BR"))
+                    @Relogio.Agora.ToString("MMMM yyyy", new System.Globalization.CultureInfo("pt-BR"))
                 </div>
             </div>
             <div class="cal-stat-row">

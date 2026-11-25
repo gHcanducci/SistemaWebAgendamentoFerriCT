@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web.Mvc;
 using SistemaWebAgendamentoFerriCT.Filtros;
+using SistemaWebAgendamentoFerriCT.Helpers;
 using SistemaWebAgendamentoFerriCT.Models;
 using SistemaWebAgendamentoFerriCT.ViewModels;
 
@@ -74,11 +75,14 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
         {
             try
             {
+                // Variável local: o EF não traduz Relogio.Hoje para SQL
+                var hoje = Relogio.Hoje;
+
                 ViewBag.TotalAlunos = db.Clientes.Count();
-                ViewBag.AgendamentosHoje = db.Agendamentos.Count(a => a.DataAula == DateTime.Today);
+                ViewBag.AgendamentosHoje = db.Agendamentos.Count(a => a.DataAula == hoje);
                 ViewBag.PendentePagamento = db.Agendamentos.Count(a => a.Status == "PendentePagamento");
                 ViewBag.TotalTurmas = db.Turmas.Count();
-                ViewBag.ConfirmadosHoje = db.Agendamentos.Count(a => a.DataAula == DateTime.Today && a.Status == "Confirmado");
+                ViewBag.ConfirmadosHoje = db.Agendamentos.Count(a => a.DataAula == hoje && a.Status == "Confirmado");
 
                 return View();
             }
@@ -144,7 +148,7 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                         return View(cliente);
                     }
 
-                    cliente.DataCadastro = DateTime.Now;
+                    cliente.DataCadastro = Relogio.Agora;
                     db.Clientes.Add(cliente);
                     db.SaveChanges();
 
@@ -465,7 +469,7 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                 foreach (var p in pendentesAntigos)
                 {
                     p.StatusPagamento = "Cancelado";
-                    p.DataAtualizacao = DateTime.Now;
+                    p.DataAtualizacao = Relogio.Agora;
                 }
 
                 // Valor recalculado server-side — admin NÃO informa valor
@@ -479,9 +483,9 @@ namespace SistemaWebAgendamentoFerriCT.Controllers
                     Valor = valor,
                     FormaPagamento = formaPagamento,
                     StatusPagamento = "Aprovado",
-                    DataPagamento = DateTime.Now,
-                    DataCriacao = DateTime.Now,
-                    DataAtualizacao = DateTime.Now,
+                    DataPagamento = Relogio.Agora,
+                    DataCriacao = Relogio.Agora,
+                    DataAtualizacao = Relogio.Agora,
                     CodigoTransacao = "MANUAL-" + Guid.NewGuid().ToString("N").Substring(0, 16).ToUpperInvariant()
                 };
 

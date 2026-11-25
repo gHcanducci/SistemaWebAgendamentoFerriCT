@@ -385,7 +385,7 @@
         <i class="bi bi-calendar-plus mini-stat-icon" style="color:var(--success)"></i>
         <div>
             <div class="mini-stat-value" style="color:var(--success)">
-                @(Model?.Count(a => a.DataCadastro.Month == DateTime.Now.Month) ?? 0)
+                @(Model?.Count(a => a.DataCadastro.Month == Relogio.Agora.Month) ?? 0)
             </div>
             <div class="mini-stat-label">Novos este mês</div>
         </div>
